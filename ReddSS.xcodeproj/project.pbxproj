@@ -10,6 +10,7 @@
 		24B35B722434FED00088569E /* BrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B35B712434FED00088569E /* BrowseView.swift */; };
 		24B3CD9D2433DEBF006BF9DD /* RedditAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */; };
 		24B3CDA02433DFDA006BF9DD /* RedditConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B3CD9F2433DFDA006BF9DD /* RedditConfig.swift */; };
+		24B8FFB1243506980029734C /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B8FFB0243506980029734C /* SearchBar.swift */; };
 		24D740FC2433CE6A00407F8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D740FB2433CE6A00407F8B /* AppDelegate.swift */; };
 		24D740FF2433CE6A00407F8B /* ReddSS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 24D740FD2433CE6A00407F8B /* ReddSS.xcdatamodeld */; };
 		24D741012433CE6A00407F8B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D741002433CE6A00407F8B /* SceneDelegate.swift */; };
@@ -27,6 +28,7 @@
 		24B35B712434FED00088569E /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseView.swift; sourceTree = "<group>"; };
 		24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditAuth.swift; sourceTree = "<group>"; };
 		24B3CD9F2433DFDA006BF9DD /* RedditConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditConfig.swift; sourceTree = "<group>"; };
+		24B8FFB0243506980029734C /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		24D740F82433CE6A00407F8B /* ReddSS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReddSS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D740FB2433CE6A00407F8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24D740FE2433CE6A00407F8B /* ReddSS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ReddSS.xcdatamodel; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 				24D741182433D52300407F8B /* CoreDataModel.swift in Sources */,
 				24B35B722434FED00088569E /* BrowseView.swift in Sources */,
 				24D7411F2433DAA300407F8B /* SubredditsView.swift in Sources */,
+				24B8FFB1243506980029734C /* SearchBar.swift in Sources */,
 				24D741212433DAD100407F8B /* SubredditView.swift in Sources */,
 				24D741052433CE6A00407F8B /* ContentView.swift in Sources */,
 				24D740FF2433CE6A00407F8B /* ReddSS.xcdatamodeld in Sources */,

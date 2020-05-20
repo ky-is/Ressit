@@ -13,9 +13,11 @@ struct SubredditView: View {
 
 struct SubredditView_Previews: PreviewProvider {
 	static var previews: some View {
-		let subreddit = SubredditSubscription.create(named: "Test", in: CoreDataModel.persistentContainer.viewContext)
+		let subredditSubscription = SubredditSubscription(context: CoreDataModel.persistentContainer.viewContext)
+		subredditSubscription.name = "Test"
+		subredditSubscription.creationDate = Date()
 		return NavigationView {
-			SubredditView(subreddit: subreddit)
+			SubredditView(subreddit: subredditSubscription)
 		}
 	}
 }
