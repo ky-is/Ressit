@@ -5,6 +5,7 @@ final class RedditAuthModel: ObservableObject {
 	static let shared = RedditAuthModel()
 
 	@Published var accessToken = UserDefaults.standard.string(forKey: "access_token")
+	@Published var loading = false
 }
 
 private struct RedditAuthResponse: Decodable {
@@ -136,6 +137,8 @@ struct RedditAuthManager {
 	private static let decoder = JSONDecoder()
 
 	private static func authorize(grantType: GrantType, token: String? = nil) {
+		RedditAuthModel.shared.loading = true
+
 		var request = URLRequest(url: RedditConfig.accessTokenURL)
 		request.httpMethod = "POST"
 		request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -158,6 +161,9 @@ struct RedditAuthManager {
 			}
 			.decode(type: RedditAuthResponse.self, decoder: decoder)
 			.sink(receiveCompletion: { completion in
+				DispatchQueue.main.async {
+					RedditAuthModel.shared.loading = false
+				}
 				switch completion {
 				case .failure(let error):
 					print(#function, error)
@@ -165,7 +171,9 @@ struct RedditAuthManager {
 					break
 				}
 			}) { response in
-				RedditAuthModel.shared.accessToken = response.accessToken
+				DispatchQueue.main.async {
+					RedditAuthModel.shared.accessToken = response.accessToken
+				}
 				refreshToken = response.refreshToken
 				refreshExpireDuration = response.expiresIn
 

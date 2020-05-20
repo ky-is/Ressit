@@ -1,8 +1,16 @@
 import SwiftUI
 
 struct ContentView: View {
+	@ObservedObject private var redditAuth = RedditAuthModel.shared
+
 	var body: some View {
-		BrowseView()
+		Group {
+			if redditAuth.accessToken != nil {
+				BrowseView()
+			} else {
+				WelcomeView()
+			}
+		}
 	}
 }
 

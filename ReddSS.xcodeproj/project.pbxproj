@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		24B35B722434FED00088569E /* BrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B35B712434FED00088569E /* BrowseView.swift */; };
 		24B3CD9D2433DEBF006BF9DD /* RedditAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */; };
+		24B7CEBE2474FB8700823BB1 /* Welcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B7CEBD2474FB8700823BB1 /* Welcome.swift */; };
+		24B7CEC12474FF8800823BB1 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B7CEC02474FF8800823BB1 /* Colors.swift */; };
 		24B8FFB1243506980029734C /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B8FFB0243506980029734C /* SearchBar.swift */; };
 		24D740FC2433CE6A00407F8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D740FB2433CE6A00407F8B /* AppDelegate.swift */; };
 		24D740FF2433CE6A00407F8B /* ReddSS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 24D740FD2433CE6A00407F8B /* ReddSS.xcdatamodeld */; };
@@ -26,6 +28,8 @@
 /* Begin PBXFileReference section */
 		24B35B712434FED00088569E /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseView.swift; sourceTree = "<group>"; };
 		24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditAuth.swift; sourceTree = "<group>"; };
+		24B7CEBD2474FB8700823BB1 /* Welcome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Welcome.swift; sourceTree = "<group>"; };
+		24B7CEC02474FF8800823BB1 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		24B8FFB0243506980029734C /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		24D740F82433CE6A00407F8B /* ReddSS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReddSS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D740FB2433CE6A00407F8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +70,7 @@
 		24B3CD9B2433DDD9006BF9DD /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				24B8FFB0243506980029734C /* SearchBar.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -76,6 +81,22 @@
 				24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		24B7CEBC2474FB7D00823BB1 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				24B7CEBD2474FB8700823BB1 /* Welcome.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
+		24B7CEBF2474FF8000823BB1 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				24B7CEC02474FF8800823BB1 /* Colors.swift */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		24D740EF2433CE6A00407F8B = {
@@ -129,6 +150,7 @@
 		24D741152433D3F100407F8B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				24B7CEBC2474FB7D00823BB1 /* Welcome */,
 				24D7411B2433D85A00407F8B /* Home */,
 			);
 			path = Views;
@@ -137,6 +159,7 @@
 		24D741162433D3F900407F8B /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				24B7CEBF2474FF8000823BB1 /* Assets */,
 				24D741142433D3EA00407F8B /* Models */,
 				24B3CD9B2433DDD9006BF9DD /* Components */,
 				24D741152433D3F100407F8B /* Views */,
@@ -228,7 +251,9 @@
 				24D7411D2433D8D600407F8B /* SubredditSubscription.swift in Sources */,
 				24D741182433D52300407F8B /* CoreDataModel.swift in Sources */,
 				24B35B722434FED00088569E /* BrowseView.swift in Sources */,
+				24B7CEC12474FF8800823BB1 /* Colors.swift in Sources */,
 				24D7411F2433DAA300407F8B /* SubredditsView.swift in Sources */,
+				24B7CEBE2474FB8700823BB1 /* Welcome.swift in Sources */,
 				24B8FFB1243506980029734C /* SearchBar.swift in Sources */,
 				24D741212433DAD100407F8B /* SubredditView.swift in Sources */,
 				24D741052433CE6A00407F8B /* ContentView.swift in Sources */,
