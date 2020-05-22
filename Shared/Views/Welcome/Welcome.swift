@@ -28,6 +28,7 @@ struct WelcomeView: View {
 			}
 				.navigationBarTitle("ReddSS")
 		}
+			.navigationViewStyle(StackNavigationViewStyle())
 	}
 }
 

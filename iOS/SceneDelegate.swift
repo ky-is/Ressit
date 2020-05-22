@@ -5,7 +5,6 @@ import SwiftUI
 var globalPresentationAnchor: ASPresentationAnchor?
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
 	var window: UIWindow?
 
 	func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -20,12 +19,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		}
 	}
 
-	func sceneDidEnterBackground(_ scene: UIScene) {
+	func sceneWillResignActive(_ scene: UIScene) {
 		CoreDataModel.saveContext()
 	}
 
 	func sceneWillEnterForeground(_ scene: UIScene) {
 		RedditAuthManager.refreshIfNeeded()
 	}
-
 }

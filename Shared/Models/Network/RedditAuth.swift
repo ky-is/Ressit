@@ -6,6 +6,12 @@ final class RedditAuthModel: ObservableObject {
 
 	@Published var accessToken = UserDefaults.standard.string(forKey: "access_token")
 	@Published var loading = false
+
+	func toggleLoading(_ loading: Bool) {
+		DispatchQueue.main.async {
+			self.loading = loading
+		}
+	}
 }
 
 struct RedditAuthResponse: Decodable {
@@ -157,12 +163,6 @@ struct RedditAuthManager {
 		return decoder
 	}()
 
-	private static func toggleLoading(_ loading: Bool) {
-		DispatchQueue.main.async {
-			RedditAuthModel.shared.loading = loading
-		}
-	}
-
 	@discardableResult static func createAuthorization(grantType: GrantType, token: String? = nil, promise: ((Result<RedditAuthResponse, Error>) -> Void)? = nil) -> AnyPublisher<RedditAuthResponse, Error> {
 		let queryItems = grantType.getQueryItems(with: token)
 		var components = URLComponents()
@@ -180,7 +180,7 @@ struct RedditAuthManager {
 		let encodedClientIDAndEmptyPassword = "\(clientID):".data(using: .utf8)!.base64EncodedString()
 		request.addValue("Basic \(encodedClientIDAndEmptyPassword)", forHTTPHeaderField: "Authorization")
 
-		toggleLoading(true)
+		RedditAuthModel.shared.toggleLoading(true)
 		let authorizationPublisher = URLSession.shared.dataTaskPublisher(for: request)
 			.tryMap { data, response in
 				let httpResponse = response as! HTTPURLResponse
@@ -194,7 +194,7 @@ struct RedditAuthManager {
 		self.authorizationPublisher = authorizationPublisher
 		authorizationSubscription = authorizationPublisher
 			.sink(receiveCompletion: { completion in
-				toggleLoading(false)
+				RedditAuthModel.shared.toggleLoading(false)
 				authorizationBody = nil
 				switch completion {
 				case .failure(let error):
