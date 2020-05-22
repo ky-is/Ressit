@@ -73,5 +73,10 @@ final class APIRequest<Result> {
 }
 
 extension APIRequest {
-	static var mySubreddits: APIRequest<RedditListing<Subreddit>> { APIRequest<RedditListing<Subreddit>>(path: "/subreddits/mine", parameters: ["limit": "100"]) }
+	static var subredditsMine: APIRequest<RedditListing<Subreddit>> {
+		APIRequest<RedditListing<Subreddit>>(path: "/subreddits/mine", parameters: ["limit": "100"])
+	}
+	static func subreddits(search query: String) -> APIRequest<RedditListing<Subreddit>> {
+		APIRequest<RedditListing<Subreddit>>(path: "/subreddits/search", parameters: ["q": query])
+	}
 }

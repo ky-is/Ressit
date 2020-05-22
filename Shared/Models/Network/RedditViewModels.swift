@@ -5,18 +5,18 @@ protocol RedditViewModel: ObservableObject {
 	associatedtype NetworkResource: RedditResponsable
 
 	var objectWillChange: ObservableObjectPublisher { get }
-	var request: APIRequest<NetworkResource> { get set }
+	var request: APIRequest<NetworkResource>? { get set }
 	var subscription: AnyCancellable? { get set }
 	var loading: Bool { get set }
-	var result: NetworkResource? { get set }
 	var error: Error? { get set }
+	var result: NetworkResource? { get set }
 
 	func fetch()
 }
 
 extension RedditViewModel {
 	func fetch() {
-		guard subscription == nil else {
+		guard let request = request, subscription == nil else {
 			return
 		}
 		loading = true
@@ -27,6 +27,7 @@ extension RedditViewModel {
 				self.loading = false
 				switch completion {
 				case .failure(let error):
+					print(error)
 					self.error = error
 					self.objectWillChange.send()
 				case .finished:
@@ -39,14 +40,37 @@ extension RedditViewModel {
 	}
 }
 
-final class SubredditsViewModel: RedditViewModel {
-	static let shared = SubredditsViewModel()
+final class SubredditsMineViewModel: RedditViewModel {
+	static let shared = SubredditsMineViewModel()
 
-	var request: APIRequest<RedditListing<Subreddit>> = .mySubreddits
+	var request: APIRequest<RedditListing<Subreddit>>? = .subredditsMine
 	var subscription: AnyCancellable?
 	var loading = true
-	var result: RedditListing<Subreddit>?
 	var error: Error?
+	var result: RedditListing<Subreddit>?
+}
+
+final class SubredditsSearchViewModel: RedditViewModel {
+	@Published var query = ""
+	var querySubscription: AnyCancellable?
+
+	var request: APIRequest<RedditListing<Subreddit>>?
+	var subscription: AnyCancellable?
+	var loading = true
+	var error: Error?
+	var result: RedditListing<Subreddit>?
+
+	init() {
+		querySubscription = $query
+			.removeDuplicates()
+			.debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+			.map { $0.starts(with: "r/") ? String($0.dropFirst(2)) : $0 }
+			.filter { $0.count > 2 }
+			.sink { value in
+				self.request = .subreddits(search: value)
+				self.fetch()
+			}
+	}
 }
 
 struct RedditView<VM: RedditViewModel, Content: View>: View {

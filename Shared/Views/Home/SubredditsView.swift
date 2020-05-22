@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 struct SubredditsView: View {
-	@FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \SubredditSubscription.name, ascending: true)], animation: .default) private var subscriptions: FetchedResults<SubredditSubscription>
+	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscription>
 
 	var body: some View {
 		SubredditsSubscriptionList(subscriptions: subscriptions)
@@ -33,14 +33,11 @@ private struct SubredditsSubscriptionList: View {
 					self.showAddSubreddits = true
 				}) {
 					Text("＋")
+						.font(.title)
 				}
 			)
 			.sheet(isPresented: $showAddSubreddits) {
-				NavigationView {
-					SubredditsManage(subscriptions: self.subscriptions)
-						.navigationBarTitle("Manage")
-				}
-					.navigationViewStyle(StackNavigationViewStyle())
+				SubredditsManageSheet(subscriptions: self.subscriptions)
 					.environment(\.managedObjectContext, self.viewContext)
 			}
 			.onAppear {
@@ -51,18 +48,65 @@ private struct SubredditsSubscriptionList: View {
 	}
 }
 
+private struct SubredditsManageSheet: View {
+	let subscriptions: FetchedResults<SubredditSubscription>
+
+	@Environment(\.presentationMode) private var presentationMode
+
+	var body: some View {
+		NavigationView {
+			SubredditsManage(subscriptions: self.subscriptions)
+				.navigationBarTitle("Manage")
+				.navigationBarItems(trailing:
+					Button(action: {
+						self.presentationMode.wrappedValue.dismiss()
+					}) {
+						Text("Close")
+					}
+				)
+		}
+			.navigationViewStyle(StackNavigationViewStyle())
+	}
+}
+
+final class SearchViewModel: ObservableObject {
+	@Published var query = ""
+	@Published var results: [Subreddit]?
+
+	private var subscription: AnyCancellable?
+
+	init() {
+		subscription = $query
+			.setFailureType(to: Error.self)
+			.removeDuplicates()
+			.debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+			.map { $0.starts(with: "r/") ? String($0.dropFirst(2)) : $0 }
+			.filter { $0.count > 2 }
+			.flatMap { query in RedditClient.shared.send(.subreddits(search: query)) }
+			.map { response -> [Subreddit]? in response.values }
+			.replaceError(with: nil)
+			.assign(to: \.results, on: self)
+	}
+}
+
 private struct SubredditsManage: View {
 	let subscriptions: FetchedResults<SubredditSubscription>
 
-	@State private var searchText = ""
+	@ObservedObject private var search = SubredditsSearchViewModel()
 
 	var body: some View {
 		ZStack(alignment: .top) {
 			VStack(spacing: 0) {
-				SearchBar(text: $searchText, autoFocus: false)
+				SearchBar(text: $search.query, autoFocus: false)
 				Group {
-					if RedditAuthModel.shared.accessToken != nil {
-						SubredditsManageList(subscriptions: subscriptions)
+					if search.result?.values != nil {
+						RedditView(search) { result in
+							SubredditsSubscriptionListView(subreddits: result.values, subscriptions: self.subscriptions)
+						}
+					} else if RedditAuthModel.shared.accessToken != nil {
+						RedditView(SubredditsMineViewModel.shared) { result in
+							SubredditsSubscriptionListView(subreddits: result.values, subscriptions: self.subscriptions)
+						}
 					} else {
 						Spacer()
 						Text("Sign in to choose from subreddits you already subscribe to")
@@ -74,16 +118,13 @@ private struct SubredditsManage: View {
 	}
 }
 
-private struct SubredditsManageList: View {
+private struct SubredditsSubscriptionListView: View {
+	let subreddits: [Subreddit]
 	let subscriptions: FetchedResults<SubredditSubscription>
 
 	var body: some View {
-		RedditView(SubredditsViewModel.shared) { subreddits in
-			List {
-				ForEach(subreddits.values) { subreddit in
-					SubredditsManageEntry(subreddit: subreddit, subscription: self.subscriptions.first { $0.id == subreddit.id })
-				}
-			}
+		List(subreddits) { subreddit in
+			SubredditsManageEntry(subreddit: subreddit, subscription: self.subscriptions.first { $0.id == subreddit.id })
 		}
 	}
 }
@@ -108,6 +149,7 @@ private struct SubredditsManageEntry: View {
 			HStack {
 				Text(subscription != nil ? "✔︎" : "◯")
 					.foregroundColor(subscription != nil ? .accentColor : .secondary)
+					.frame(width: 16)
 				SubredditTitle(name: subreddit.name)
 			}
 		}

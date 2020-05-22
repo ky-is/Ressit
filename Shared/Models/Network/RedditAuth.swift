@@ -30,7 +30,7 @@ struct RedditAuthManager {
 	private static let redirectURI = "reddss://auth"
 	private static var authURL: URL {
 		let baseURL = URL(string: "https://www.reddit.com/api/v1/authorize.compact")!
-		let scopes = ["mysubreddits", "save", "vote"]
+		let scopes = ["read", "mysubreddits", "save", "vote"]
 		var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)!
 		urlComponents.queryItems = [
 			URLQueryItem(name: "client_id", value: clientID),
@@ -124,7 +124,7 @@ struct RedditAuthManager {
 			webAuthenticationSession.presentationContextProvider = authProvider
 			webAuthenticationSession.start()
 		}
-		return AnyPublisher(future)
+		return future.eraseToAnyPublisher()
 	}
 
 	private static func isRefreshTokenValid() -> Bool {
