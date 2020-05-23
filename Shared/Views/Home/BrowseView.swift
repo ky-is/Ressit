@@ -4,8 +4,7 @@ struct BrowseView: View {
 	var body: some View {
 		NavigationView {
 			SubredditsView()
-			EmptyView()
-				.navigationBarTitle("")
+			AllSubredditPostsView()
 		}
 			.navigationViewStyle(DoubleColumnNavigationViewStyle())
 	}

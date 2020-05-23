@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
-    <entity name="SubredditSubscription" representedClassName="SubredditSubscription" syncable="YES">
+    <entity name="SubredditPostModel" representedClassName="SubredditPostModel" syncable="YES">
+        <attribute name="author" optional="YES" attributeType="String"/>
+        <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="subreddit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditSubscriptionModel" inverseName="posts" inverseEntity="SubredditSubscriptionModel"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="SubredditSubscriptionModel" representedClassName="SubredditSubscriptionModel" syncable="YES">
         <attribute name="accessDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="creationDate" optional="YES" attributeType="Date"/>
         <attribute name="id" attributeType="String" defaultValueString=""/>
@@ -9,6 +23,7 @@
         <attribute name="periodMonthDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SubredditPostModel" inverseName="subreddit" inverseEntity="SubredditPostModel"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -16,6 +31,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditSubscription" positionX="261" positionY="189" width="128" height="163"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="148"/>
+        <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="178"/>
     </elements>
 </model>

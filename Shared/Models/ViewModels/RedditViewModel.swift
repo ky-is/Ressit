@@ -12,7 +12,7 @@ protocol RedditViewModel: ObservableObject {
 	var result: NetworkResource? { get set }
 
 	func fetch()
-	func fetch(_: APIRequest<NetworkResource>) -> AnyPublisher<Self.NetworkResource, Error>?
+	func fetch(_: APIRequest<NetworkResource>, callback: ((NetworkResource) -> Void)?)
 }
 
 extension RedditViewModel {
@@ -20,17 +20,16 @@ extension RedditViewModel {
 		guard let request = request ?? self.request else {
 			return
 		}
-		_ = fetch(request)
+		fetch(request)
 	}
 
-	@discardableResult func fetch(_ request: APIRequest<NetworkResource>) -> AnyPublisher<Self.NetworkResource, Error>? {
+	func fetch(_ request: APIRequest<NetworkResource>, callback: ((NetworkResource) -> Void)? = nil) {
 		guard subscription == nil else {
-			return nil
+			return
 		}
 		self.request = request
 		loading = true
-		let publisher = RedditClient.shared.send(request)
-		subscription = publisher
+		subscription = RedditClient.shared.send(request)
 			.receive(on: RunLoop.main)
 			.sink(receiveCompletion: { completion in
 				self.subscription = nil
@@ -45,7 +44,7 @@ extension RedditViewModel {
 				self.objectWillChange.send()
 			}, receiveValue: { result in
 				self.result = result
+				callback?(result)
 			})
-		return publisher
 	}
 }

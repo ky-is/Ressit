@@ -1,8 +1,8 @@
 import Foundation
 import CoreData
 
-@objc(SubredditSubscription)
-final class SubredditSubscription: NSManagedObject, Identifiable {
+@objc(SubredditSubscriptionModel)
+final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 	@NSManaged var id: String
 	@NSManaged var name: String
 	@NSManaged var creationDate: Date?
@@ -31,36 +31,39 @@ final class SubredditSubscription: NSManagedObject, Identifiable {
 		return previousDate.timeIntervalSinceNow > period.minimumUpdate
 	}
 
-	func markUpdated(for period: RedditPeriod) {
-		let date = Date()
-		switch period {
-		case .all:
-			periodAllDate = date
-		case .year:
-			periodYearDate = date
-		case .month:
-			periodMonthDate = date
-		case .week:
-			periodWeekDate = date
+	func update(posts: [SubredditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
+		context.perform {
+			posts.forEach { SubredditPostModel.create(for: $0, subreddit: self, in: context) }
+			let date = Date()
+			switch period {
+			case .all:
+				self.periodAllDate = date
+			case .year:
+				self.periodYearDate = date
+			case .month:
+				self.periodMonthDate = date
+			case .week:
+				self.periodWeekDate = date
+			}
+			context.safeSave()
 		}
 	}
 }
 
-extension SubredditSubscription {
-	static func create(for subreddit: Subreddit, in managedObjectContext: NSManagedObjectContext) {
-		let subredditSubscription = self.init(context: managedObjectContext)
+extension SubredditSubscriptionModel {
+	static func create(for subreddit: Subreddit, in context: NSManagedObjectContext) {
+		let subredditSubscription = self.init(context: context)
 		subredditSubscription.id = subreddit.id
 		subredditSubscription.name = subreddit.name
 		subredditSubscription.creationDate = Date()
-		managedObjectContext.safeSave()
 	}
 }
 
 extension Collection where Element == SubredditPostsViewModel, Index == Int {
-	func delete(at indices: IndexSet, from managedObjectContext: NSManagedObjectContext) {
+	func delete(at indices: IndexSet, from context: NSManagedObjectContext) {
 		if !indices.isEmpty {
-			indices.forEach { managedObjectContext.delete(self[$0].model) }
-			managedObjectContext.safeSave()
+			indices.forEach { context.delete(self[$0].model) }
+			context.safeSave()
 		}
 	}
 }

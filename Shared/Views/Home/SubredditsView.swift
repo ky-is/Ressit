@@ -2,17 +2,16 @@ import Combine
 import SwiftUI
 
 struct SubredditsView: View {
-	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscription>
+	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
 
-	let subredditSearch = SubredditsSearchViewModel()
+	@Environment(\.managedObjectContext) private var context
+	private let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
 		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0) }
+		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
 		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch)
 			.navigationBarTitle("Subreddits")
-			.onAppear {
-				subscriptionViewModels.forEach { $0.updateIfNeeded() }
-			}
 	}
 }
 
@@ -21,17 +20,20 @@ private struct SubredditsSubscriptionList: View {
 	let subredditSearch: SubredditsSearchViewModel
 
 	@State private var showAddSubreddits = false
-	@Environment(\.managedObjectContext) private var viewContext
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		List {
+			NavigationLink(destination: AllSubredditPostsView()) {
+				Text("🌏 Global Feed")
+			}
 			ForEach(subscriptions) { subreddit in
-				NavigationLink(destination: SubredditView(subreddit: subreddit.model)) {
+				NavigationLink(destination: SubredditView(subscription: subreddit)) {
 					SubredditTitle(name: subreddit.model.name)
 				}
 			}
 				.onDelete { indices in
-					self.subscriptions.delete(at: indices, from: self.viewContext)
+					self.subscriptions.delete(at: indices, from: self.context)
 				}
 		}
 			.navigationBarItems(trailing:
@@ -44,7 +46,7 @@ private struct SubredditsSubscriptionList: View {
 			)
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
-					.environment(\.managedObjectContext, self.viewContext)
+					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
 				if self.subscriptions.isEmpty {
@@ -115,19 +117,19 @@ private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.Networ
 
 private struct SubredditsManageEntry: View {
 	let subreddit: Subreddit
-	let subscriptionModel: SubredditSubscription?
+	let subscriptionModel: SubredditSubscriptionModel?
 
-	@Environment(\.managedObjectContext) private var viewContext
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		Button(action: {
-			self.viewContext.perform {
+			self.context.perform {
 				if let subscriptionModel = self.subscriptionModel {
-					self.viewContext.delete(subscriptionModel)
-					self.viewContext.safeSave()
+					self.context.delete(subscriptionModel)
 				} else {
-					SubredditSubscription.create(for: self.subreddit, in: self.viewContext)
+					SubredditSubscriptionModel.create(for: self.subreddit, in: self.context)
 				}
+				self.context.safeSave()
 			}
 		}) {
 			HStack {
