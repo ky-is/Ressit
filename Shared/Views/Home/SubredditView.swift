@@ -27,17 +27,19 @@ private struct SubredditPostsList: View {
 
 	var body: some View {
 		List(posts) { post in
-			VStack(alignment: .leading, spacing: 4) {
-				Text(post.title)
-					.font(.headline)
-				HStack {
-					Text("🔺\(post.score)")
-					Text("💬\(post.commentCount)")
-					Text("🕓\(post.creationString)")
+			NavigationLink(destination: SubredditPostView(post: post)) {
+				VStack(alignment: .leading, spacing: 4) {
+					Text(post.title)
+						.font(.headline)
+					HStack {
+						Text("🔺\(post.score)")
+						Text("💬\(post.commentCount)")
+						Text("🕓\(post.creationString)")
+					}
+						.font(.caption)
 				}
-				.font(.subheadline)
+					.padding(.vertical, 6)
 			}
-			.padding(.vertical, 6)
 		}
 	}
 }

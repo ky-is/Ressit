@@ -32,7 +32,7 @@ extension SubredditPostModel {
 		subredditPost.author = post.author
 		subredditPost.score = post.score
 		subredditPost.commentCount = post.commentCount
-		subredditPost.creationDate = Date()
+		subredditPost.creationDate = Date(timeIntervalSince1970: post.createdAt)
 		subredditPost.subreddit = subreddit
 	}
 }

@@ -79,7 +79,7 @@ extension APIRequest {
 	static func subreddits(search query: String) -> APIRequest<RedditListing<Subreddit>> {
 		APIRequest<RedditListing<Subreddit>>(path: "/subreddits/search", parameters: ["q": query])
 	}
-	static func topPosts(in subreddit: String, over period: RedditPeriod) -> APIRequest<RedditListing<SubredditPost>> {
-		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue])
+	static func topPosts(in subreddit: String, over period: RedditPeriod, count: Int) -> APIRequest<RedditListing<SubredditPost>> {
+		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
 	}
 }

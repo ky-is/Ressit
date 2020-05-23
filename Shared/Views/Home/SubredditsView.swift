@@ -142,17 +142,6 @@ private struct SubredditsManageEntry: View {
 	}
 }
 
-private struct SubredditTitle: View {
-	let name: String
-
-	var body: some View {
-		Text("r/")
-			.foregroundColor(.secondary)
-		+
-		Text(name)
-	}
-}
-
 struct SubredditsView_Previews: PreviewProvider {
 	static var previews: some View {
 		NavigationView {
