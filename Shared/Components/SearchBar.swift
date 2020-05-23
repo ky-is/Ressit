@@ -15,6 +15,7 @@ struct SearchBar: UIViewRepresentable {
 		if autoFocus {
 			searchBar.becomeFirstResponder()
 		}
+		searchBar.text = text
 		return searchBar
 	}
 

@@ -4,14 +4,17 @@ import SwiftUI
 struct SubredditsView: View {
 	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscription>
 
+	let subredditSearch = SubredditsSearchViewModel()
+
 	var body: some View {
-		SubredditsSubscriptionList(subscriptions: subscriptions)
+		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch)
 			.navigationBarTitle("Subreddits")
 	}
 }
 
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: FetchedResults<SubredditSubscription>
+	let subredditSearch: SubredditsSearchViewModel
 
 	@State private var showAddSubreddits = false
 
@@ -37,7 +40,7 @@ private struct SubredditsSubscriptionList: View {
 				}
 			)
 			.sheet(isPresented: $showAddSubreddits) {
-				SubredditsManageSheet(subscriptions: self.subscriptions)
+				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
 					.environment(\.managedObjectContext, self.viewContext)
 			}
 			.onAppear {
@@ -50,12 +53,13 @@ private struct SubredditsSubscriptionList: View {
 
 private struct SubredditsManageSheet: View {
 	let subscriptions: FetchedResults<SubredditSubscription>
+	let subredditSearch: SubredditsSearchViewModel
 
 	@Environment(\.presentationMode) private var presentationMode
 
 	var body: some View {
 		NavigationView {
-			SubredditsManage(subscriptions: self.subscriptions)
+			SubredditsManage(subscriptions: subscriptions, subredditSearch: subredditSearch)
 				.navigationBarTitle("Manage")
 				.navigationBarItems(trailing:
 					Button(action: {
@@ -69,44 +73,19 @@ private struct SubredditsManageSheet: View {
 	}
 }
 
-final class SearchViewModel: ObservableObject {
-	@Published var query = ""
-	@Published var results: [Subreddit]?
-
-	private var subscription: AnyCancellable?
-
-	init() {
-		subscription = $query
-			.setFailureType(to: Error.self)
-			.removeDuplicates()
-			.debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-			.map { $0.starts(with: "r/") ? String($0.dropFirst(2)) : $0 }
-			.filter { $0.count > 2 }
-			.flatMap { query in RedditClient.shared.send(.subreddits(search: query)) }
-			.map { response -> [Subreddit]? in response.values }
-			.replaceError(with: nil)
-			.assign(to: \.results, on: self)
-	}
-}
-
 private struct SubredditsManage: View {
 	let subscriptions: FetchedResults<SubredditSubscription>
-
-	@ObservedObject private var search = SubredditsSearchViewModel()
+	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
 	var body: some View {
 		ZStack(alignment: .top) {
 			VStack(spacing: 0) {
-				SearchBar(text: $search.query, autoFocus: false)
+				SearchBar(text: $subredditSearch.query, autoFocus: false)
 				Group {
-					if search.result?.values != nil {
-						RedditView(search) { result in
-							SubredditsSubscriptionListView(subreddits: result.values, subscriptions: self.subscriptions)
-						}
+					if subredditSearch.result?.values != nil {
+						SubredditsResponseList(viewModel: subredditSearch, subscriptions: self.subscriptions)
 					} else if RedditAuthModel.shared.accessToken != nil {
-						RedditView(SubredditsMineViewModel.shared) { result in
-							SubredditsSubscriptionListView(subreddits: result.values, subscriptions: self.subscriptions)
-						}
+						SubredditsResponseList(viewModel: SubredditsMineViewModel.shared, subscriptions: self.subscriptions)
 					} else {
 						Spacer()
 						Text("Sign in to choose from subreddits you already subscribe to")
@@ -118,13 +97,15 @@ private struct SubredditsManage: View {
 	}
 }
 
-private struct SubredditsSubscriptionListView: View {
-	let subreddits: [Subreddit]
+private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.NetworkResource == RedditListing<Subreddit> {
+	let viewModel: VM
 	let subscriptions: FetchedResults<SubredditSubscription>
 
 	var body: some View {
-		List(subreddits) { subreddit in
-			SubredditsManageEntry(subreddit: subreddit, subscription: self.subscriptions.first { $0.id == subreddit.id })
+		RedditView(viewModel) { result in
+			List(result.values) { subreddit in
+				SubredditsManageEntry(subreddit: subreddit, subscription: self.subscriptions.first { $0.id == subreddit.id })
+			}
 		}
 	}
 }
