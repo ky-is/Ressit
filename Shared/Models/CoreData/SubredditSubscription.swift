@@ -3,10 +3,47 @@ import CoreData
 
 @objc(SubredditSubscription)
 final class SubredditSubscription: NSManagedObject, Identifiable {
-	@NSManaged public var id: String
-	@NSManaged public var name: String
-	@NSManaged public var creationDate: Date?
-	@NSManaged public var accessDate: Date?
+	@NSManaged var id: String
+	@NSManaged var name: String
+	@NSManaged var creationDate: Date?
+	@NSManaged var accessDate: Date?
+
+	@NSManaged var periodAllDate: Date?
+	@NSManaged var periodYearDate: Date?
+	@NSManaged var periodMonthDate: Date?
+	@NSManaged var periodWeekDate: Date?
+
+	func needsUpdate(for period: RedditPeriod) -> Bool {
+		let date: Date?
+		switch period {
+		case .all:
+			date = periodAllDate
+		case .year:
+			date = periodYearDate
+		case .month:
+			date = periodMonthDate
+		case .week:
+			date = periodWeekDate
+		}
+		guard let previousDate = date else {
+			return true
+		}
+		return previousDate.timeIntervalSinceNow > period.minimumUpdate
+	}
+
+	func markUpdated(for period: RedditPeriod) {
+		let date = Date()
+		switch period {
+		case .all:
+			periodAllDate = date
+		case .year:
+			periodYearDate = date
+		case .month:
+			periodMonthDate = date
+		case .week:
+			periodWeekDate = date
+		}
+	}
 }
 
 extension SubredditSubscription {
@@ -19,10 +56,10 @@ extension SubredditSubscription {
 	}
 }
 
-extension Collection where Element == SubredditSubscription, Index == Int {
+extension Collection where Element == SubscriptionViewModel, Index == Int {
 	func delete(at indices: IndexSet, from managedObjectContext: NSManagedObjectContext) {
 		if !indices.isEmpty {
-			indices.forEach { managedObjectContext.delete(self[$0]) }
+			indices.forEach { managedObjectContext.delete(self[$0].model) }
 			managedObjectContext.safeSave()
 		}
 	}

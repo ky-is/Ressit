@@ -5,6 +5,10 @@
         <attribute name="creationDate" optional="YES" attributeType="Date"/>
         <attribute name="id" attributeType="String" defaultValueString=""/>
         <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="periodAllDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="periodMonthDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -12,6 +16,6 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditSubscription" positionX="261" positionY="189" width="128" height="103"/>
+        <element name="SubredditSubscription" positionX="261" positionY="189" width="128" height="163"/>
     </elements>
 </model>

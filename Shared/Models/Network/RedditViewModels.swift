@@ -1,6 +1,23 @@
 import Combine
 import SwiftUI
 
+enum RedditPeriod: String, CaseIterable {
+	case all, year, month, week
+
+	var minimumUpdate: TimeInterval {
+		switch self {
+		case .week:
+			return .day
+		case .month:
+			return .week
+		case .year:
+			return .month
+		case .all:
+			return .year
+		}
+	}
+}
+
 protocol RedditViewModel: ObservableObject {
 	associatedtype NetworkResource: RedditResponsable
 
@@ -12,15 +29,25 @@ protocol RedditViewModel: ObservableObject {
 	var result: NetworkResource? { get set }
 
 	func fetch()
+	func fetch(_: APIRequest<NetworkResource>) -> AnyPublisher<Self.NetworkResource, Error>?
 }
 
 extension RedditViewModel {
 	func fetch() {
-		guard let request = request, subscription == nil else {
+		guard let request = request ?? self.request else {
 			return
 		}
+		_ = fetch(request)
+	}
+
+	@discardableResult func fetch(_ request: APIRequest<NetworkResource>) -> AnyPublisher<Self.NetworkResource, Error>? {
+		guard subscription == nil else {
+			return nil
+		}
+		self.request = request
 		loading = true
-		subscription = RedditClient.shared.send(request)
+		let publisher = RedditClient.shared.send(request)
+		subscription = publisher
 			.receive(on: RunLoop.main)
 			.sink(receiveCompletion: { completion in
 				self.subscription = nil
@@ -29,14 +56,14 @@ extension RedditViewModel {
 				case .failure(let error):
 					print(error)
 					self.error = error
-					self.objectWillChange.send()
 				case .finished:
 					break
 				}
+				self.objectWillChange.send()
 			}, receiveValue: { result in
 				self.result = result
-				self.objectWillChange.send()
 			})
+		return publisher
 	}
 }
 
@@ -75,8 +102,7 @@ final class SubredditsSearchViewModel: RedditViewModel {
 					self.result = nil
 					self.objectWillChange.send()
 				} else {
-					self.request = .subreddits(search: value)
-					self.fetch()
+					self.fetch(.subreddits(search: value))
 				}
 			}
 	}
@@ -107,5 +133,35 @@ struct RedditView<VM: RedditViewModel, Content: View>: View {
 			}
 		}
 			.onAppear(perform: viewModel.fetch)
+	}
+}
+
+final class SubscriptionViewModel: RedditViewModel, Identifiable {
+	typealias NetworkResource = RedditListing<SubredditPost>
+
+	let model: SubredditSubscription
+	var updateSubscription: AnyCancellable?
+
+	var request: APIRequest<NetworkResource>?
+	var subscription: AnyCancellable?
+	var loading = true
+	var error: Error?
+	var result: NetworkResource?
+
+	init(model: SubredditSubscription) {
+		self.model = model
+	}
+
+	func updateIfNeeded() {
+		guard let period = RedditPeriod.allCases.first(where: { model.needsUpdate(for: $0) }) else {
+			return
+		}
+		if let publisher = fetch(.topPosts(in: model.name, over: period)) {
+			updateSubscription = publisher
+				.sink(receiveCompletion: { _ in }) { _ in
+					self.model.markUpdated(for: period)
+				}
+			print(#function, model.name, period)
+		}
 	}
 }

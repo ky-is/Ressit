@@ -7,13 +7,17 @@ struct SubredditsView: View {
 	let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
-		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch)
+		let subscriptionViewModels = subscriptions.map { SubscriptionViewModel(model: $0) }
+		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch)
 			.navigationBarTitle("Subreddits")
+			.onAppear {
+				subscriptionViewModels.forEach { $0.updateIfNeeded() }
+			}
 	}
 }
 
 private struct SubredditsSubscriptionList: View {
-	let subscriptions: FetchedResults<SubredditSubscription>
+	let subscriptions: [SubscriptionViewModel]
 	let subredditSearch: SubredditsSearchViewModel
 
 	@State private var showAddSubreddits = false
@@ -22,9 +26,9 @@ private struct SubredditsSubscriptionList: View {
 
 	var body: some View {
 		List {
-			ForEach(subscriptions, id: \.self) { subreddit in
-				NavigationLink(destination: SubredditView(subreddit: subreddit)) {
-					SubredditTitle(name: subreddit.name)
+			ForEach(subscriptions) { subreddit in
+				NavigationLink(destination: SubredditView(subreddit: subreddit.model)) {
+					SubredditTitle(name: subreddit.model.name)
 				}
 			}
 				.onDelete { indices in
@@ -52,7 +56,7 @@ private struct SubredditsSubscriptionList: View {
 }
 
 private struct SubredditsManageSheet: View {
-	let subscriptions: FetchedResults<SubredditSubscription>
+	let subscriptions: [SubscriptionViewModel]
 	let subredditSearch: SubredditsSearchViewModel
 
 	@Environment(\.presentationMode) private var presentationMode
@@ -74,7 +78,7 @@ private struct SubredditsManageSheet: View {
 }
 
 private struct SubredditsManage: View {
-	let subscriptions: FetchedResults<SubredditSubscription>
+	let subscriptions: [SubscriptionViewModel]
 	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
 	var body: some View {
@@ -99,12 +103,12 @@ private struct SubredditsManage: View {
 
 private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.NetworkResource == RedditListing<Subreddit> {
 	let viewModel: VM
-	let subscriptions: FetchedResults<SubredditSubscription>
+	let subscriptions: [SubscriptionViewModel]
 
 	var body: some View {
 		RedditView(viewModel) { result in
 			List(result.values) { subreddit in
-				SubredditsManageEntry(subreddit: subreddit, subscription: self.subscriptions.first { $0.id == subreddit.id })
+				SubredditsManageEntry(subreddit: subreddit, subscriptionModel: self.subscriptions.first { $0.model.id == subreddit.id }?.model)
 			}
 		}
 	}
@@ -112,15 +116,15 @@ private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.Networ
 
 private struct SubredditsManageEntry: View {
 	let subreddit: Subreddit
-	let subscription: SubredditSubscription?
+	let subscriptionModel: SubredditSubscription?
 
 	@Environment(\.managedObjectContext) private var viewContext
 
 	var body: some View {
 		Button(action: {
 			self.viewContext.perform {
-				if let subscription = self.subscription {
-					self.viewContext.delete(subscription)
+				if let subscriptionModel = self.subscriptionModel {
+					self.viewContext.delete(subscriptionModel)
 					self.viewContext.safeSave()
 				} else {
 					SubredditSubscription.create(for: self.subreddit, in: self.viewContext)
@@ -128,8 +132,8 @@ private struct SubredditsManageEntry: View {
 			}
 		}) {
 			HStack {
-				Text(subscription != nil ? "✔︎" : "◯")
-					.foregroundColor(subscription != nil ? .accentColor : .secondary)
+				Text(subscriptionModel != nil ? "✔︎" : "◯")
+					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
 					.frame(width: 16)
 				SubredditTitle(name: subreddit.name)
 			}
