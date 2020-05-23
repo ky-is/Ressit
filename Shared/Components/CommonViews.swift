@@ -4,9 +4,11 @@ struct SubredditTitle: View {
 	let name: String
 
 	var body: some View {
-		Text("r/")
-			.foregroundColor(.secondary)
-		+
-		Text(name)
+		HStack(spacing: 1) {
+			Text("r/")
+				.foregroundColor(.secondary)
+			Text(name)
+		}
+			.lineLimit(1)
 	}
 }

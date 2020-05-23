@@ -62,7 +62,7 @@ extension SubredditSubscriptionModel {
 extension Collection where Element == SubredditPostsViewModel, Index == Int {
 	func delete(at indices: IndexSet, from context: NSManagedObjectContext) {
 		if !indices.isEmpty {
-			indices.forEach { context.delete(self[$0].model) }
+			indices.forEach { context.delete(self[$0].model!) }
 			context.safeSave()
 		}
 	}

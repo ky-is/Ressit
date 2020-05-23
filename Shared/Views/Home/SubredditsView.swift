@@ -2,34 +2,42 @@ import Combine
 import SwiftUI
 
 struct SubredditsView: View {
-	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
+	let isChild: Bool
 
+	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
 	@Environment(\.managedObjectContext) private var context
 	private let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
 		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0) }
 		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
-		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch)
-			.navigationBarTitle("Subreddits")
+		return NavigationView {
+			SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch, isChild: isChild)
+				.navigationBarTitle("Subreddits")
+		}
 	}
 }
 
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: [SubredditPostsViewModel]
 	let subredditSearch: SubredditsSearchViewModel
+	let isChild: Bool
 
 	@State private var showAddSubreddits = false
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		List {
-			NavigationLink(destination: AllSubredditPostsView()) {
+			Button(action: {
+				UserModel.shared.selectedSubreddit = .global
+			}) {
 				Text("🌏 Global Feed")
 			}
 			ForEach(subscriptions) { subreddit in
-				NavigationLink(destination: SubredditView(subscription: subreddit)) {
-					SubredditTitle(name: subreddit.model.name)
+				Button(action: {
+					UserModel.shared.selectedSubreddit = subreddit
+				}) {
+					SubredditTitle(name: subreddit.model!.name)
 				}
 			}
 				.onDelete { indices in
@@ -37,11 +45,15 @@ private struct SubredditsSubscriptionList: View {
 				}
 		}
 			.navigationBarItems(trailing:
-				Button(action: {
-					self.showAddSubreddits = true
-				}) {
-					Text("＋")
-						.font(.title)
+				Group {
+					if !isChild {
+						Button(action: {
+							self.showAddSubreddits = true
+						}) {
+							Text("＋")
+								.font(.title)
+						}
+					}
 				}
 			)
 			.sheet(isPresented: $showAddSubreddits) {
@@ -49,10 +61,15 @@ private struct SubredditsSubscriptionList: View {
 					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
+				UserModel.shared.selectedSubreddit = nil
 				if self.subscriptions.isEmpty {
 					self.showAddSubreddits = true
 				}
 			}
+			.background(
+				SelectedSubredditLink(isChild: isChild)
+			)
+		
 	}
 }
 
@@ -65,20 +82,19 @@ private struct SubredditsManageSheet: View {
 	var body: some View {
 		NavigationView {
 			SubredditsManage(subscriptions: subscriptions, subredditSearch: subredditSearch)
-				.navigationBarTitle("Manage")
 				.navigationBarItems(trailing:
 					Button(action: {
 						self.presentationMode.wrappedValue.dismiss()
 					}) {
 						Text("Close")
 					}
-				)
+			)
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
 	}
 }
 
-private struct SubredditsManage: View {
+struct SubredditsManage: View {
 	let subscriptions: [SubredditPostsViewModel]
 	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
@@ -99,6 +115,7 @@ private struct SubredditsManage: View {
 				}
 			}
 		}
+			.navigationBarTitle(Text("Subscriptions"), displayMode: .inline)
 	}
 }
 
@@ -109,7 +126,7 @@ private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.Networ
 	var body: some View {
 		RedditView(viewModel) { result in
 			List(result.values) { subreddit in
-				SubredditsManageEntry(subreddit: subreddit, subscriptionModel: self.subscriptions.first { $0.model.id == subreddit.id }?.model)
+				SubredditsManageEntry(subreddit: subreddit, subscriptionModel: self.subscriptions.first { $0.model!.id == subreddit.id }?.model)
 			}
 		}
 	}
@@ -144,9 +161,7 @@ private struct SubredditsManageEntry: View {
 
 struct SubredditsView_Previews: PreviewProvider {
 	static var previews: some View {
-		NavigationView {
-			SubredditsView()
-		}
+		SubredditsView(isChild: false)
 			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }

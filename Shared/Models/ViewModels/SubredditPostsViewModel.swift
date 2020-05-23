@@ -22,8 +22,10 @@ enum RedditPeriod: String, CaseIterable {
 final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	typealias NetworkResource = RedditListing<SubredditPost>
 
+	static let global = SubredditPostsViewModel(model: nil)
+
 	let id: String
-	let model: SubredditSubscriptionModel
+	let model: SubredditSubscriptionModel?
 
 	var request: APIRequest<NetworkResource>?
 	var subscription: AnyCancellable?
@@ -31,17 +33,17 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	var error: Error?
 	var result: NetworkResource?
 
-	init(model: SubredditSubscriptionModel) {
-		self.id = model.id
+	init(model: SubredditSubscriptionModel?) {
+		self.id = model?.id ?? "$GLOBAL"
 		self.model = model
 	}
 
 	func updateIfNeeded(in context: NSManagedObjectContext) {
-		guard subscription == nil, let period = RedditPeriod.allCases.first(where: { model.needsUpdate(for: $0) }) else {
+		guard let model = model, subscription == nil, let period = RedditPeriod.allCases.first(where: { model.needsUpdate(for: $0) }) else {
 			return
 		}
 		fetch(.topPosts(in: model.name, over: period, count: 10)) { result in
-			self.model.update(posts: result.values, for: period, in: context)
+			model.update(posts: result.values, for: period, in: context)
 		}
 	}
 }
