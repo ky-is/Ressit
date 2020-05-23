@@ -3,17 +3,16 @@ import SwiftUI
 struct BrowseView: View {
 	var body: some View {
 		GeometryReader { geometry in
+//			if geometry.size.width > 900 { //SAMPLE
 			if geometry.size.width > 640 {
 				HStack(spacing: 0) {
 					BrowseSidebar(geometry: geometry)
-						.navigationViewStyle(StackNavigationViewStyle())
 					Divider()
 						.padding(.top, -64)
-					SubredditsView(isChild: true)
-						.navigationViewStyle(StackNavigationViewStyle())
+					SubredditsView(inSplitView: true)
 				}
 			} else {
-				SubredditsView(isChild: false)
+				SubredditsView(inSplitView: false)
 			}
 		}
 	}
@@ -23,7 +22,6 @@ struct BrowseSidebar: View {
 	let geometry: GeometryProxy
 
 	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
-	@ObservedObject private var userModel = UserModel.shared
 
 	private let subredditSearch = SubredditsSearchViewModel()
 
@@ -32,32 +30,42 @@ struct BrowseSidebar: View {
 			SubredditsManage(subscriptions: subscriptions.map({ SubredditPostsViewModel(model: $0) }), subredditSearch: subredditSearch)
 				.edgesIgnoringSafeArea(.horizontal)
 				.onAppear {
-					UserModel.shared.selectedSubreddit = nil
+					SubredditUserModel.shared.selected = nil
+					PostUserModel.shared.selected = nil
 				}
 				.background(
-					SelectedSubredditLink(isChild: false)
+					SelectedSubredditLink(inSplitView: true)
 				)
 		}
+			.navigationViewStyle(StackNavigationViewStyle())
 			.frame(maxWidth: min(geometry.size.width / 2.5, 320))
 	}
 }
 
 struct SelectedSubredditLink: View {
-	let isChild: Bool
+	let inSplitView: Bool
 
-	@ObservedObject private var userModel = UserModel.shared
+	@ObservedObject private var subredditUserModel = SubredditUserModel.shared
 
 	var body: some View {
-		NavigationLink(
-			destination:
-				SubredditView(subscription: userModel.selectedSubreddit ?? .global)
-					.navigationBarBackButtonHidden(isChild)
-			,
-			isActive: .constant(userModel.selectedSubreddit != nil)
-		) {
-			EmptyView()
-		}
-			.hidden()
+		HiddenNavigationLink(
+			isActive: subredditUserModel.selected != nil,
+			destination: SubredditView(subscription: subredditUserModel.selected ?? .global, inSplitView: inSplitView)
+		)
+	}
+}
+
+struct SelectedPostLink: View {
+	let inSplitView: Bool
+
+	@ObservedObject private var postUserModel = PostUserModel.shared
+	@ObservedObject private var subredditUserModel = SubredditUserModel.shared
+
+	var body: some View {
+		HiddenNavigationLink(
+			isActive: inSplitView ? subredditUserModel.selected != nil : postUserModel.selected != nil,
+			destination: SubredditPostView(post: postUserModel.selected).navigationBarBackButtonHidden(inSplitView)
+		)
 	}
 }
 

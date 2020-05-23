@@ -25,7 +25,7 @@ struct RedditView<VM: RedditViewModel, Content: View>: View {
 				Spacer()
 			}
 		}
-		.onAppear(perform: viewModel.fetch)
+			.onAppear(perform: viewModel.fetch)
 	}
 }
 

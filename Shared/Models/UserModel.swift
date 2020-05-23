@@ -1,7 +1,13 @@
 import Combine
 
-final class UserModel: ObservableObject {
-	static let shared = UserModel()
+final class SubredditUserModel: ObservableObject {
+	static let shared = SubredditUserModel()
 
-	@Published var selectedSubreddit: SubredditPostsViewModel?
+	@Published var selected: SubredditPostsViewModel?
+}
+
+final class PostUserModel: ObservableObject {
+	static let shared = PostUserModel()
+
+	@Published var selected: SubredditPostModel?
 }

@@ -4,6 +4,7 @@ private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
 struct SubredditView: View {
 	let subscription: SubredditPostsViewModel
+	let inSplitView: Bool
 
 	var body: some View {
 		Group {
@@ -14,6 +15,13 @@ struct SubredditView: View {
 			}
 		}
 			.navigationBarTitle(Text(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed"), displayMode: .inline)
+			.background(
+				Group {
+					if !inSplitView {
+						SelectedPostLink(inSplitView: inSplitView)
+					}
+				}
+			)
 	}
 }
 
@@ -41,7 +49,9 @@ private struct SubredditPostsList: View {
 
 	var body: some View {
 		List(posts) { post in
-			NavigationLink(destination: SubredditPostView(post: post)) {
+			Button(action: {
+				PostUserModel.shared.selected = post
+			}) {
 				VStack(alignment: .leading, spacing: 4) {
 					Text(post.title)
 						.font(.headline)
@@ -55,6 +65,9 @@ private struct SubredditPostsList: View {
 					.padding(.vertical, 6)
 			}
 		}
+			.onAppear {
+				PostUserModel.shared.selected = nil
+			}
 	}
 }
 
@@ -64,7 +77,7 @@ struct SubredditView_Previews: PreviewProvider {
 		subredditSubscription.name = "Test"
 		subredditSubscription.creationDate = Date()
 		return NavigationView {
-			SubredditView(subscription: SubredditPostsViewModel(model: subredditSubscription))
+			SubredditView(subscription: SubredditPostsViewModel(model: subredditSubscription), inSplitView: false)
 		}
 	}
 }

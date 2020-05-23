@@ -3,6 +3,23 @@ import SwiftUI
 private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
 struct SubredditPostView: View {
+	let post: SubredditPostModel?
+
+	var body: some View {
+		Group {
+			if post != nil {
+				SubredditPostContent(post: post!)
+			} else {
+				EmptyView()
+			}
+		}
+			.onDisappear {
+				PostUserModel.shared.selected = nil
+			}
+	}
+}
+
+private struct SubredditPostContent: View {
 	@ObservedObject var post: SubredditPostModel
 
 	private let commentsViewModel: SubredditPostCommentsViewModel

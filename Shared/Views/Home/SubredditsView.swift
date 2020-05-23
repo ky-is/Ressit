@@ -2,7 +2,31 @@ import Combine
 import SwiftUI
 
 struct SubredditsView: View {
-	let isChild: Bool
+	let inSplitView: Bool
+
+	var body: some View {
+		NavigationView {
+			SubredditsContainer(inSplitView: inSplitView)
+				.background(
+					Group {
+						if inSplitView {
+							SelectedPostLink(inSplitView: inSplitView)
+						} else {
+							SelectedSubredditLink(inSplitView: inSplitView)
+						}
+					}
+				)
+		}
+			.navigationViewStyle(StackNavigationViewStyle())
+			.onAppear {
+				SubredditUserModel.shared.selected = nil
+				PostUserModel.shared.selected = nil
+			}
+	}
+}
+
+private struct SubredditsContainer: View {
+	let inSplitView: Bool
 
 	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
 	@Environment(\.managedObjectContext) private var context
@@ -11,17 +35,16 @@ struct SubredditsView: View {
 	var body: some View {
 		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0) }
 		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
-		return NavigationView {
-			SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch, isChild: isChild)
+		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch, inSplitView: inSplitView)
 				.navigationBarTitle("Subreddits")
-		}
 	}
 }
+
 
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: [SubredditPostsViewModel]
 	let subredditSearch: SubredditsSearchViewModel
-	let isChild: Bool
+	let inSplitView: Bool
 
 	@State private var showAddSubreddits = false
 	@Environment(\.managedObjectContext) private var context
@@ -29,13 +52,13 @@ private struct SubredditsSubscriptionList: View {
 	var body: some View {
 		List {
 			Button(action: {
-				UserModel.shared.selectedSubreddit = .global
+				SubredditUserModel.shared.selected = .global
 			}) {
 				Text("🌏 Global Feed")
 			}
 			ForEach(subscriptions) { subreddit in
 				Button(action: {
-					UserModel.shared.selectedSubreddit = subreddit
+					SubredditUserModel.shared.selected = subreddit
 				}) {
 					SubredditTitle(name: subreddit.model!.name)
 				}
@@ -46,7 +69,7 @@ private struct SubredditsSubscriptionList: View {
 		}
 			.navigationBarItems(trailing:
 				Group {
-					if !isChild {
+					if !inSplitView {
 						Button(action: {
 							self.showAddSubreddits = true
 						}) {
@@ -61,15 +84,11 @@ private struct SubredditsSubscriptionList: View {
 					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
-				UserModel.shared.selectedSubreddit = nil
-				if self.subscriptions.isEmpty {
+				SubredditUserModel.shared.selected = nil
+				if !self.inSplitView && self.subscriptions.isEmpty {
 					self.showAddSubreddits = true
 				}
 			}
-			.background(
-				SelectedSubredditLink(isChild: isChild)
-			)
-		
 	}
 }
 
@@ -161,7 +180,7 @@ private struct SubredditsManageEntry: View {
 
 struct SubredditsView_Previews: PreviewProvider {
 	static var previews: some View {
-		SubredditsView(isChild: false)
+		SubredditsView(inSplitView: false)
 			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }

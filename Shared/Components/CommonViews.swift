@@ -12,3 +12,15 @@ struct SubredditTitle: View {
 			.lineLimit(1)
 	}
 }
+
+struct HiddenNavigationLink<Destination: View>: View {
+	let isActive: Bool
+	let destination: Destination
+
+	var body: some View {
+		NavigationLink(destination: destination, isActive: .constant(isActive)) {
+			EmptyView()
+		}
+			.hidden()
+	}
+}
