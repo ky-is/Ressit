@@ -20,7 +20,7 @@
 		24B7CEC82477330800823BB1 /* RedditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B7CEC72477330800823BB1 /* RedditModels.swift */; };
 		24B8FFB1243506980029734C /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B8FFB0243506980029734C /* SearchBar.swift */; };
 		24B8FFB424351E740029734C /* RedditClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B8FFB324351E740029734C /* RedditClient.swift */; };
-		24C7AC432478F86A00200C0D /* ReddSS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 24C7AC412478F86A00200C0D /* ReddSS.xcdatamodeld */; };
+		24C7AC432478F86A00200C0D /* CoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 24C7AC412478F86A00200C0D /* CoreData.xcdatamodeld */; };
 		24D740FC2433CE6A00407F8B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D740FB2433CE6A00407F8B /* AppDelegate.swift */; };
 		24D741012433CE6A00407F8B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D741002433CE6A00407F8B /* SceneDelegate.swift */; };
 		24D741052433CE6A00407F8B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D741042433CE6A00407F8B /* ContentView.swift */; };
@@ -47,8 +47,8 @@
 		24B7CEC72477330800823BB1 /* RedditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditModels.swift; sourceTree = "<group>"; };
 		24B8FFB0243506980029734C /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		24B8FFB324351E740029734C /* RedditClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditClient.swift; sourceTree = "<group>"; };
-		24C7AC422478F86A00200C0D /* ReddSS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ReddSS.xcdatamodel; sourceTree = "<group>"; };
-		24D740F82433CE6A00407F8B /* ReddSS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReddSS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		24C7AC422478F86A00200C0D /* CoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreData.xcdatamodel; sourceTree = "<group>"; };
+		24D740F82433CE6A00407F8B /* Ressit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ressit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D740FB2433CE6A00407F8B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24D741002433CE6A00407F8B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		24D741042433CE6A00407F8B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -88,7 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				24D741172433D52300407F8B /* CoreDataModel.swift */,
-				24C7AC412478F86A00200C0D /* ReddSS.xcdatamodeld */,
+				24C7AC412478F86A00200C0D /* CoreData.xcdatamodeld */,
 				24D7411C2433D8D600407F8B /* SubredditSubscriptionModel.swift */,
 				243C00702478D827007CAD9F /* SubredditPostModel.swift */,
 			);
@@ -141,7 +141,7 @@
 		24D740F92433CE6A00407F8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				24D740F82433CE6A00407F8B /* ReddSS.app */,
+				24D740F82433CE6A00407F8B /* Ressit.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -225,8 +225,8 @@
 			dependencies = (
 			);
 			name = iOS;
-			productName = ReddSS;
-			productReference = 24D740F82433CE6A00407F8B /* ReddSS.app */;
+			productName = Ressit;
+			productReference = 24D740F82433CE6A00407F8B /* Ressit.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -244,7 +244,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 24D740F32433CE6A00407F8B /* Build configuration list for PBXProject "ReddSS" */;
+			buildConfigurationList = 24D740F32433CE6A00407F8B /* Build configuration list for PBXProject "Ressit" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -296,7 +296,7 @@
 				24D741052433CE6A00407F8B /* ContentView.swift in Sources */,
 				243C00712478D827007CAD9F /* SubredditPostModel.swift in Sources */,
 				24D740FC2433CE6A00407F8B /* AppDelegate.swift in Sources */,
-				24C7AC432478F86A00200C0D /* ReddSS.xcdatamodeld in Sources */,
+				24C7AC432478F86A00200C0D /* CoreData.xcdatamodeld in Sources */,
 				243C006B2478D209007CAD9F /* SubredditViewModels.swift in Sources */,
 				24A2D14124789887007E4111 /* Extensions.swift in Sources */,
 				24D741012433CE6A00407F8B /* SceneDelegate.swift in Sources */,
@@ -437,15 +437,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = P3YWQG9C86;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = is.ky.ReddSS;
-				PRODUCT_NAME = ReddSS;
+				PRODUCT_BUNDLE_IDENTIFIER = is.ky.ressit;
+				PRODUCT_NAME = Ressit;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -456,15 +455,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = P3YWQG9C86;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = is.ky.ReddSS;
-				PRODUCT_NAME = ReddSS;
+				PRODUCT_BUNDLE_IDENTIFIER = is.ky.ressit;
+				PRODUCT_NAME = Ressit;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -473,7 +471,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		24D740F32433CE6A00407F8B /* Build configuration list for PBXProject "ReddSS" */ = {
+		24D740F32433CE6A00407F8B /* Build configuration list for PBXProject "Ressit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				24D7410F2433CE6C00407F8B /* Debug */,
@@ -494,13 +492,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		24C7AC412478F86A00200C0D /* ReddSS.xcdatamodeld */ = {
+		24C7AC412478F86A00200C0D /* CoreData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				24C7AC422478F86A00200C0D /* ReddSS.xcdatamodel */,
+				24C7AC422478F86A00200C0D /* CoreData.xcdatamodel */,
 			);
-			currentVersion = 24C7AC422478F86A00200C0D /* ReddSS.xcdatamodel */;
-			path = ReddSS.xcdatamodeld;
+			currentVersion = 24C7AC422478F86A00200C0D /* CoreData.xcdatamodel */;
+			path = CoreData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

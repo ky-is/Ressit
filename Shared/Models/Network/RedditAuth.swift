@@ -27,7 +27,7 @@ struct RedditAuthResponse: Decodable {
 struct RedditAuthManager {
 	private static let clientID = "sBrY48PRjJuRRQ"
 	private static let uuid = UUID().uuidString
-	private static let redirectURI = "reddss://auth"
+	private static let redirectURI = "ressit://auth"
 	private static var authURL: URL {
 		let baseURL = URL(string: "https://www.reddit.com/api/v1/authorize.compact")!
 		let scopes = ["read", "mysubreddits", "save", "vote"]

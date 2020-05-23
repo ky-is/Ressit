@@ -2,7 +2,7 @@ import CoreData
 
 struct CoreDataModel {
 	static var persistentContainer: NSPersistentCloudKitContainer = {
-		let container = NSPersistentCloudKitContainer(name: "ReddSS")
+		let container = NSPersistentCloudKitContainer(name: "CoreData")
 		container.loadPersistentStores() { storeDescription, error in
 			if let error = error as NSError? {
 				fatalError("Unresolved error \(error), \(error.userInfo)")

@@ -26,7 +26,7 @@ struct WelcomeView: View {
 				}
 				Spacer()
 			}
-				.navigationBarTitle("ReddSS")
+				.navigationBarTitle("Ressit")
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
 	}
