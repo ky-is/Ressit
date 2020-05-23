@@ -11,17 +11,6 @@ final class SubredditPostModel: NSManagedObject, Identifiable {
 	@NSManaged var creationDate: Date
 
 	@NSManaged var subreddit: SubredditSubscriptionModel
-
-	static private let formatter: RelativeDateTimeFormatter = {
-		let formatter = RelativeDateTimeFormatter()
-		formatter.unitsStyle = .abbreviated
-		formatter.dateTimeStyle = .numeric
-		return formatter
-	}()
-
-	var creationString: String {
-		SubredditPostModel.formatter.localizedString(for: creationDate, relativeTo: Date())
-	}
 }
 
 extension SubredditPostModel {

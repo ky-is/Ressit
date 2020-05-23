@@ -32,9 +32,9 @@ private struct SubredditPostsList: View {
 					Text(post.title)
 						.font(.headline)
 					HStack {
-						Text("🔺\(post.score)")
-						Text("💬\(post.commentCount)")
-						Text("🕓\(post.creationString)")
+						Text("🔺") + Text(post.score.description)
+						Text("💬") + Text(post.commentCount.description)
+						Text("🕓") + Text(post.creationDate.relativeToNow)
 					}
 						.font(.caption)
 				}

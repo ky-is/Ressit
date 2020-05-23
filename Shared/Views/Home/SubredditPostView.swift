@@ -5,26 +5,50 @@ private let postSort = NSSortDescriptor(key: "score", ascending: false)
 struct SubredditPostView: View {
 	@ObservedObject var post: SubredditPostModel
 
+	private let commentsViewModel: SubredditPostCommentsViewModel
+
+	init(post: SubredditPostModel) {
+		self.post = post
+		commentsViewModel = SubredditPostCommentsViewModel(post: post)
+	}
+
 	var body: some View {
-		VStack(alignment: .leading, spacing: 6) {
-			Text(post.title)
-				.font(.headline)
-			HStack {
-				HStack(spacing: 1) {
-					Text("👤")
-					Text(post.author)
+		ScrollView {
+			VStack(alignment: .leading, spacing: 6) {
+				Text(post.title)
+					.font(.headline)
+				HStack {
+					HStack(spacing: 1) {
+						Text("👤")
+						Text(post.author)
+					}
+					HStack(spacing: 1) {
+						Text("🗓")
+						Text(post.creationDate.relativeToNow)
+					}
+					SubredditTitle(name: post.subreddit.name)
+					Spacer()
 				}
-				HStack(spacing: 1) {
-					Text("🗓")
-					Text(post.creationString)
-				}
-				SubredditTitle(name: post.subreddit.name)
-				Spacer()
+					.font(.caption)
 			}
-				.font(.caption)
-			Spacer()
+				.padding()
+			RedditView(commentsViewModel) { result in
+				VStack(alignment: .leading) {
+					ForEach(result.values) { comment in
+						Divider()
+						VStack(alignment: .leading) {
+							Text(comment.text)
+							HStack {
+								Text(comment.author)
+								Text(comment.creationDate.relativeToNow)
+							}
+							.font(.caption)
+						}
+							.padding(.horizontal)
+					}
+				}
+			}
 		}
-			.padding()
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
 	}
 }

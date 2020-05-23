@@ -49,3 +49,27 @@ struct SubredditPost: RedditResponsable, Identifiable {
 		url = data["url"] as? String
 	}
 }
+
+struct SubredditPostComment: RedditResponsable, Identifiable {
+	let id: String
+	let linkID: String
+	let parentID: String
+	let author: String
+	let text: String
+	let creationDate: Date
+	let editedAt: TimeInterval?
+	let score: Int
+
+	init(json: [String: Any]) {
+		let data = json["data"] as! [String: Any]
+		id = data["id"] as! String
+		linkID = data["link_id"] as! String
+		parentID = data["parent_id"] as! String
+		author = data["author"] as! String
+		text = data["body"] as! String
+		creationDate = Date(timeIntervalSince1970: data["created"] as! TimeInterval)
+		let editTimestamp = data["edited"] as! TimeInterval
+		editedAt = editTimestamp > 0 ? editTimestamp : nil
+		score = data["score"] as! Int
+	}
+}

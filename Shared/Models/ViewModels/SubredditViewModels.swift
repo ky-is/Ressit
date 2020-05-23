@@ -41,3 +41,17 @@ final class SubredditsSearchViewModel: RedditViewModel {
 			}
 	}
 }
+
+final class SubredditPostCommentsViewModel: RedditViewModel {
+	typealias NetworkResource = RedditListing<SubredditPostComment>
+
+	var request: APIRequest<NetworkResource>?
+	var subscription: AnyCancellable?
+	var loading = true
+	var error: Error?
+	var result: NetworkResource?
+
+	init(post: SubredditPostModel) {
+		request = .comments(for: post)
+	}
+}

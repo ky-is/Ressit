@@ -82,4 +82,7 @@ extension APIRequest {
 	static func topPosts(in subreddit: String, over period: RedditPeriod, count: Int) -> APIRequest<RedditListing<SubredditPost>> {
 		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
 	}
+	static func comments(for post: SubredditPostModel) -> APIRequest<RedditListing<SubredditPostComment>> {
+		APIRequest<RedditListing<SubredditPostComment>>(path: "/r/\(post.subreddit.name)/comments", parameters: ["article": post.id, "sort": "top"])
+	}
 }

@@ -14,3 +14,18 @@ extension TimeInterval {
 	static let month: Self = year / 12
 	static let year: Self = day * 365.25
 }
+
+extension RelativeDateTimeFormatter {
+	static let `default`: RelativeDateTimeFormatter = {
+		let formatter = RelativeDateTimeFormatter()
+		formatter.unitsStyle = .abbreviated
+		formatter.dateTimeStyle = .numeric
+		return formatter
+	}()
+}
+
+extension Date {
+	var relativeToNow: String {
+		RelativeDateTimeFormatter.default.localizedString(for: self, relativeTo: Date())
+	}
+}
