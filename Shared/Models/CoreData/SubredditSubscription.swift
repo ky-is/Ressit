@@ -56,7 +56,7 @@ extension SubredditSubscription {
 	}
 }
 
-extension Collection where Element == SubscriptionViewModel, Index == Int {
+extension Collection where Element == SubredditPostsViewModel, Index == Int {
 	func delete(at indices: IndexSet, from managedObjectContext: NSManagedObjectContext) {
 		if !indices.isEmpty {
 			indices.forEach { managedObjectContext.delete(self[$0].model) }

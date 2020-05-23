@@ -7,7 +7,7 @@ struct SubredditsView: View {
 	let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
-		let subscriptionViewModels = subscriptions.map { SubscriptionViewModel(model: $0) }
+		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0) }
 		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch)
 			.navigationBarTitle("Subreddits")
 			.onAppear {
@@ -17,11 +17,10 @@ struct SubredditsView: View {
 }
 
 private struct SubredditsSubscriptionList: View {
-	let subscriptions: [SubscriptionViewModel]
+	let subscriptions: [SubredditPostsViewModel]
 	let subredditSearch: SubredditsSearchViewModel
 
 	@State private var showAddSubreddits = false
-
 	@Environment(\.managedObjectContext) private var viewContext
 
 	var body: some View {
@@ -56,7 +55,7 @@ private struct SubredditsSubscriptionList: View {
 }
 
 private struct SubredditsManageSheet: View {
-	let subscriptions: [SubscriptionViewModel]
+	let subscriptions: [SubredditPostsViewModel]
 	let subredditSearch: SubredditsSearchViewModel
 
 	@Environment(\.presentationMode) private var presentationMode
@@ -78,7 +77,7 @@ private struct SubredditsManageSheet: View {
 }
 
 private struct SubredditsManage: View {
-	let subscriptions: [SubscriptionViewModel]
+	let subscriptions: [SubredditPostsViewModel]
 	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
 	var body: some View {
@@ -103,7 +102,7 @@ private struct SubredditsManage: View {
 
 private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.NetworkResource == RedditListing<Subreddit> {
 	let viewModel: VM
-	let subscriptions: [SubscriptionViewModel]
+	let subscriptions: [SubredditPostsViewModel]
 
 	var body: some View {
 		RedditView(viewModel) { result in
