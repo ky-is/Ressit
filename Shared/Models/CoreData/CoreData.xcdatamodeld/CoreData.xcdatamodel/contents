@@ -23,7 +23,7 @@
         <attribute name="periodMonthDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SubredditPostModel" inverseName="subreddit" inverseEntity="SubredditPostModel"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SubredditPostModel" inverseName="subreddit" inverseEntity="SubredditPostModel"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
