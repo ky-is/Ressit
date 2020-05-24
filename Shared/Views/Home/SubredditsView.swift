@@ -60,18 +60,16 @@ private struct SubredditsSubscriptionList: View {
 					self.subscriptions.delete(at: indices, from: self.context)
 				}
 		}
-			.navigationBarItems(trailing:
-				Group {
-					if !inSplitView {
-						Button(action: {
-							self.showAddSubreddits = true
-						}) {
-							Text("＋")
-								.font(.title)
-						}
+			.navigationBarItems(trailing: Group {
+				if !inSplitView {
+					Button(action: {
+						self.showAddSubreddits = true
+					}) {
+						Text("＋")
+							.font(.title)
 					}
 				}
-			)
+			})
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
 					.environment(\.managedObjectContext, self.context)

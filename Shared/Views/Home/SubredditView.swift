@@ -15,13 +15,11 @@ struct SubredditView: View {
 			}
 		}
 			.navigationBarTitle(Text(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed"), displayMode: .inline)
-			.background(
-				Group {
-					if !inSplitView {
-						SelectedPostLink(inSplitView: inSplitView)
-					}
+			.background(Group {
+				if !inSplitView {
+					SelectedPostLink(inSplitView: inSplitView)
 				}
-			)
+			})
 	}
 }
 

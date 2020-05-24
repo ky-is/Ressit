@@ -104,6 +104,5 @@ struct SubredditPostComment: RedditResponsable, Identifiable {
 		let editTimestamp = data["edited"] as? TimeInterval ?? 0
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
 		score = data["score"] as? Int
-
 	}
 }

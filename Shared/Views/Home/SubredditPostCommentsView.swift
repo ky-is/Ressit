@@ -5,7 +5,7 @@ struct SubredditPostCommentsView: View {
 
 	var body: some View {
 		RedditView(commentsViewModel) { result in
-			SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 10, currentDepth: 0)
+			SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 20, currentDepth: 0)
 				.padding(.horizontal)
 		}
 	}

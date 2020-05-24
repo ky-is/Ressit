@@ -57,7 +57,7 @@ private struct SubredditPostBody: View {
 				SubredditTitle(name: post.subreddit.name)
 				Spacer()
 			}
-			.font(.caption)
+				.font(.caption)
 		}
 			.fixedSize(horizontal: false, vertical: true)
 			.padding()

@@ -42,7 +42,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 		guard let model = model, subscription == nil, let period = RedditPeriod.allCases.first(where: { model.needsUpdate(for: $0) }) else {
 			return
 		}
-		fetch(.topPosts(in: model.name, over: period, count: 10)) { result in
+		fetch(.topPosts(in: model.name, over: period, count: 5)) { result in
 			model.update(posts: result.values, for: period, in: context)
 		}
 	}
