@@ -59,6 +59,7 @@ private struct SubredditPostBody: View {
 			}
 			.font(.caption)
 		}
+			.fixedSize(horizontal: false, vertical: true)
 			.padding()
 	}
 }

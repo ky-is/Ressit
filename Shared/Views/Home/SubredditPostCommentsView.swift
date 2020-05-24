@@ -17,71 +17,105 @@ private struct SubredditPostCommentGroup: View {
 	let maxDepth: Int
 	let currentDepth: Int
 
-	private static let horizontalPadding: CGFloat = 12
-	private static let veritcalPadding: CGFloat = 12
-
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
 			ForEach(comments.values.prefix(maxBreadth)) { comment in
-				VStack(alignment: .leading, spacing: 0) {
-					Divider()
-						.background(Color.secondary)
-					SubredditPostCommentContent(comment: comment)
-						.padding(.vertical, SubredditPostCommentGroup.veritcalPadding)
-						.background(
-							Group { if self.currentDepth > 0 {
-								Color.accentColor
-									.hueRotation(.degrees(Double(self.currentDepth - 1) * 31))
-									.frame(width: 1)
-									.padding(.bottom, SubredditPostCommentGroup.veritcalPadding)
-									.offset(x: -SubredditPostCommentGroup.horizontalPadding)
-							}}
-						, alignment: .topLeading)
-					if comment.replies != nil && self.currentDepth < self.maxDepth {
-						SubredditPostCommentGroup(comments: comment.replies!, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth + 1)
-					}
-				}
-					.padding(.leading, SubredditPostCommentGroup.horizontalPadding)
+				SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
 			}
 		}
 	}
 }
 
-private struct SubredditPostCommentContent: View {
+private struct SubredditPostCommentTree: View {
 	let comment: SubredditPostComment
+	let maxBreadth: Int
+	let maxDepth: Int
+	let currentDepth: Int
+
+	@State private var collapsed = false
+
+	private static let horizontalPadding: CGFloat = 12
+	private static let veritcalPadding: CGFloat = 12
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 2) {
-			if comment.author != nil && comment.author != "[deleted]" {
-				Text(comment.body!.trimmingCharacters(in: .whitespacesAndNewlines))
-					.foregroundColor(comment.body != nil ? nil : .secondary)
-					.font(.callout)
-					.fixedSize(horizontal: false, vertical: true)
-				HStack {
-					Text("⬆︎")
-						.foregroundColor(.secondary)
-					+
-					Text(comment.score!.description)
-					Text("u/")
-						.foregroundColor(.secondary)
-					+
-					Text(comment.author!)
-					if comment.creationDate != nil {
-						Text(comment.creationDate!.relativeToNow)
+		VStack(alignment: .leading, spacing: 0) {
+			Divider()
+				.background(Color.secondary)
+			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: collapsed)
+				.padding(.vertical, Self.veritcalPadding)
+				.onTapGesture {
+					if self.comment.childIDs == nil {
+						withAnimation {
+							self.collapsed.toggle()
+						}
 					}
 				}
-					.font(.caption)
+				.background(Group {
+					if currentDepth > 0 {
+						Color.accentColor
+							.hueRotation(.degrees(Double(self.currentDepth - 1) * 31))
+							.frame(width: 1)
+							.padding(.bottom, Self.veritcalPadding)
+							.offset(x: -Self.horizontalPadding)
+					}
+				}
+				, alignment: .topLeading)
+			if !collapsed && comment.replies != nil && currentDepth < maxDepth {
+				SubredditPostCommentGroup(comments: comment.replies!, maxBreadth: maxBreadth, maxDepth: maxDepth, currentDepth: currentDepth + 1)
+			}
+		}
+			.padding(.leading, Self.horizontalPadding)
+	}
+}
+private struct SubredditPostCommentContent: View {
+	let comment: SubredditPostComment
+	let currentDepth: Int
+	let collapsed: Bool
+
+	var body: some View {
+		Group {
+			if !collapsed && comment.author != nil && comment.author != "[deleted]" {
+				SubredditPostCommentFromUser(comment: comment)
 			} else {
 				Group {
-					if comment.childIDs != nil {
+					if collapsed {
+						Text("collapsed \(1 + (comment.replies?.values.count ?? 0)) replies at depth \(currentDepth + 1)")
+					} else if comment.childIDs != nil {
 						Text("+\(comment.childIDs!.count) more")
 					} else {
 						Text("deleted \(comment.creationDate!.relativeToNow)")
 					}
 				}
-					.foregroundColor(.secondary)
-					.font(.caption)
+				.foregroundColor(.secondary)
+				.font(.caption)
 			}
+		}
+	}
+}
+
+private struct SubredditPostCommentFromUser: View {
+	let comment: SubredditPostComment
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 2) {
+			Text(comment.body!.trimmingCharacters(in: .whitespacesAndNewlines))
+				.foregroundColor(comment.body != nil ? nil : .secondary)
+				.font(.callout)
+				.fixedSize(horizontal: false, vertical: true)
+			HStack {
+				Text("⬆︎")
+					.foregroundColor(.secondary)
+				+
+				Text(comment.score!.description)
+				Text("u/")
+					.foregroundColor(.secondary)
+				+
+				Text(comment.author!)
+				if comment.creationDate != nil {
+					Text(comment.creationDate!.relativeToNow)
+				}
+			}
+				.font(.caption)
 		}
 	}
 }
