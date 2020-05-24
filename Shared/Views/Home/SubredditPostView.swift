@@ -8,7 +8,7 @@ struct SubredditPostView: View {
 	var body: some View {
 		Group {
 			if post != nil {
-				SubredditPostContent(post: post!)
+				SubredditPostContainer(post: post!)
 			} else {
 				EmptyView()
 			}
@@ -19,54 +19,47 @@ struct SubredditPostView: View {
 	}
 }
 
-private struct SubredditPostContent: View {
+private struct SubredditPostContainer: View {
 	@ObservedObject var post: SubredditPostModel
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
 
 	init(post: SubredditPostModel) {
 		self.post = post
-		commentsViewModel = SubredditPostCommentsViewModel(post: post)
+		self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
 	}
 
 	var body: some View {
 		ScrollView {
-			VStack(alignment: .leading, spacing: 6) {
-				Text(post.title)
-					.font(.headline)
-				HStack {
-					HStack(spacing: 1) {
-						Text("👤")
-						Text(post.author)
-					}
-					HStack(spacing: 1) {
-						Text("🗓")
-						Text(post.creationDate.relativeToNow)
-					}
-					SubredditTitle(name: post.subreddit.name)
-					Spacer()
-				}
-					.font(.caption)
-			}
-				.padding()
-			RedditView(commentsViewModel) { result in
-				VStack(alignment: .leading) {
-					ForEach(result.comments.values) { comment in
-						Divider()
-						VStack(alignment: .leading) {
-							Text(comment.text)
-							HStack {
-								Text(comment.author)
-								Text(comment.creationDate.relativeToNow)
-							}
-							.font(.caption)
-						}
-							.padding(.horizontal)
-					}
-				}
-			}
+			SubredditPostBody(post: post)
+			SubredditPostCommentsView(commentsViewModel: commentsViewModel)
 		}
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
+	}
+}
+
+private struct SubredditPostBody: View {
+	@ObservedObject var post: SubredditPostModel
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 6) {
+			Text(post.title)
+				.font(.headline)
+			HStack {
+				HStack(spacing: 1) {
+					Text("👤")
+					Text(post.author)
+				}
+				HStack(spacing: 1) {
+					Text("🗓")
+					Text(post.creationDate.relativeToNow)
+				}
+				SubredditTitle(name: post.subreddit.name)
+				Spacer()
+			}
+			.font(.caption)
+		}
+			.padding()
 	}
 }
 

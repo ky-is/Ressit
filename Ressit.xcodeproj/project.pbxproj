@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		24047A1D2479046B0015BD80 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24047A1C2479046B0015BD80 /* CloudKit.framework */; };
+		2425E827247B065000977CC3 /* RedditResponsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2425E826247B065000977CC3 /* RedditResponsable.swift */; };
 		243C006B2478D209007CAD9F /* SubredditViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243C006A2478D209007CAD9F /* SubredditViewModels.swift */; };
 		243C006D2478D250007CAD9F /* RedditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243C006C2478D250007CAD9F /* RedditView.swift */; };
 		243C006F2478D27F007CAD9F /* RedditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243C006E2478D27F007CAD9F /* RedditViewModel.swift */; };
 		243C00712478D827007CAD9F /* SubredditPostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 243C00702478D827007CAD9F /* SubredditPostModel.swift */; };
+		2442248D247AF51800C20D9E /* SubredditPostCommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2442248C247AF51800C20D9E /* SubredditPostCommentsView.swift */; };
 		24A2D14124789887007E4111 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A2D14024789887007E4111 /* Extensions.swift */; };
 		24B35B722434FED00088569E /* BrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B35B712434FED00088569E /* BrowseView.swift */; };
 		24B3CD9D2433DEBF006BF9DD /* RedditAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */; };
@@ -40,10 +42,12 @@
 /* Begin PBXFileReference section */
 		24047A1A247904680015BD80 /* Ressit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ressit.entitlements; sourceTree = "<group>"; };
 		24047A1C2479046B0015BD80 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		2425E826247B065000977CC3 /* RedditResponsable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditResponsable.swift; sourceTree = "<group>"; };
 		243C006A2478D209007CAD9F /* SubredditViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubredditViewModels.swift; sourceTree = "<group>"; };
 		243C006C2478D250007CAD9F /* RedditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditView.swift; sourceTree = "<group>"; };
 		243C006E2478D27F007CAD9F /* RedditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditViewModel.swift; sourceTree = "<group>"; };
 		243C00702478D827007CAD9F /* SubredditPostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubredditPostModel.swift; sourceTree = "<group>"; };
+		2442248C247AF51800C20D9E /* SubredditPostCommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubredditPostCommentsView.swift; sourceTree = "<group>"; };
 		24A2D14024789887007E4111 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		24B35B712434FED00088569E /* BrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseView.swift; sourceTree = "<group>"; };
 		24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditAuth.swift; sourceTree = "<group>"; };
@@ -127,6 +131,7 @@
 			children = (
 				24B3CD9C2433DEBF006BF9DD /* RedditAuth.swift */,
 				24B8FFB324351E740029734C /* RedditClient.swift */,
+				2425E826247B065000977CC3 /* RedditResponsable.swift */,
 				24B7CEC72477330800823BB1 /* RedditModels.swift */,
 			);
 			path = Network;
@@ -144,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				24B7CEC02474FF8800823BB1 /* Colors.swift */,
+				24D741082433CE6C00407F8B /* Preview Content */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -176,7 +182,6 @@
 				24D7410B2433CE6C00407F8B /* LaunchScreen.storyboard */,
 				24047A1A247904680015BD80 /* Ressit.entitlements */,
 				24D7410E2433CE6C00407F8B /* Info.plist */,
-				24D741082433CE6C00407F8B /* Preview Content */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -228,6 +233,7 @@
 				24D7411E2433DAA300407F8B /* SubredditsView.swift */,
 				24D741202433DAD100407F8B /* SubredditView.swift */,
 				24BA8A3E2479819E00E04579 /* SubredditPostView.swift */,
+				2442248C247AF51800C20D9E /* SubredditPostCommentsView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -315,6 +321,7 @@
 				24B8FFB1243506980029734C /* SearchBar.swift in Sources */,
 				24BA8A4324799F2200E04579 /* UserModel.swift in Sources */,
 				24D741212433DAD100407F8B /* SubredditView.swift in Sources */,
+				2425E827247B065000977CC3 /* RedditResponsable.swift in Sources */,
 				243C006D2478D250007CAD9F /* RedditView.swift in Sources */,
 				24B7CEC62477329100823BB1 /* SubredditPostsViewModel.swift in Sources */,
 				243C006F2478D27F007CAD9F /* RedditViewModel.swift in Sources */,
@@ -325,6 +332,7 @@
 				24C7AC432478F86A00200C0D /* CoreData.xcdatamodeld in Sources */,
 				243C006B2478D209007CAD9F /* SubredditViewModels.swift in Sources */,
 				24A2D14124789887007E4111 /* Extensions.swift in Sources */,
+				2442248D247AF51800C20D9E /* SubredditPostCommentsView.swift in Sources */,
 				24D741012433CE6A00407F8B /* SceneDelegate.swift in Sources */,
 				24B3CD9D2433DEBF006BF9DD /* RedditAuth.swift in Sources */,
 			);
@@ -464,6 +472,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iOS/Ressit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Shared/Assets/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -483,6 +492,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iOS/Ressit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"Shared/Assets/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

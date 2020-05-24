@@ -21,7 +21,7 @@ struct RedditListing<Value: RedditResponsable>: RedditResponsable {
 		after = data["after"] as? String
 		before = data["after"] as? String
 		let children = data["children"] as! [[String: Any]]
-		values = children.map(Value.init(json:))
+		values = children.compactMap(Value.init(json:))
 	}
 }
 
@@ -64,26 +64,46 @@ struct SubredditPost: RedditResponsable, Identifiable {
 
 struct SubredditPostComment: RedditResponsable, Identifiable {
 	let id: String
-	let author: String
-	let text: String
-	let creationDate: Date
+	let author: String?
+	let body: String?
+	let creationDate: Date?
 	let editedAt: TimeInterval?
-	let score: Int
+	let score: Int?
 	let replies: RedditListing<SubredditPostComment>?
+	let childIDs: [String]?
 
-	init(json: Any) {
+	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
-		id = data["id"] as! String
-		author = data["author"] as! String
-		text = data["body"] as! String
-		creationDate = Date(timeIntervalSince1970: data["created"] as! TimeInterval)
-		let editTimestamp = data["edited"] as! TimeInterval
-		editedAt = editTimestamp > 0 ? editTimestamp : nil
-		score = data["score"] as! Int
+
+		let created = data["created"] as? TimeInterval
+		let creationDate = created != nil ? Date(timeIntervalSince1970: created!) : nil
+		self.creationDate = creationDate
+
+		let childIDs = data["children"] as? [String]
+		if childIDs?.isEmpty ?? false {
+			if creationDate != nil {
+				print("INVALID CHILDREN", data)
+			}
+			return nil
+		}
+		self.childIDs = childIDs
+
+		let author = data["author"] as? String
 		if let rawReplies = data["replies"] as? [String: Any] {
 			replies = RedditListing<SubredditPostComment>(json: rawReplies)
 		} else {
+			if author == "[deleted]" { //TODO && childIDs == nil, if we want to be able to load replies to deleted posts
+				return nil
+			}
 			replies = nil
 		}
+		self.author = author
+
+		id = data["id"] as! String
+		body = data["body"] as? String
+		let editTimestamp = data["edited"] as? TimeInterval ?? 0
+		editedAt = editTimestamp > 0 ? editTimestamp : nil
+		score = data["score"] as? Int
+
 	}
 }

@@ -1,23 +1,6 @@
 import Foundation
 import Combine
 
-protocol RedditResponsable {
-	init(json: Any)
-}
-extension RedditResponsable {
-	static func defaultJSONData(_ json: Any) -> [String: Any] {
-		guard let baseJSON = json as? [String: Any] else {
-			print(json)
-			fatalError("JSON non-object")
-		}
-		guard let data = baseJSON["data"] as? [String: Any] else {
-			print(baseJSON)
-			fatalError("JSON invalid")
-		}
-		return data
-	}
-}
-
 final class RedditClient {
 	static let shared = RedditClient()
 
@@ -60,8 +43,9 @@ final class RedditClient {
 		guard statusCode == 200 else {
 			throw APIError.status(code: statusCode)
 		}
+//		print(String(data: data, encoding: .utf8)!) //SAMPLE
 		let json = try JSONSerialization.jsonObject(with: data, options: [])
-		return Result(json: json)
+		return Result(json: json)!
 	}
 }
 
