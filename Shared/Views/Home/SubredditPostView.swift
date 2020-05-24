@@ -51,7 +51,7 @@ private struct SubredditPostContent: View {
 				.padding()
 			RedditView(commentsViewModel) { result in
 				VStack(alignment: .leading) {
-					ForEach(result.values) { comment in
+					ForEach(result.comments.values) { comment in
 						Divider()
 						VStack(alignment: .leading) {
 							Text(comment.text)

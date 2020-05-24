@@ -1,16 +1,13 @@
 import SwiftUI
 
 struct BrowseView: View {
+	@ObservedObject private var subredditUserModel = SubredditUserModel.shared
+
 	var body: some View {
 		GeometryReader { geometry in
 //			if geometry.size.width > 900 { //SAMPLE
 			if geometry.size.width > 640 {
-				HStack(spacing: 0) {
-					BrowseSidebar(geometry: geometry)
-					Divider()
-						.padding(.top, -64)
-					SubredditsView(inSplitView: true)
-				}
+				SplitView(contentWidth: geometry.size.width / 2)
 			} else {
 				SubredditsView(inSplitView: false)
 			}
@@ -18,9 +15,21 @@ struct BrowseView: View {
 	}
 }
 
-struct BrowseSidebar: View {
-	let geometry: GeometryProxy
+struct SplitView: View {
+	let contentWidth: CGFloat
 
+	var body: some View {
+		HStack(spacing: 0) {
+			SubredditsView(inSplitView: true)
+			Divider()
+				.padding(.top, -32)
+			BrowseSidebar()
+				.frame(width: contentWidth)
+		}
+	}
+}
+
+struct BrowseSidebar: View {
 	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
 
 	private let subredditSearch = SubredditsSearchViewModel()
@@ -34,11 +43,10 @@ struct BrowseSidebar: View {
 					PostUserModel.shared.selected = nil
 				}
 				.background(
-					SelectedSubredditLink(inSplitView: true)
+					SelectedPostLink(inSplitView: true)
 				)
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
-			.frame(maxWidth: min(geometry.size.width / 2.5, 320))
 	}
 }
 
@@ -63,7 +71,7 @@ struct SelectedPostLink: View {
 
 	var body: some View {
 		HiddenNavigationLink(
-			isActive: inSplitView ? subredditUserModel.selected != nil : postUserModel.selected != nil,
+			isActive: inSplitView ? subredditUserModel.selected != nil || postUserModel.selected != nil : postUserModel.selected != nil,
 			destination: SubredditPostView(post: postUserModel.selected).navigationBarBackButtonHidden(inSplitView)
 		)
 	}

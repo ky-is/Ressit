@@ -43,7 +43,7 @@ final class SubredditsSearchViewModel: RedditViewModel {
 }
 
 final class SubredditPostCommentsViewModel: RedditViewModel {
-	typealias NetworkResource = RedditListing<SubredditPostComment>
+	typealias NetworkResource = RedditPostComments
 
 	var request: APIRequest<NetworkResource>?
 	var subscription: AnyCancellable?

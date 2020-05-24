@@ -2,7 +2,20 @@ import Foundation
 import Combine
 
 protocol RedditResponsable {
-	init(json: [String: Any])
+	init(json: Any)
+}
+extension RedditResponsable {
+	static func defaultJSONData(_ json: Any) -> [String: Any] {
+		guard let baseJSON = json as? [String: Any] else {
+			print(json)
+			fatalError("JSON non-object")
+		}
+		guard let data = baseJSON["data"] as? [String: Any] else {
+			print(baseJSON)
+			fatalError("JSON invalid")
+		}
+		return data
+	}
 }
 
 final class RedditClient {
@@ -47,11 +60,8 @@ final class RedditClient {
 		guard statusCode == 200 else {
 			throw APIError.status(code: statusCode)
 		}
-		let rawJSON = try JSONSerialization.jsonObject(with: data, options: [])
-		guard let baseJSON = rawJSON as? [String: Any], let jsonContents = baseJSON["data"] as? [String: Any] else {
-			throw APIError.invalidJSON
-		}
-		return Result(json: jsonContents)
+		let json = try JSONSerialization.jsonObject(with: data, options: [])
+		return Result(json: json)
 	}
 }
 
@@ -82,7 +92,7 @@ extension APIRequest {
 	static func topPosts(in subreddit: String, over period: RedditPeriod, count: Int) -> APIRequest<RedditListing<SubredditPost>> {
 		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
 	}
-	static func comments(for post: SubredditPostModel) -> APIRequest<RedditListing<SubredditPostComment>> {
-		APIRequest<RedditListing<SubredditPostComment>>(path: "/r/\(post.subreddit.name)/comments", parameters: ["article": post.id, "sort": "top"])
+	static func comments(for post: SubredditPostModel) -> APIRequest<RedditPostComments> {
+		APIRequest<RedditPostComments>(path: "/r/\(post.subreddit.name)/comments/\(post.id)/", parameters: ["article": post.id, "sort": "top"])
 	}
 }

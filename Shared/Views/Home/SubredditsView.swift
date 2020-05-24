@@ -8,13 +8,7 @@ struct SubredditsView: View {
 		NavigationView {
 			SubredditsContainer(inSplitView: inSplitView)
 				.background(
-					Group {
-						if inSplitView {
-							SelectedPostLink(inSplitView: inSplitView)
-						} else {
-							SelectedSubredditLink(inSplitView: inSplitView)
-						}
-					}
+					SelectedSubredditLink(inSplitView: inSplitView)
 				)
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
@@ -39,7 +33,6 @@ private struct SubredditsContainer: View {
 				.navigationBarTitle("Subreddits")
 	}
 }
-
 
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: [SubredditPostsViewModel]
