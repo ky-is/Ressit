@@ -5,7 +5,7 @@ private let listInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
 
 private var activeSwipeAction: PostSwipeAction?
-private var feedbackGenerator: UISelectionFeedbackGenerator?
+private var feedbackGenerator: UIImpactFeedbackGenerator?
 
 struct SubredditPostListEntry: View {
 	let post: SubredditPostModel
@@ -16,36 +16,44 @@ struct SubredditPostListEntry: View {
 
 	var body: some View {
 		ZStack {
+			PostSwipeActionView(action: swipeAction, offset: swipeDistance)
 			SubredditPostButton(post: post)
 				.opacity(post.metadata?.readDate != nil ? 0.5 : 1)
 				.offset(x: swipeDistance)
 				.gesture(
-					DragGesture(minimumDistance: 32)
+					DragGesture(minimumDistance: 15)
 						.updating($swipeDistance) { value, swipeDistance, transaction in
+							guard value.startLocation.x > 10.5 else { // Prevent overlap with system back gesture
+								return
+							}
 							let distance = self.getSwipeDistance(from: value).resist(over: 256)
 							swipeDistance = distance
 							if feedbackGenerator == nil {
-								feedbackGenerator = UISelectionFeedbackGenerator()
+								feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
 								feedbackGenerator?.prepare()
 							}
-							DispatchQueue.main.async {
-								if distance > 0 {
-									self.swipeAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
-								} else if distance < 0 {
-									let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
-									if reachedSecondAction {
-										self.swipeAction = .save
-									} else {
-										self.swipeAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
-									}
+							let reachedAction = distance.magnitude > swipeActivationMagnitude
+							let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
+							let displayAction: PostSwipeAction
+							if distance > 0 {
+								displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
+							} else {
+								if reachedSecondAction {
+									displayAction = .save
+								} else {
+									displayAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
 								}
 							}
-							if self.swipeAction != activeSwipeAction {
-								let activatedAction = distance.magnitude > swipeActivationMagnitude
-								if activatedAction {
-									activeSwipeAction = self.swipeAction
-										feedbackGenerator?.selectionChanged()
+							if displayAction != self.swipeAction {
+								DispatchQueue.main.async {
+									self.swipeAction = displayAction
 								}
+							}
+							let activeAction = reachedAction ? displayAction : nil
+							if activeSwipeAction != activeAction {
+								activeSwipeAction = activeAction
+								feedbackGenerator?.impactOccurred(intensity: reachedAction ? 1 : 0.5)
+								feedbackGenerator?.prepare()
 							}
 						}
 						.onEnded { _ in
@@ -54,7 +62,6 @@ struct SubredditPostListEntry: View {
 						}
 				)
 				.frame(maxWidth: .infinity, alignment: .leading)
-			PostSwipeActionView(action: swipeAction, offset: swipeDistance)
 		}
 			.animation(swipeDistance == .zero ? .default : nil, value: swipeDistance)
 			.listRowInsets(listInset)
@@ -72,15 +79,19 @@ private struct PostSwipeActionView: View {
 	var body: some View {
 		let alignment: Alignment = action.edge == .leading ? .leading : .trailing
 		let unitVector = action.edge.unitVector
-		let activationMagnitude: CGFloat = 80
+		let activationMagnitudeRemaining = max(0, swipeActivationMagnitude - offset.magnitude)
+		let activated = activationMagnitudeRemaining <= 0
 		return ZStack(alignment: alignment) {
 			action.color
 				.frame(width: offset.magnitude)
 			Text(action.icon)
 				.font(.system(size: swipeActivationMagnitude))
 				.foregroundColor(.background)
-				.frame(width: activationMagnitude)
-				.offset(x: max(0, activationMagnitude - offset.magnitude) * -unitVector, y: -4)
+				.scaleEffect(activated ? 1 : 0.75)
+				.opacity(activated ? 1 : 0.5)
+				.animation(offset.magnitude > 10 ? .default : nil, value: activated)
+				.frame(width: swipeActivationMagnitude)
+				.offset(x: activationMagnitudeRemaining * -unitVector, y: -4)
 		}
 			.padding(.vertical, -listInset.top)
 			.offset(x: action.edge == .leading ? -listInset.leading : listInset.trailing)
@@ -150,9 +161,9 @@ private enum PostSwipeAction {
 		case .upvoteRemove:
 			return "⇧"
 		case .markRead:
-			return "⎘"
-		case .markUnread:
 			return "⎗"
+		case .markUnread:
+			return "⎘"
 		case .save:
 			return "★"
 		case .unsave:
