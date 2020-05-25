@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 extension Collection {
 	var nonEmpty: Self? {
@@ -27,5 +27,26 @@ extension RelativeDateTimeFormatter {
 extension Date {
 	var relativeToNow: String {
 		RelativeDateTimeFormatter.default.localizedString(for: self, relativeTo: Date())
+	}
+}
+
+extension BinaryFloatingPoint {
+	var unitVector: Self {
+		return self < 0 ? -1 : +1
+	}
+
+	func resist(over maximumDistance: Self) -> Self {
+		return maximumDistance * Self(log(1 + Double(magnitude / maximumDistance))) * unitVector
+	}
+}
+
+extension Edge {
+	var unitVector: CGFloat {
+		switch self {
+		case .top, .leading:
+			return 1
+		case .bottom, .trailing:
+			return -1
+		}
 	}
 }

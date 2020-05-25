@@ -45,9 +45,14 @@ private struct AllSubredditPostsView: View {
 private struct SubredditPostsList: View {
 	let posts: FetchedResults<SubredditPostModel>
 
+	@ObservedObject private var postModel = PostUserModel.shared
+
 	var body: some View {
-		List(posts) { post in
-			SubredditPostListEntry(post: post)
+		List(selection: $postModel.selected) {
+			ForEach(posts) { post in
+				SubredditPostListEntry(post: post)
+					.tag(post)
+			}
 		}
 			.onAppear {
 				PostUserModel.shared.selected = nil
