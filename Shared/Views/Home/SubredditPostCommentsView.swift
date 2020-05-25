@@ -43,6 +43,8 @@ private struct SubredditPostCommentTree: View {
 				.background(Color.secondary)
 			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: collapsed)
 				.padding(.vertical, Self.veritcalPadding)
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.contentShape(Rectangle())
 				.onTapGesture {
 					if self.comment.childIDs == nil {
 						withAnimation {
@@ -58,8 +60,7 @@ private struct SubredditPostCommentTree: View {
 							.padding(.bottom, Self.veritcalPadding)
 							.offset(x: -Self.horizontalPadding)
 					}
-				}
-				, alignment: .topLeading)
+				}, alignment: .topLeading)
 			if !collapsed && comment.replies != nil && currentDepth < maxDepth {
 				SubredditPostCommentGroup(comments: comment.replies!, maxBreadth: maxBreadth, maxDepth: maxDepth, currentDepth: currentDepth + 1)
 			}
@@ -79,15 +80,15 @@ private struct SubredditPostCommentContent: View {
 			} else {
 				Group {
 					if collapsed {
-						Text("collapsed \(1 + (comment.replies?.values.count ?? 0)) replies at depth \(currentDepth + 1)")
+						Text("collapsed \(comment.replies?.values.count ?? 0) direct replies")
 					} else if comment.childIDs != nil {
 						Text("+\(comment.childIDs!.count) more")
 					} else {
 						Text("deleted \(comment.creationDate!.relativeToNow)")
 					}
 				}
-				.foregroundColor(.secondary)
-				.font(.caption)
+					.foregroundColor(.secondary)
+					.font(.caption)
 			}
 		}
 	}

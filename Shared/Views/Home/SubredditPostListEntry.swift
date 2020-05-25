@@ -100,10 +100,13 @@ private struct SubredditPostButton: View {
 					Text(post.title)
 						.font(.headline)
 					HStack {
-						Text("⬆︎")
-							.foregroundColor(post.userVote > 0 ? .orange : .secondary)
-						+
-						Text(post.score.description)
+						HStack(spacing: 0) {
+							Text("⬆︎")
+								.font(.system(size: 26))
+								.foregroundColor(post.userVote > 0 ? .orange : .secondary)
+								.padding(.top, -6)
+							Text(post.score.description)
+						}
 						Text("💬") + Text(post.commentCount.description)
 						Text("🕓") + Text(post.creationDate.relativeToNow)
 					}
