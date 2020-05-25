@@ -48,8 +48,8 @@ final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 			case .week:
 				self.periodWeekDate = date
 			}
-			context.refresh(self, mergeChanges: true) // Recompute derived properties
 			context.safeSave()
+			context.refresh(self, mergeChanges: true)
 		}
 	}
 }

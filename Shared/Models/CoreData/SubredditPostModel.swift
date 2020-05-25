@@ -19,6 +19,7 @@ final class SubredditPostModel: NSManagedObject, Identifiable {
 	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
 		if let metadata = metadata {
 			metadata.readDate = read ? Date() : nil
+			context.refresh(self, mergeChanges: true)
 		} else if read {
 			SubredditPostMetadataModel.create(for: self, in: context)
 		}
