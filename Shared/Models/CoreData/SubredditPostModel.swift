@@ -10,6 +10,9 @@ final class SubredditPostModel: NSManagedObject, Identifiable {
 	@NSManaged var commentCount: Int
 	@NSManaged var creationDate: Date
 
+	@NSManaged var userSaved: Bool
+	@NSManaged var userVote: Int
+
 	@NSManaged var subreddit: SubredditSubscriptionModel
 	@NSManaged var metadata: SubredditPostMetadataModel?
 
@@ -19,6 +22,12 @@ final class SubredditPostModel: NSManagedObject, Identifiable {
 		} else if read {
 			SubredditPostMetadataModel.create(for: self, in: context)
 		}
+	}
+	func toggleVote(_ vote: Int) {
+		self.userVote = vote
+	}
+	func toggleSaved(_ saved: Bool) {
+		self.userSaved = saved
 	}
 }
 
@@ -31,6 +40,8 @@ extension SubredditPostModel {
 		subredditPost.score = post.score
 		subredditPost.commentCount = post.commentCount
 		subredditPost.creationDate = Date(timeIntervalSince1970: post.createdAt)
+		subredditPost.userSaved = post.saved
+		subredditPost.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
 		subredditPost.subreddit = subreddit
 	}
 }

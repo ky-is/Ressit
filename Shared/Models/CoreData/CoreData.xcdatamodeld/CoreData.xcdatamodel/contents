@@ -11,6 +11,8 @@
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="userSaved" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="userVote" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditPostMetadataModel" inverseName="posts" inverseEntity="SubredditPostMetadataModel"/>
         <relationship name="subreddit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditSubscriptionModel" inverseName="posts" inverseEntity="SubredditSubscriptionModel"/>
         <uniquenessConstraints>
@@ -36,7 +38,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="163"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="193"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="178"/>
         <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
     </elements>

@@ -46,6 +46,8 @@ struct SubredditPost: RedditResponsable, Identifiable {
 	let editedAt: TimeInterval?
 	let text: String?
 	let url: String?
+	let saved: Bool
+	let likes: Bool?
 
 	init(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -59,6 +61,8 @@ struct SubredditPost: RedditResponsable, Identifiable {
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
 		text = data["selftext"] as? String
 		url = data["url"] as? String
+		saved = data["saved"] as! Bool
+		likes = data["likes"] as? Bool
 	}
 }
 

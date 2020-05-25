@@ -30,7 +30,7 @@ struct SubredditPostListEntry: View {
 							}
 							DispatchQueue.main.async {
 								if distance > 0 {
-									self.swipeAction = .upvote
+									self.swipeAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
 								} else if distance < 0 {
 									let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
 									if reachedSecondAction {
@@ -100,7 +100,10 @@ private struct SubredditPostButton: View {
 					Text(post.title)
 						.font(.headline)
 					HStack {
-						Text("🔺") + Text(post.score.description)
+						Text("⬆︎")
+							.foregroundColor(post.userVote > 0 ? .orange : .secondary)
+						+
+						Text(post.score.description)
 						Text("💬") + Text(post.commentCount.description)
 						Text("🕓") + Text(post.creationDate.relativeToNow)
 					}
@@ -113,59 +116,64 @@ private struct SubredditPostButton: View {
 }
 
 private enum PostSwipeAction {
-	case upvote
+	case upvote, upvoteRemove
 	case markRead, markUnread
-	case save
+	case save, unsave
 
 	var edge: Edge {
 		switch self {
-		case .upvote:
+		case .upvote, .upvoteRemove:
 			return .leading
-		case .markRead, .markUnread, .save:
+		case .markRead, .markUnread, .save, .unsave:
 			return .trailing
 		}
 	}
 	var color: Color {
 		switch self {
-		case .upvote:
+		case .upvote, .upvoteRemove:
 			return .orange
 		case .markRead, .markUnread:
 			return .blue
 		case .save:
 			return .green
+		case .unsave:
+			return .red
 		}
 	}
 	var icon: String {
 		switch self {
 		case .upvote:
 			return "⬆︎"
+		case .upvoteRemove:
+			return "⇧"
 		case .markRead:
 			return "⎘"
 		case .markUnread:
 			return "⎗"
 		case .save:
-			return "⟳"
+			return "★"
+		case .unsave:
+			return "☆"
 		}
 	}
 
 	func activate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
-		print(#function, self, post.id)
-
-		switch self {
-		case .upvote:
-			break //TODO
-		case .markRead:
-			context.perform {
+		context.perform {
+			switch self { //TODO upload votes/saved
+			case .upvote:
+				post.toggleVote(1)
+			case .upvoteRemove:
+				post.toggleVote(0)
+			case .markRead:
 				post.toggleRead(true, in: context)
-				context.safeSave()
-			}
-		case .markUnread:
-			context.perform {
+			case .markUnread:
 				post.toggleRead(false, in: context)
-				context.safeSave()
+			case .save:
+				post.toggleSaved(true)
+			case .unsave:
+				post.toggleSaved(false)
 			}
-		case .save:
-			break //TODO
+			context.safeSave()
 		}
 	}
 }
