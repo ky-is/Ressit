@@ -32,7 +32,7 @@ final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 		return previousDate.timeIntervalSinceNow > period.minimumUpdate
 	}
 
-	func update(posts: [SubredditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
+	func performUpdate(posts: [SubredditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
 		context.perform {
 			posts.forEach { SubredditPostModel.create(for: $0, subreddit: self, in: context) }
 			let date = Date()
@@ -61,10 +61,12 @@ extension SubredditSubscriptionModel {
 }
 
 extension Collection where Element == SubredditPostsViewModel, Index == Int {
-	func delete(at indices: IndexSet, from context: NSManagedObjectContext) {
+	func performDelete(at indices: IndexSet, from context: NSManagedObjectContext) {
 		if !indices.isEmpty {
-			indices.forEach { context.delete(self[$0].model!) }
-			context.safeSave()
+			context.perform {
+				indices.forEach { context.delete(self[$0].model!) }
+				context.safeSave()
+			}
 		}
 	}
 }

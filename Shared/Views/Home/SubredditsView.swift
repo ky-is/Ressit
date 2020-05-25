@@ -49,7 +49,7 @@ private struct SubredditsSubscriptionList: View {
 				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}
 				.onDelete { indices in
-					self.subscriptions.delete(at: indices, from: self.context)
+					self.subscriptions.performDelete(at: indices, from: self.context)
 				}
 		}
 			.navigationBarItems(trailing: Group {

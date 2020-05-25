@@ -43,7 +43,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 			return
 		}
 		fetch(.topPosts(in: model.name, over: period, count: 5)) { result in
-			model.update(posts: result.values, for: period, in: context)
+			model.performUpdate(posts: result.values, for: period, in: context)
 		}
 	}
 }

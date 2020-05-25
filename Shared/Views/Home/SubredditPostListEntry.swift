@@ -49,7 +49,7 @@ struct SubredditPostListEntry: View {
 							}
 						}
 						.onEnded { _ in
-							activeSwipeAction?.activate(for: self.post, in: self.context)
+							activeSwipeAction?.performActivate(for: self.post, in: self.context)
 							activeSwipeAction = nil
 						}
 				)
@@ -160,7 +160,7 @@ private enum PostSwipeAction {
 		}
 	}
 
-	func activate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
+	func performActivate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
 		context.perform {
 			switch self { //TODO upload votes/saved
 			case .upvote:
