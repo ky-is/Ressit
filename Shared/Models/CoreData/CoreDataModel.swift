@@ -13,7 +13,7 @@ struct CoreDataModel {
 		return container
 	}()
 
-	static func saveContext () {
+	static func saveContext() {
 		let context = persistentContainer.viewContext
 		if context.hasChanges {
 			context.safeSave()

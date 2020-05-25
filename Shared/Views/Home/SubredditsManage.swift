@@ -25,6 +25,8 @@ struct SubredditsManage: View {
 	let subscriptions: [SubredditPostsViewModel]
 	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
+	@State private var title = "Add"
+
 	var body: some View {
 		ZStack(alignment: .top) {
 			VStack(spacing: 0) {
@@ -42,7 +44,12 @@ struct SubredditsManage: View {
 				}
 			}
 		}
-			.navigationBarTitle(Text("Subscriptions"), displayMode: .inline)
+			.navigationBarTitle(Text("\(title) subreddits"), displayMode: .inline)
+			.onAppear {
+				if !self.subscriptions.isEmpty {
+					self.title = "Manage"
+				}
+			}
 	}
 }
 
