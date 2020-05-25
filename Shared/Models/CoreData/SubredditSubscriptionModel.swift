@@ -12,6 +12,7 @@ final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 	@NSManaged var periodYearDate: Date?
 	@NSManaged var periodMonthDate: Date?
 	@NSManaged var periodWeekDate: Date?
+	@NSManaged var postCount: Int
 
 	func needsUpdate(for period: RedditPeriod) -> Bool {
 		let date: Date?

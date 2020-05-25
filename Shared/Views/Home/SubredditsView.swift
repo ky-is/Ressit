@@ -44,17 +44,9 @@ private struct SubredditsSubscriptionList: View {
 
 	var body: some View {
 		List {
-			Button(action: {
-				SubredditUserModel.shared.selected = .global
-			}) {
-				Text("🌏 Global Feed")
-			}
+			SubredditListEntry(subscription: .global, postCount: subscriptions.reduce(0, +, \.model!.postCount))
 			ForEach(subscriptions) { subreddit in
-				Button(action: {
-					SubredditUserModel.shared.selected = subreddit
-				}) {
-					SubredditTitle(name: subreddit.model!.name)
-				}
+				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}
 				.onDelete { indices in
 					self.subscriptions.delete(at: indices, from: self.context)
@@ -80,6 +72,30 @@ private struct SubredditsSubscriptionList: View {
 					self.showAddSubreddits = true
 				}
 			}
+	}
+}
+
+private struct SubredditListEntry: View {
+	let subscription: SubredditPostsViewModel
+	let postCount: Int?
+
+	var body: some View {
+		HStack {
+			Button(action: {
+				SubredditUserModel.shared.selected = self.subscription
+			}) {
+				SubredditTitle(name: subscription.model?.name)
+			}
+			Spacer()
+			Text((postCount ?? subscription.model!.postCount).description)
+				.foregroundColor(.background)
+				.font(Font.footnote.bold())
+				.padding(4)
+				.background(
+					Circle()
+						.fill(Color.secondary)
+				)
+		}
 	}
 }
 

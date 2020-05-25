@@ -30,6 +30,7 @@
         <attribute name="periodMonthDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="postCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="posts.@count" usesScalarValueType="YES"/>
         <relationship name="posts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SubredditPostModel" inverseName="subreddit" inverseEntity="SubredditPostModel"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -39,7 +40,7 @@
     </entity>
     <elements>
         <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="193"/>
-        <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="178"/>
+        <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
         <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
     </elements>
 </model>

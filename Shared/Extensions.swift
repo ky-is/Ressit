@@ -50,3 +50,9 @@ extension Edge {
 		}
 	}
 }
+
+extension Sequence {
+	func reduce<Result>(_ initialValue: Result, _ operation: (Result, Result) -> Result, _ keyPath: KeyPath<Element, Result>) -> Result {
+		return reduce(initialValue) { operation($0, $1[keyPath: keyPath]) }
+	}
+}

@@ -1,15 +1,21 @@
 import SwiftUI
 
 struct SubredditTitle: View {
-	let name: String
+	let name: String?
 
 	var body: some View {
-		HStack(spacing: 1) {
-			Text("r/")
-				.foregroundColor(.secondary)
-			Text(name)
+		Group {
+			if name != nil {
+				HStack(spacing: 1) {
+					Text("r/")
+						.foregroundColor(.secondary)
+					Text(name!)
+				}
+					.lineLimit(1)
+			} else {
+				Text("🌏 Global Feed")
+			}
 		}
-			.lineLimit(1)
 	}
 }
 
