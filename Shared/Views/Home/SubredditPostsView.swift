@@ -2,7 +2,7 @@ import SwiftUI
 
 private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
-struct SubredditView: View {
+struct SubredditPostsView: View {
 	let subscription: SubredditPostsViewModel
 	let inSplitView: Bool
 
@@ -47,21 +47,7 @@ private struct SubredditPostsList: View {
 
 	var body: some View {
 		List(posts) { post in
-			Button(action: {
-				PostUserModel.shared.selected = post
-			}) {
-				VStack(alignment: .leading, spacing: 4) {
-					Text(post.title)
-						.font(.headline)
-					HStack {
-						Text("🔺") + Text(post.score.description)
-						Text("💬") + Text(post.commentCount.description)
-						Text("🕓") + Text(post.creationDate.relativeToNow)
-					}
-						.font(.caption)
-				}
-					.padding(.vertical, 6)
-			}
+			SubredditPostListEntry(post: post)
 		}
 			.onAppear {
 				PostUserModel.shared.selected = nil
@@ -69,13 +55,13 @@ private struct SubredditPostsList: View {
 	}
 }
 
-struct SubredditView_Previews: PreviewProvider {
+struct SubredditPostsView_Previews: PreviewProvider {
 	static var previews: some View {
 		let subredditSubscription = SubredditSubscriptionModel(context: CoreDataModel.persistentContainer.viewContext)
 		subredditSubscription.name = "Test"
 		subredditSubscription.creationDate = Date()
 		return NavigationView {
-			SubredditView(subscription: SubredditPostsViewModel(model: subredditSubscription), inSplitView: false)
+			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription), inSplitView: false)
 		}
 	}
 }

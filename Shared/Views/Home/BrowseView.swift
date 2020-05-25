@@ -58,7 +58,7 @@ struct SelectedSubredditLink: View {
 	var body: some View {
 		HiddenNavigationLink(
 			isActive: subredditUserModel.selected != nil,
-			destination: SubredditView(subscription: subredditUserModel.selected ?? .global, inSplitView: inSplitView)
+			destination: SubredditPostsView(subscription: subredditUserModel.selected ?? .global, inSplitView: inSplitView)
 		)
 	}
 }
