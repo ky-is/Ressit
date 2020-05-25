@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="SubredditPostMetadataModel" representedClassName="SubredditPostMetadataModel" syncable="YES">
+        <attribute name="readDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SubredditPostModel" inverseName="metadata" inverseEntity="SubredditPostModel"/>
+    </entity>
     <entity name="SubredditPostModel" representedClassName="SubredditPostModel" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String"/>
         <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -7,6 +11,7 @@
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditPostMetadataModel" inverseName="posts" inverseEntity="SubredditPostMetadataModel"/>
         <relationship name="subreddit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditSubscriptionModel" inverseName="posts" inverseEntity="SubredditSubscriptionModel"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -31,7 +36,8 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="148"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="163"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="178"/>
+        <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
     </elements>
 </model>

@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreData
 
 private let listInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
@@ -11,10 +12,12 @@ struct SubredditPostListEntry: View {
 
 	@State private var swipeAction: PostSwipeAction = .upvote
 	@GestureState private var swipeDistance: CGFloat = .zero
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		ZStack {
 			SubredditPostButton(post: post)
+				.opacity(post.metadata?.readDate != nil ? 0.5 : 1)
 				.offset(x: swipeDistance)
 				.gesture(
 					DragGesture(minimumDistance: 32)
@@ -33,7 +36,7 @@ struct SubredditPostListEntry: View {
 									if reachedSecondAction {
 										self.swipeAction = .save
 									} else {
-										self.swipeAction = .markUnread //TODO .markRead
+										self.swipeAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
 									}
 								}
 							}
@@ -46,7 +49,7 @@ struct SubredditPostListEntry: View {
 							}
 						}
 						.onEnded { _ in
-							activeSwipeAction?.activate(for: self.post)
+							activeSwipeAction?.activate(for: self.post, in: self.context)
 							activeSwipeAction = nil
 						}
 				)
@@ -137,25 +140,32 @@ private enum PostSwipeAction {
 		case .upvote:
 			return "⬆︎"
 		case .markRead:
-			return "⎗"
-		case .markUnread:
 			return "⎘"
+		case .markUnread:
+			return "⎗"
 		case .save:
 			return "⟳"
 		}
 	}
 
-	func activate(for post: SubredditPostModel) {
+	func activate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
 		print(#function, self, post.id)
+
 		switch self {
 		case .upvote:
-			break
+			break //TODO
 		case .markRead:
-			break
+			context.perform {
+				post.toggleRead(true, in: context)
+				context.safeSave()
+			}
 		case .markUnread:
-			break
+			context.perform {
+				post.toggleRead(false, in: context)
+				context.safeSave()
+			}
 		case .save:
-			break
+			break //TODO
 		}
 	}
 }

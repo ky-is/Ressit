@@ -11,6 +11,15 @@ final class SubredditPostModel: NSManagedObject, Identifiable {
 	@NSManaged var creationDate: Date
 
 	@NSManaged var subreddit: SubredditSubscriptionModel
+	@NSManaged var metadata: SubredditPostMetadataModel?
+
+	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
+		if let metadata = metadata {
+			metadata.readDate = read ? Date() : nil
+		} else if read {
+			SubredditPostMetadataModel.create(for: self, in: context)
+		}
+	}
 }
 
 extension SubredditPostModel {
