@@ -45,6 +45,10 @@ final class SubredditsSearchViewModel: RedditViewModel {
 final class SubredditPostCommentsViewModel: RedditViewModel {
 	typealias NetworkResource = RedditPostComments
 
+	static var latest: SubredditPostCommentsViewModel?
+
+	let id: String
+
 	var request: APIRequest<NetworkResource>?
 	var subscription: AnyCancellable?
 	var loading = true
@@ -52,6 +56,8 @@ final class SubredditPostCommentsViewModel: RedditViewModel {
 	var result: NetworkResource?
 
 	init(post: SubredditPostModel) {
-		request = .comments(for: post)
+		self.id = post.id
+		self.request = .comments(for: post)
+		Self.latest = self
 	}
 }

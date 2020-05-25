@@ -27,7 +27,11 @@ private struct SubredditPostContainer: View {
 
 	init(post: SubredditPostModel) {
 		self.post = post
-		self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
+		if let latest = SubredditPostCommentsViewModel.latest, latest.id == post.id {
+			self.commentsViewModel = latest
+		} else {
+			self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
+		}
 	}
 
 	var body: some View {
