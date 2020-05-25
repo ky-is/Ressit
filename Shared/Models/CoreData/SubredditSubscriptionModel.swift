@@ -14,6 +14,8 @@ final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 	@NSManaged var periodWeekDate: Date?
 	@NSManaged var postCount: Int
 
+	@NSManaged var posts: Set<SubredditPostModel>
+
 	func needsUpdate(for period: RedditPeriod) -> Bool {
 		let date: Date?
 		switch period {
@@ -46,6 +48,7 @@ final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
 			case .week:
 				self.periodWeekDate = date
 			}
+			context.refresh(self, mergeChanges: true) // Recompute derived properties
 			context.safeSave()
 		}
 	}

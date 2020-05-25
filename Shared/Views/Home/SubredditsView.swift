@@ -43,8 +43,11 @@ private struct SubredditsSubscriptionList: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		List {
-			SubredditListEntry(subscription: .global, postCount: subscriptions.reduce(0, +, \.model!.postCount))
+		let totalPostCount = subscriptions.count < 2 ? 0 : subscriptions.reduce(0, +, \.model!.postCount)
+		return List {
+			if totalPostCount > 0 {
+				SubredditListEntry(subscription: .global, postCount: totalPostCount)
+			}
 			ForEach(subscriptions) { subreddit in
 				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}
@@ -77,7 +80,12 @@ private struct SubredditsSubscriptionList: View {
 
 private struct SubredditListEntry: View {
 	let subscription: SubredditPostsViewModel
-	let postCount: Int?
+	let postCount: Int
+
+	init(subscription: SubredditPostsViewModel, postCount: Int? = nil) {
+		self.subscription = subscription
+		self.postCount = postCount ?? subscription.model!.postCount
+	}
 
 	var body: some View {
 		HStack {
@@ -86,15 +94,18 @@ private struct SubredditListEntry: View {
 			}) {
 				SubredditTitle(name: subscription.model?.name)
 			}
-			Spacer()
-			Text((postCount ?? subscription.model!.postCount).description)
-				.foregroundColor(.background)
-				.font(Font.footnote.bold())
-				.padding(4)
-				.background(
-					Circle()
-						.fill(Color.secondary)
-				)
+			if postCount > 0 {
+				Spacer()
+				Text(postCount.description)
+					.foregroundColor(.background)
+					.font(Font.footnote.bold())
+					.frame(minWidth: 18)
+					.padding(4)
+					.background(
+						Capsule()
+							.fill(Color.secondary)
+					)
+			}
 		}
 	}
 }
