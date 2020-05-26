@@ -11,8 +11,14 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	@NSManaged var author: String
 	@NSManaged var score: Int
 	@NSManaged var commentCount: Int
-	@NSManaged var creationDate: Date
+	@NSManaged var creationDate: Date?
 	@NSManaged var thumbnail: URL?
+	@NSManaged var url: URL?
+
+	@NSManaged var previewURL: URL?
+	@NSManaged var previewIsVideo: Bool
+	@NSManaged var previewWidth: Float
+	@NSManaged var previewHeight: Float
 
 	@NSManaged var userSaved: Bool
 	@NSManaged var userVote: Int
@@ -77,14 +83,20 @@ extension SubredditPostModel {
 		subredditPost.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
 		subredditPost.subreddit = subreddit
 		subredditPost.thumbnail = post.thumbnail != nil ? URL(string: post.thumbnail!) : nil
-		if let thumbnailURL = subredditPost.thumbnail {
-			subredditPost.thumbnailLoader = ImageDownloadManager(id: post.id, url: thumbnailURL)
-		}
+		subredditPost.url = post.url
+		subredditPost.previewURL = post.previewURLs?.first
+		subredditPost.previewIsVideo = post.previewIsVideo
+		subredditPost.previewWidth = post.previewWidth ?? 0
+		subredditPost.previewHeight = post.previewHeight ?? 0
+		_ = subredditPost.getThumbnailManager()
 	}
 
-	func getThumbnailManager() -> ImageDownloadManager {
+	func getThumbnailManager() -> ImageDownloadManager? {
+		guard let thumbnail = thumbnail else {
+			return nil
+		}
 		guard let thumbnailLoader = thumbnailLoader else {
-			let loader = ImageDownloadManager(id: id, url: thumbnail!)
+			let loader = ImageDownloadManager(id: id, url: thumbnail, cache: true)
 			self.thumbnailLoader = loader
 			return loader
 		}

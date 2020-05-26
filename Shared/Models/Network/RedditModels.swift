@@ -9,12 +9,12 @@ struct EmptyReddit: RedditResponsable {
 }
 
 struct RedditPostComments: RedditResponsable {
-//	let post: RedditListing<SubredditPost>
+	let post: SubredditPost
 	let comments: RedditListing<SubredditPostComment>
 
 	init(json: Any) {
 		let children = json as! [[String: Any]]
-//		post = RedditListing<SubredditPost>(json: children[0])
+		post = RedditListing<SubredditPost>(json: children[0]).values.first!
 		comments = RedditListing<SubredditPostComment>(json: children[1])
 	}
 }
@@ -57,10 +57,15 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	let createdAt: TimeInterval
 	let editedAt: TimeInterval?
 	let text: String?
-	let url: String?
 	let saved: Bool
 	let likes: Bool?
+	let url: URL?
 	let thumbnail: String?
+
+	let previewURLs: [URL]?
+	let previewIsVideo: Bool
+	let previewWidth: Float?
+	let previewHeight: Float?
 
 	init(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -73,10 +78,43 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 		let editTimestamp = data["edited"] as! TimeInterval
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
 		text = data["selftext"] as? String
-		url = data["url"] as? String
+		let urlString = data["url"] as? String
+		url = urlString != nil ? URL(string: urlString!) : nil
 		saved = data["saved"] as! Bool
 		likes = data["likes"] as? Bool
 		thumbnail = data["thumbnail"] as? String
+		var previewURLStrings: [String]?
+		var isPreviewVideo = false
+		var previewWidth: Float?, previewHeight: Float?
+		if let previews = data["preview"] as? [String: Any] {
+			if let videoPreview = previews["reddit_video_preview"] as? [String: Any] {
+				if let urlString = (videoPreview["hls_url"] ?? videoPreview["fallback_url"]) as? String {
+					isPreviewVideo = true
+					previewURLStrings = [urlString]
+					previewWidth = videoPreview["width"] as? Float
+					previewHeight = videoPreview["height"] as? Float
+				} else {
+					print("reddit_video_preview", videoPreview)
+				}
+			}
+			if previewURLStrings == nil, let images = previews["images"] as? [[String: Any]] {
+				previewURLStrings = images.compactMap { image in
+					guard let source = image["source"] as? [String: Any], let urlString = source["url"] as? String else {
+						print("images", image)
+						return nil
+					}
+					if previewWidth == nil {
+						previewWidth = source["width"] as? Float
+						previewHeight = source["height"] as? Float
+					}
+					return urlString
+				}
+			}
+		}
+		self.previewURLs = previewURLStrings?.compactMap(URL.init(string:)).nonEmpty
+		self.previewIsVideo = isPreviewVideo
+		self.previewWidth = previewWidth
+		self.previewHeight = previewHeight
 	}
 }
 

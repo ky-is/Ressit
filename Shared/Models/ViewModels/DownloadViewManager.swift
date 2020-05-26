@@ -16,27 +16,26 @@ final class ImageDownloadManager: ObservableObject {
 
 	@Published var state: DownloadState
 
-	private let localURL: URL
+	private let localURL: URL?
 	private var subscription: AnyCancellable?
 
 	private static let localDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
 	private static let backgroundQueue = DispatchQueue.global(qos: .background)
 
-	init(id: String, url: URL) {
+	init(id: String, url: URL, cache: Bool) {
 		self.id = id
 		self.url = url
-		self.localURL = Self.localDirectory.appendingPathComponent(id + "/t").appendingPathExtension(url.pathExtension)
-		try? FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
+		self.localURL = cache ? Self.localDirectory.appendingPathComponent(id + "/t").appendingPathExtension(url.pathExtension) : nil
 		self.state = .loading
-		if FileManager.default.fileExists(atPath: localURL.path) {
-			try? FileManager.default.removeItem(at: self.localURL) //SAMPLE
+		if let localURL = localURL, FileManager.default.fileExists(atPath: localURL.path) {
+			try? FileManager.default.removeItem(at: localURL) //SAMPLE
 			subscribe(to:
 				Future<UIImage, DownloadError> { promise in
-					if let image = UIImage(contentsOfFile: self.localURL.path) {
+					if let image = UIImage(contentsOfFile: localURL.path) {
 						promise(.success(image))
 					} else {
 						promise(.failure(DownloadError.invalidImage))
-						try? FileManager.default.removeItem(at: self.localURL)
+						try? FileManager.default.removeItem(at: localURL)
 					}
 				}
 					.subscribe(on: Self.backgroundQueue)
@@ -72,11 +71,14 @@ final class ImageDownloadManager: ObservableObject {
 		URLSession.shared.dataTaskPublisher(for: url)
 			.subscribe(on: Self.backgroundQueue)
 			.receive(on: RunLoop.main)
-			.tryMap { (data, response) in
+			.tryMap { data, response in
 				guard let image = UIImage(data: data) else {
 					throw DownloadError.invalidImage
 				}
-				try data.write(to: self.localURL)
+				if let localURL = self.localURL {
+					try? FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
+					try? data.write(to: localURL)
+				}
 				return image
 			}
 			.eraseToAnyPublisher()

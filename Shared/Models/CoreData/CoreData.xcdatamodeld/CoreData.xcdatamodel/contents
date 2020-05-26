@@ -9,9 +9,14 @@
         <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="previewHeight" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="previewIsVideo" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="previewURL" optional="YES" attributeType="URI"/>
+        <attribute name="previewWidth" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="userSaved" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="userVote" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditPostMetadataModel" inverseName="posts" inverseEntity="SubredditPostMetadataModel"/>
@@ -41,7 +46,7 @@
     </entity>
     <elements>
         <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="208"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="283"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
     </elements>
 </model>

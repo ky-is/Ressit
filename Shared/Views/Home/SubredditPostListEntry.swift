@@ -112,7 +112,7 @@ private struct SubredditPostButton: View {
 		}) {
 			HStack(alignment: .top) {
 				if post.thumbnail != nil {
-					DownloadImageView(viewModel: post.getThumbnailManager())
+					DownloadImageView(viewModel: post.getThumbnailManager()!)
 						.frame(width: 80, height: 80)
 						.clipped()
 						.cornerRadius(2)
@@ -123,7 +123,7 @@ private struct SubredditPostButton: View {
 					HStack {
 						ScoreMetadata(entity: post)
 						Text("💬") + Text(post.commentCount.description)
-						Text("🕓") + Text(post.creationDate.relativeToNow)
+						Text("🕓") + Text(post.creationDate?.relativeToNow ?? "")
 						if post.userSaved {
 							Text("❖")
 								.foregroundColor(.green)

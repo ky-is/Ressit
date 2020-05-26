@@ -21,6 +21,7 @@ struct SubredditPostView: View {
 
 private struct SubredditPostContainer: View {
 	let post: SubredditPostModel
+
 	private let commentsViewModel: SubredditPostCommentsViewModel
 
 	init(post: SubredditPostModel) {
@@ -34,9 +35,31 @@ private struct SubredditPostContainer: View {
 
 	var body: some View {
 		ScrollView {
-			SubredditPostHeader(post: post)
+			VStack {
+				SubredditPostHeader(post: post)
+				if post.previewURL != nil {
+					if post.previewIsVideo {
+						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
+					} else {
+						DownloadImageView(viewModel: ImageDownloadManager(id: "", url: post.previewURL!, cache: false))
+							.frame(maxWidth: .infinity)
+					}
+				}
+			}
+				.fixedSize(horizontal: false, vertical: true)
 			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
 		}
+	}
+}
+
+private struct PostVideo: View {
+	let url: URL
+	@State var aspectRatio: CGFloat
+
+	var body: some View {
+		VideoViewer(url: url, aspectRatio: $aspectRatio)
+			.aspectRatio(aspectRatio, contentMode: .fit)
+			.frame(maxWidth: .infinity)
 	}
 }
 
@@ -54,14 +77,13 @@ private struct SubredditPostHeader: View {
 				}
 				HStack(spacing: 1) {
 					Text("🗓")
-					Text(post.creationDate.relativeToNow)
+					Text(post.creationDate?.relativeToNow ?? "")
 				}
 				SubredditTitle(name: post.subreddit.name)
 				Spacer()
 			}
 				.font(.caption)
 		}
-			.fixedSize(horizontal: false, vertical: true)
 			.padding()
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
 	}
