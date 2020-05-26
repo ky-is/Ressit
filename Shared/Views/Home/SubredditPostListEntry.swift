@@ -36,7 +36,11 @@ struct SubredditPostListEntry: View {
 							let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
 							let displayAction: PostSwipeAction
 							if distance > 0 {
-								displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
+								if reachedSecondAction {
+									displayAction = self.post.userVote < 0 ? .downvoteRemove : .downvote
+								} else {
+									displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
+								}
 							} else {
 								if reachedSecondAction {
 									displayAction = self.post.userSaved ? .unsave : .save
@@ -134,13 +138,14 @@ private struct SubredditPostButton: View {
 }
 
 private enum PostSwipeAction {
+	case downvote, downvoteRemove
 	case upvote, upvoteRemove
 	case markRead, markUnread
 	case save, unsave
 
 	var edge: Edge {
 		switch self {
-		case .upvote, .upvoteRemove:
+		case .upvote, .upvoteRemove, .downvote, .downvoteRemove:
 			return .leading
 		case .markRead, .markUnread, .save, .unsave:
 			return .trailing
@@ -150,6 +155,8 @@ private enum PostSwipeAction {
 		switch self {
 		case .upvote, .upvoteRemove:
 			return .orange
+		case .downvote, .downvoteRemove:
+			return .blue
 		case .markRead, .markUnread:
 			return .blue
 		case .save:
@@ -164,6 +171,10 @@ private enum PostSwipeAction {
 			return "⬆︎"
 		case .upvoteRemove:
 			return "⇧"
+		case .downvote:
+			return "⬇︎"
+		case .downvoteRemove:
+			return "⇩"
 		case .markRead:
 			return "⎗"
 		case .markUnread:
@@ -179,8 +190,10 @@ private enum PostSwipeAction {
 		switch self {
 		case .upvote:
 			post.toggleVote(1, in: context)
-		case .upvoteRemove:
+		case .upvoteRemove, .downvoteRemove:
 			post.toggleVote(0, in: context)
+		case .downvote:
+			post.toggleVote(-1, in: context)
 		case .markRead:
 			post.toggleRead(true, in: context)
 		case .markUnread:
