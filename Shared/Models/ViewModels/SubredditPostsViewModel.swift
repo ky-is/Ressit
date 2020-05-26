@@ -33,16 +33,28 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	var error: Error?
 	var result: NetworkResource?
 
+	private var context: NSManagedObjectContext?
+	private var period: RedditPeriod?
+
 	init(model: SubredditSubscriptionModel?) {
 		self.id = model?.id ?? "$GLOBAL"
 		self.model = model
 	}
 
 	func updateIfNeeded(in context: NSManagedObjectContext) {
-		guard let model = model, subscription == nil, model.postCount < 5, let period = RedditPeriod.allCases.first(where: { model.needsUpdate(for: $0) }) else { //TODO 5 is priority dependant
+		guard let model = model, subscription == nil, model.postCount < 5 else { //TODO 5 is priority dependant
 			return
 		}
-		fetch(.topPosts(in: model.name, over: period, count: 5)) { result in
+		self.context = context
+		self.period = RedditPeriod.allCases.first(where: model.needsUpdate(for:))
+		guard let period = period else {
+			return
+		}
+		fetch(.topPosts(in: model.name, over: period, count: 5))
+	}
+
+	func onLoaded(_ result: NetworkResource) {
+		if let model = model, let context = context, let period = period {
 			model.performUpdate(posts: result.values, for: period, in: context)
 		}
 	}

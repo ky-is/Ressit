@@ -60,6 +60,7 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	let url: String?
 	let saved: Bool
 	let likes: Bool?
+	let thumbnail: String?
 
 	init(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -75,6 +76,7 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 		url = data["url"] as? String
 		saved = data["saved"] as! Bool
 		likes = data["likes"] as? Bool
+		thumbnail = data["thumbnail"] as? String
 	}
 }
 
@@ -123,7 +125,7 @@ final class SubredditPostComment: RedditResponsable, RedditVotable {
 		body = data["body"] as? String
 		let editTimestamp = data["edited"] as? TimeInterval ?? 0
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
-		score = data["score"] as! Int
+		score = data["score"] as? Int ?? 0
 		let likes = data["likes"] as? Bool
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 	}

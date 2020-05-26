@@ -12,7 +12,8 @@ protocol RedditViewModel: ObservableObject {
 	var result: NetworkResource? { get set }
 
 	func fetch()
-	func fetch(_: APIRequest<NetworkResource>, callback: ((NetworkResource) -> Void)?)
+	func fetch(_: APIRequest<NetworkResource>)
+	func onLoaded(_: NetworkResource)
 }
 
 extension RedditViewModel {
@@ -23,7 +24,7 @@ extension RedditViewModel {
 		fetch(request)
 	}
 
-	func fetch(_ request: APIRequest<NetworkResource>, callback: ((NetworkResource) -> Void)? = nil) {
+	func fetch(_ request: APIRequest<NetworkResource>) {
 		guard subscription == nil else {
 			return
 		}
@@ -44,7 +45,9 @@ extension RedditViewModel {
 				self.objectWillChange.send()
 			}, receiveValue: { result in
 				self.result = result
-				callback?(result)
+				self.onLoaded(result)
 			})
 	}
+
+	func onLoaded(_: NetworkResource) {}
 }

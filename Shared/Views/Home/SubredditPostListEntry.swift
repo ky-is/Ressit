@@ -107,10 +107,16 @@ private struct SubredditPostButton: View {
 	let post: SubredditPostModel
 
 	var body: some View {
-		ZStack {
-			Button(action: {
-				PostUserModel.shared.selected = self.post
-			}) {
+		Button(action: {
+			PostUserModel.shared.selected = self.post
+		}) {
+			HStack(alignment: .top) {
+				if post.thumbnail != nil {
+					DownloadImageView(viewModel: post.getThumbnailManager())
+						.frame(width: 80, height: 80)
+						.clipped()
+						.cornerRadius(2)
+				}
 				VStack(alignment: .leading, spacing: 4) {
 					Text(post.title)
 						.font(.headline)

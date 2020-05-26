@@ -12,6 +12,7 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	@NSManaged var score: Int
 	@NSManaged var commentCount: Int
 	@NSManaged var creationDate: Date
+	@NSManaged var thumbnail: URL?
 
 	@NSManaged var userSaved: Bool
 	@NSManaged var userVote: Int
@@ -21,6 +22,8 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 
 	private var saveSubscription: AnyCancellable?
 	private var voteSubscription: AnyCancellable?
+
+	var thumbnailLoader: ImageDownloadManager?
 
 	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
 		if let metadata = metadata {
@@ -73,5 +76,18 @@ extension SubredditPostModel {
 		subredditPost.userSaved = post.saved
 		subredditPost.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
 		subredditPost.subreddit = subreddit
+		subredditPost.thumbnail = post.thumbnail != nil ? URL(string: post.thumbnail!) : nil
+		if let thumbnailURL = subredditPost.thumbnail {
+			subredditPost.thumbnailLoader = ImageDownloadManager(id: post.id, url: thumbnailURL)
+		}
+	}
+
+	func getThumbnailManager() -> ImageDownloadManager {
+		guard let thumbnailLoader = thumbnailLoader else {
+			let loader = ImageDownloadManager(id: id, url: thumbnail!)
+			self.thumbnailLoader = loader
+			return loader
+		}
+		return thumbnailLoader
 	}
 }
