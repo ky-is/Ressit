@@ -1,5 +1,13 @@
 import Foundation
 
+struct EmptyReddit: RedditResponsable {
+	init(json: Any) {
+		guard let data = json as? [String: Any], data.isEmpty else {
+			fatalError("Invalid empty response: \(json)")
+		}
+	}
+}
+
 struct RedditPostComments: RedditResponsable {
 //	let post: RedditListing<SubredditPost>
 	let comments: RedditListing<SubredditPostComment>

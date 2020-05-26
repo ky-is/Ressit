@@ -39,7 +39,7 @@ struct SubredditPostListEntry: View {
 								displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
 							} else {
 								if reachedSecondAction {
-									displayAction = .save
+									displayAction = self.post.userSaved ? .unsave : .save
 								} else {
 									displayAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
 								}
@@ -120,6 +120,10 @@ private struct SubredditPostButton: View {
 						}
 						Text("💬") + Text(post.commentCount.description)
 						Text("🕓") + Text(post.creationDate.relativeToNow)
+						if post.userSaved {
+							Text("❖")
+								.foregroundColor(.green)
+						}
 					}
 						.font(Font.caption.monospacedDigit())
 				}
@@ -172,22 +176,19 @@ private enum PostSwipeAction {
 	}
 
 	func performActivate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
-		context.perform {
-			switch self { //TODO upload votes/saved
-			case .upvote:
-				post.toggleVote(1)
-			case .upvoteRemove:
-				post.toggleVote(0)
-			case .markRead:
-				post.toggleRead(true, in: context)
-			case .markUnread:
-				post.toggleRead(false, in: context)
-			case .save:
-				post.toggleSaved(true)
-			case .unsave:
-				post.toggleSaved(false)
-			}
-			context.safeSave()
+		switch self {
+		case .upvote:
+			post.toggleVote(1, in: context)
+		case .upvoteRemove:
+			post.toggleVote(0, in: context)
+		case .markRead:
+			post.toggleRead(true, in: context)
+		case .markUnread:
+			post.toggleRead(false, in: context)
+		case .save:
+			post.performSaved(true, in: context)
+		case .unsave:
+			post.performSaved(false, in: context)
 		}
 	}
 }

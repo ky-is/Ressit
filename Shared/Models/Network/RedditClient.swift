@@ -1,35 +1,47 @@
 import Foundation
 import Combine
 
+enum APIError: Error, Equatable {
+	case uninitialized
+	case invalidJSON
+	case status(code: Int)
+	case unauthorized
+}
+
+enum HTTPMethod: String {
+	case get, post, put, delete
+}
+
 final class RedditClient {
 	static let shared = RedditClient()
 
 	private let baseUrl = URL(string: "https://oauth.reddit.com")!
 
-	func send<Result: RedditResponsable>(_ request: APIRequest<Result>) -> AnyPublisher<Result, Error> {
+	func send<Result: RedditResponsable>(_ apiRequest: APIRequest<Result>) -> AnyPublisher<Result, Error> {
 		guard let accessToken = RedditAuthModel.shared.accessToken else {
 			return Fail(error: APIError.uninitialized).eraseToAnyPublisher()
 		}
 		return URLSession.shared
-			.dataTaskPublisher(for: self.transform(accessToken: accessToken, request: request))
+			.dataTaskPublisher(for: self.transform(accessToken: accessToken, apiRequest: apiRequest))
 			.tryMap { try self.transform($0.data, $0.response) }
 			.tryCatch { error -> AnyPublisher<Result, Error> in
 				guard let apiError = error as? APIError, apiError == .unauthorized else {
 					throw error
 				}
 				return RedditAuthManager.reauthorize()
-					.flatMap { _ in self.send(request) }
+					.flatMap { _ in self.send(apiRequest) }
 					.eraseToAnyPublisher()
 			}
 			.eraseToAnyPublisher()
 	}
 
-	private func transform<Result: RedditResponsable>(accessToken: String, request: APIRequest<Result>) -> URLRequest {
-		let url = baseUrl.appendingPathComponent(request.path)
+	private func transform<Result: RedditResponsable>(accessToken: String, apiRequest: APIRequest<Result>) -> URLRequest {
+		let url = baseUrl.appendingPathComponent(apiRequest.path)
 		var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-		components.queryItems = request.parameters?.map { (key, value) in URLQueryItem(name: key, value: value) }
+		components.queryItems = apiRequest.parameters?.map { (key, value) in URLQueryItem(name: key, value: value) }
 		components.queryItems?.append(URLQueryItem(name: "raw_json", value: "1"))
 		var request = URLRequest(url: components.url!)
+		request.httpMethod = apiRequest.method?.rawValue
 		request.addValue("bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 		return request
 	}
@@ -49,20 +61,15 @@ final class RedditClient {
 	}
 }
 
-enum APIError: Error, Equatable {
-	case uninitialized
-	case invalidJSON
-	case status(code: Int)
-	case unauthorized
-}
-
 final class APIRequest<Result> {
 	let path: String
 	let parameters: [String: String]?
+	let method: HTTPMethod?
 
-	init(path: String, parameters: [String: String]? = nil) {
+	init(path: String, parameters: [String: String]? = nil, method: HTTPMethod? = nil) {
 		self.path = path
 		self.parameters = parameters
+		self.method = method
 	}
 }
 
@@ -77,6 +84,12 @@ extension APIRequest {
 		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
 	}
 	static func comments(for post: SubredditPostModel) -> APIRequest<RedditPostComments> {
-		APIRequest<RedditPostComments>(path: "/r/\(post.subreddit.name)/comments/\(post.id)/", parameters: ["article": post.id, "sort": "top"])
+		APIRequest<RedditPostComments>(path: "/r/\(post.subreddit.name)/comments/\(post.id)", parameters: ["article": post.id, "sort": "top"])
+	}
+	static func save<Entity: RedditIdentifiable>(entity: Entity, enabled: Bool) -> APIRequest<EmptyReddit> {
+		APIRequest<EmptyReddit>(path: "/api/\(enabled ? "save" : "unsave")", parameters: ["id": entity.fullName()], method: .post)
+	}
+	static func vote<Entity: RedditIdentifiable>(entity: Entity, vote: Int) -> APIRequest<EmptyReddit> {
+		APIRequest<EmptyReddit>(path: "/api/vote", parameters: ["id": entity.fullName(), "dir": vote.description], method: .post)
 	}
 }
