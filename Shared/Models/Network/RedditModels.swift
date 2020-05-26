@@ -152,10 +152,10 @@ final class SubredditPostComment: RedditResponsable, RedditVotable {
 		if let rawReplies = data["replies"] as? [String: Any] {
 			replies = RedditListing<SubredditPostComment>(json: rawReplies)
 		} else {
-			if author == "[deleted]" { //TODO && childIDs == nil, if we want to be able to load replies to deleted posts
-				return nil
-			}
 			replies = nil
+		}
+		if replies?.values.nonEmpty == nil && (author == nil || author == "[deleted]") { //TODO && childIDs == nil, if we want to be able to load replies to deleted posts
+			return nil
 		}
 		self.author = author
 
@@ -166,5 +166,9 @@ final class SubredditPostComment: RedditResponsable, RedditVotable {
 		score = data["score"] as? Int ?? 0
 		let likes = data["likes"] as? Bool
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
+	}
+
+	var deleted: Bool {
+		author == nil || author == "[deleted]"
 	}
 }

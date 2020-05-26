@@ -56,3 +56,10 @@ extension Sequence {
 		return reduce(initialValue) { operation($0, $1[keyPath: keyPath]) }
 	}
 }
+
+extension BinaryInteger {
+	func pluralize(_ word: String, drops: Int = 0, suffix: String = "s") -> String {
+		let resultWord = self == 1 ? word : word.dropLast(drops) + suffix
+		return "\(self) \(resultWord)"
+	}
+}

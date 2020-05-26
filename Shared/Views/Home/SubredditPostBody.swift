@@ -44,6 +44,14 @@ private struct SubredditPostCommentTree: View {
 
 	@State private var collapsed = false
 
+	init(comment: SubredditPostComment, maxBreadth: Int, maxDepth: Int, currentDepth: Int) {
+		self.comment = comment
+		self.maxBreadth = maxBreadth
+		self.maxDepth = maxDepth
+		self.currentDepth = currentDepth
+		self._collapsed = State(initialValue: comment.deleted)
+	}
+
 	private static let horizontalPadding: CGFloat = 12
 	private static let veritcalPadding: CGFloat = 12
 
@@ -86,12 +94,12 @@ private struct SubredditPostCommentContent: View {
 
 	var body: some View {
 		Group {
-			if !collapsed && comment.author != nil && comment.author != "[deleted]" {
+			if !collapsed && !comment.deleted {
 				SubredditPostCommentFromUser(comment: comment)
 			} else {
 				Group {
 					if collapsed {
-						Text("collapsed \(comment.replies?.values.count ?? 0) direct replies")
+						Text("\(comment.deleted ? "deleted, " : "")collapsed " + (comment.replies?.values.count ?? 0).pluralize("direct reply", drops: 1, suffix: "ies"))
 					} else if comment.childIDs != nil {
 						Text("+\(comment.childIDs!.count) more")
 					} else {
