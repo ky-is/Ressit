@@ -104,10 +104,7 @@ private struct SubredditPostCommentFromUser: View {
 				.font(.callout)
 				.fixedSize(horizontal: false, vertical: true)
 			HStack {
-				Text("⬆︎")
-					.foregroundColor(.secondary)
-				+
-				Text(comment.score!.description)
+				ScoreMetadata(entity: comment)
 				Text("u/")
 					.foregroundColor(.secondary)
 				+

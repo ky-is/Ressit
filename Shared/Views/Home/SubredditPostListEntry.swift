@@ -115,13 +115,7 @@ private struct SubredditPostButton: View {
 					Text(post.title)
 						.font(.headline)
 					HStack {
-						HStack(spacing: 0) {
-							Text("⬆︎")
-								.font(.system(size: 26))
-								.foregroundColor(post.userVote > 0 ? .orange : .secondary)
-								.padding(.top, -6)
-							Text(post.score.description)
-						}
+						ScoreMetadata(entity: post)
 						Text("💬") + Text(post.commentCount.description)
 						Text("🕓") + Text(post.creationDate.relativeToNow)
 						if post.userSaved {

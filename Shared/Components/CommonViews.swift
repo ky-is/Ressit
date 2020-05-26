@@ -30,3 +30,19 @@ struct HiddenNavigationLink<Destination: View>: View {
 			.hidden()
 	}
 }
+
+struct ScoreMetadata<Entity: RedditVotable>: View {
+	@ObservedObject var entity: Entity
+
+	var body: some View {
+		HStack(spacing: 0) {
+			Text("⬆︎")
+				.font(.system(size: 26))
+				.foregroundColor(entity.voteColor())
+				.padding(.top, -6)
+				.animation(.default)
+				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
+			Text(entity.score.description)
+		}
+	}
+}
