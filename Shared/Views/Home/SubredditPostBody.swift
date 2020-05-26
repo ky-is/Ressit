@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SubredditPostCommentsView: View {
+struct SubredditPostBody: View {
 	let commentsViewModel: SubredditPostCommentsViewModel
 
 	var body: some View {
@@ -68,6 +68,7 @@ private struct SubredditPostCommentTree: View {
 			.padding(.leading, Self.horizontalPadding)
 	}
 }
+
 private struct SubredditPostCommentContent: View {
 	let comment: SubredditPostComment
 	let currentDepth: Int
@@ -118,7 +119,7 @@ private struct SubredditPostCommentFromUser: View {
 	}
 }
 
-struct SubredditPostCommentsView_Previews: PreviewProvider {
+struct SubredditPostBody_Previews: PreviewProvider {
 	static let comments = RedditListing<SubredditPostComment>(asset: .comments)
 
 	static var previews: some View {

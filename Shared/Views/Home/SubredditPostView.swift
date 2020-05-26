@@ -36,8 +36,8 @@ private struct SubredditPostContainer: View {
 
 	var body: some View {
 		ScrollView {
-			SubredditPostBody(post: post)
-			SubredditPostCommentsView(commentsViewModel: commentsViewModel)
+			SubredditPostHeader(post: post)
+			SubredditPostBody(commentsViewModel: commentsViewModel)
 		}
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
 			.onAppear {
@@ -49,7 +49,7 @@ private struct SubredditPostContainer: View {
 	}
 }
 
-private struct SubredditPostBody: View {
+private struct SubredditPostHeader: View {
 	@ObservedObject var post: SubredditPostModel
 
 	var body: some View {

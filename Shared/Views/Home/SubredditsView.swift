@@ -2,11 +2,12 @@ import Combine
 import SwiftUI
 
 struct SubredditsView: View {
+	let subscriptions: [SubredditPostsViewModel]
 	let inSplitView: Bool
 
 	var body: some View {
 		NavigationView {
-			SubredditsContainer(inSplitView: inSplitView)
+			SubredditsContainer(subscriptions: subscriptions, inSplitView: inSplitView)
 				.background(
 					SelectedSubredditLink(inSplitView: inSplitView)
 				)
@@ -20,16 +21,13 @@ struct SubredditsView: View {
 }
 
 private struct SubredditsContainer: View {
+	let subscriptions: [SubredditPostsViewModel]
 	let inSplitView: Bool
 
-	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
-	@Environment(\.managedObjectContext) private var context
 	private let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
-		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0) }
-		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
-		return SubredditsSubscriptionList(subscriptions: subscriptionViewModels, subredditSearch: subredditSearch, inSplitView: inSplitView)
+		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch, inSplitView: inSplitView)
 				.navigationBarTitle("Subreddits")
 	}
 }
@@ -114,7 +112,7 @@ private struct SubredditListEntry: View {
 
 struct SubredditsView_Previews: PreviewProvider {
 	static var previews: some View {
-		SubredditsView(inSplitView: false)
+		SubredditsView(subscriptions: [], inSplitView: false)
 			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }

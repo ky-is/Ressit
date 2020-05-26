@@ -1,42 +1,45 @@
 import SwiftUI
 
 struct BrowseView: View {
-	@ObservedObject private var subredditUserModel = SubredditUserModel.shared
+	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
+
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		GeometryReader { geometry in
+		let subscriptionViewModels = subscriptions.map(SubredditPostsViewModel.init(model:))
+		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
+		return GeometryReader { geometry in
 //			if geometry.size.width > 900 { //SAMPLE
 			if geometry.size.width > 640 {
-				SplitView(contentWidth: geometry.size.width / 2)
+				SplitView(subscriptions: subscriptionViewModels, contentWidth: geometry.size.width / 2)
 			} else {
-				SubredditsView(inSplitView: false)
+				SubredditsView(subscriptions: subscriptionViewModels, inSplitView: false)
 			}
 		}
 	}
 }
 
 struct SplitView: View {
+	let subscriptions: [SubredditPostsViewModel]
 	let contentWidth: CGFloat
 
 	var body: some View {
 		HStack(spacing: 0) {
-			SubredditsView(inSplitView: true)
+			SubredditsView(subscriptions: subscriptions, inSplitView: true)
 			Divider()
 				.padding(.top, -32)
-			BrowseSidebar()
+			BrowseSidebar(subscriptions: subscriptions)
 				.frame(width: contentWidth)
 		}
 	}
 }
 
 struct BrowseSidebar: View {
-	@FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], animation: .default) private var subscriptions: FetchedResults<SubredditSubscriptionModel>
-
-	private let subredditSearch = SubredditsSearchViewModel()
+	let subscriptions: [SubredditPostsViewModel]
 
 	var body: some View {
 		NavigationView {
-			SubredditsManage(subscriptions: subscriptions.map({ SubredditPostsViewModel(model: $0) }), subredditSearch: subredditSearch)
+			SubredditsManage(subscriptions: subscriptions, subredditSearch: SubredditsSearchViewModel())
 				.edgesIgnoringSafeArea(.horizontal)
 				.onAppear {
 					SubredditUserModel.shared.selected = nil
@@ -80,5 +83,6 @@ struct SelectedPostLink: View {
 struct BrowseView_Previews: PreviewProvider {
 	static var previews: some View {
 		BrowseView()
+			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }
