@@ -1,12 +1,22 @@
 import SwiftUI
 
 struct SubredditPostBody: View {
+	let post: SubredditPostModel
+
 	let commentsViewModel: SubredditPostCommentsViewModel
+
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		RedditView(commentsViewModel) { result in
 			SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 20, currentDepth: 0)
 				.padding(.horizontal)
+				.onAppear {
+					self.context.perform {
+						self.post.toggleRead(true, in: self.context)
+						self.context.safeSave()
+					}
+				}
 		}
 	}
 }
@@ -40,7 +50,7 @@ private struct SubredditPostCommentTree: View {
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
 			Divider()
-				.background(Color.secondary)
+				.background(currentDepth == 0 ? Color.secondary : nil)
 			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: collapsed)
 				.padding(.vertical, Self.veritcalPadding)
 				.frame(maxWidth: .infinity, alignment: .leading)
@@ -65,7 +75,7 @@ private struct SubredditPostCommentTree: View {
 				SubredditPostCommentGroup(comments: comment.replies!, maxBreadth: maxBreadth, maxDepth: maxDepth, currentDepth: currentDepth + 1)
 			}
 		}
-			.padding(.leading, Self.horizontalPadding)
+			.padding(.leading, currentDepth > 0 ? Self.horizontalPadding : 0)
 	}
 }
 
@@ -127,5 +137,6 @@ struct SubredditPostBody_Previews: PreviewProvider {
 			SubredditPostCommentGroup(comments: comments, maxBreadth: 2, maxDepth: 2, currentDepth: 0)
 				.padding(.horizontal)
 		}
+			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }

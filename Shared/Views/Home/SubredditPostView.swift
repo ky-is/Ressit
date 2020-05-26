@@ -20,10 +20,8 @@ struct SubredditPostView: View {
 }
 
 private struct SubredditPostContainer: View {
-	@ObservedObject var post: SubredditPostModel
+	let post: SubredditPostModel
 	private let commentsViewModel: SubredditPostCommentsViewModel
-
-	@Environment(\.managedObjectContext) private var context
 
 	init(post: SubredditPostModel) {
 		self.post = post
@@ -37,15 +35,8 @@ private struct SubredditPostContainer: View {
 	var body: some View {
 		ScrollView {
 			SubredditPostHeader(post: post)
-			SubredditPostBody(commentsViewModel: commentsViewModel)
+			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
 		}
-			.navigationBarTitle(Text(post.title), displayMode: .inline)
-			.onAppear {
-				self.context.perform {
-					self.post.toggleRead(true, in: self.context)
-					self.context.safeSave()
-				}
-			}
 	}
 }
 
@@ -72,6 +63,7 @@ private struct SubredditPostHeader: View {
 		}
 			.fixedSize(horizontal: false, vertical: true)
 			.padding()
+			.navigationBarTitle(Text(post.title), displayMode: .inline)
 	}
 }
 
