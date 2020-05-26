@@ -121,7 +121,7 @@ private struct SubredditPostButton: View {
 						Text("💬") + Text(post.commentCount.description)
 						Text("🕓") + Text(post.creationDate.relativeToNow)
 					}
-						.font(.caption)
+						.font(Font.caption.monospacedDigit())
 				}
 					.padding(.vertical, 6)
 			}

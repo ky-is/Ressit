@@ -93,6 +93,8 @@ private struct SubredditListEntry: View {
 				SubredditUserModel.shared.selected = self.subscription
 			}) {
 				SubredditTitle(name: subscription.model?.name)
+					.font(.system(size: 22))
+					.padding(.vertical, 8)
 			}
 			if postCount > 0 {
 				Spacer()

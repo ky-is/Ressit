@@ -116,7 +116,7 @@ private struct SubredditPostCommentFromUser: View {
 					Text(comment.creationDate!.relativeToNow)
 				}
 			}
-				.font(.caption)
+				.font(Font.caption.monospacedDigit())
 		}
 	}
 }
