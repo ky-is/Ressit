@@ -6,10 +6,21 @@ enum APIError: Error, Equatable {
 	case invalidJSON
 	case status(code: Int)
 	case unauthorized
+	case rateLimited(interval: TimeInterval)
 }
 
 enum HTTPMethod: String {
 	case get, post, put, delete
+}
+
+extension Publisher {
+	func retry<T, E>(after interval: TimeInterval) -> Publishers.Catch<Self, AnyPublisher<T, E>> where T == Self.Output, E == Self.Failure {
+		return self.catch { error -> AnyPublisher<T, E> in
+			return Publishers.Delay(upstream: self, interval: .seconds(interval), tolerance: 1, scheduler: RunLoop.current)
+				.retry(2)
+				.eraseToAnyPublisher()
+		}
+	}
 }
 
 final class RedditClient {
@@ -17,20 +28,43 @@ final class RedditClient {
 
 	private let baseUrl = URL(string: "https://oauth.reddit.com")!
 
+	static var rateLimitEnds: Date?
+
+	private func retry<Result: RedditResponsable>(_ apiRequest: APIRequest<Result>, after interval: TimeInterval) -> AnyPublisher<Result, Error> {
+		return Just<Result?>(nil)
+			.delay(for: .seconds(interval), scheduler: RunLoop.current)
+			.mapError { error in APIError.uninitialized as Error }
+			.flatMap { _ in self.send(apiRequest) }
+			.eraseToAnyPublisher()
+	}
+
 	func send<Result: RedditResponsable>(_ apiRequest: APIRequest<Result>) -> AnyPublisher<Result, Error> {
 		guard let accessToken = RedditAuthModel.shared.accessToken else {
 			return Fail(error: APIError.uninitialized).eraseToAnyPublisher()
 		}
-		return URLSession.shared
-			.dataTaskPublisher(for: self.transform(accessToken: accessToken, apiRequest: apiRequest))
+		if let rateLimitEnds = Self.rateLimitEnds {
+			let rateLimitInterval = rateLimitEnds.timeIntervalSinceNow
+			if rateLimitInterval > 1 {
+				return retry(apiRequest, after: rateLimitInterval)
+			}
+		}
+		return URLSession.shared.dataTaskPublisher(for: self.transform(accessToken: accessToken, apiRequest: apiRequest))
 			.tryMap { try self.transform($0.data, $0.response) }
 			.tryCatch { error -> AnyPublisher<Result, Error> in
-				guard let apiError = error as? APIError, apiError == .unauthorized else {
+				guard let apiError = error as? APIError else {
 					throw error
 				}
-				return RedditAuthManager.reauthorize()
-					.flatMap { _ in self.send(apiRequest) }
-					.eraseToAnyPublisher()
+				switch apiError {
+				case .unauthorized:
+					return RedditAuthManager.reauthorize()
+						.flatMap { _ in self.send(apiRequest) }
+						.eraseToAnyPublisher()
+				case .rateLimited(let interval):
+					Self.rateLimitEnds = Date(timeIntervalSinceNow: interval)
+					return self.retry(apiRequest, after: interval)
+				default:
+					throw error
+				}
 			}
 			.eraseToAnyPublisher()
 	}
@@ -51,6 +85,17 @@ final class RedditClient {
 		let statusCode = httpResponse.statusCode
 		if statusCode == 401 {
 			throw APIError.unauthorized
+		}
+		if statusCode == 429 {
+			if let remainingHeader = httpResponse.value(forHTTPHeaderField: "x-ratelimit-remaining"), let remainingCount = Double(remainingHeader) {
+				if remainingCount > 1 {
+					throw APIError.rateLimited(interval: 9)
+				}
+				if let resetHeader = httpResponse.value(forHTTPHeaderField: "x-ratelimit-reset"), let resetAfterSeconds = TimeInterval(resetHeader) {
+					throw APIError.rateLimited(interval: resetAfterSeconds)
+				}
+			}
+			print("Unknown rate limit", httpResponse.value(forHTTPHeaderField: "x-ratelimit-used") ?? "", httpResponse.value(forHTTPHeaderField: "x-ratelimit-remaining") ?? "", httpResponse.value(forHTTPHeaderField: "x-ratelimit-reset") ?? "", httpResponse.allHeaderFields)
 		}
 		guard statusCode == 200 else {
 			throw APIError.status(code: statusCode)
