@@ -3,7 +3,7 @@ import CoreData
 import Combine
 
 @objc(SubredditPostModel)
-final class SubredditPostModel: NSManagedObject, RedditIdentifiable {
+final class SubredditPostModel: NSManagedObject, RedditVotable {
 	static let type = "t3"
 
 	@NSManaged var id: String

@@ -78,7 +78,7 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	}
 }
 
-struct SubredditPostComment: RedditResponsable, RedditIdentifiable {
+final class SubredditPostComment: RedditResponsable, RedditVotable {
 	static let type = "t1"
 
 	let id: String
@@ -86,9 +86,11 @@ struct SubredditPostComment: RedditResponsable, RedditIdentifiable {
 	let body: String?
 	let creationDate: Date?
 	let editedAt: TimeInterval?
-	let score: Int?
+	let score: Int
 	let replies: RedditListing<SubredditPostComment>?
 	let childIDs: [String]?
+
+	@Published var userVote: Int
 
 	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -121,6 +123,8 @@ struct SubredditPostComment: RedditResponsable, RedditIdentifiable {
 		body = data["body"] as? String
 		let editTimestamp = data["edited"] as? TimeInterval ?? 0
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
-		score = data["score"] as? Int
+		score = data["score"] as! Int
+		let likes = data["likes"] as? Bool
+		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 	}
 }
