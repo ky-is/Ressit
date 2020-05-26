@@ -25,7 +25,9 @@ struct RedditListing<Value: RedditResponsable>: RedditResponsable {
 	}
 }
 
-struct Subreddit: RedditResponsable, Identifiable {
+struct Subreddit: RedditResponsable, RedditIdentifiable {
+	static let type = "t5"
+
 	let id: String
 	let name: String
 
@@ -36,7 +38,9 @@ struct Subreddit: RedditResponsable, Identifiable {
 	}
 }
 
-struct SubredditPost: RedditResponsable, Identifiable {
+struct SubredditPost: RedditResponsable, RedditIdentifiable {
+	static let type = "t3"
+
 	let id: String
 	let title: String
 	let author: String
@@ -66,7 +70,9 @@ struct SubredditPost: RedditResponsable, Identifiable {
 	}
 }
 
-struct SubredditPostComment: RedditResponsable, Identifiable {
+struct SubredditPostComment: RedditResponsable, RedditIdentifiable {
+	static let type = "t1"
+
 	let id: String
 	let author: String?
 	let body: String?

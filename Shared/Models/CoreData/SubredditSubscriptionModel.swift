@@ -2,7 +2,9 @@ import Foundation
 import CoreData
 
 @objc(SubredditSubscriptionModel)
-final class SubredditSubscriptionModel: NSManagedObject, Identifiable {
+final class SubredditSubscriptionModel: NSManagedObject, RedditIdentifiable {
+	static let type = "t5"
+
 	@NSManaged var id: String
 	@NSManaged var name: String
 	@NSManaged var creationDate: Date?

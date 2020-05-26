@@ -2,7 +2,9 @@ import Foundation
 import CoreData
 
 @objc(SubredditPostModel)
-final class SubredditPostModel: NSManagedObject, Identifiable {
+final class SubredditPostModel: NSManagedObject, RedditIdentifiable {
+	static let type = "t3"
+
 	@NSManaged var id: String
 	@NSManaged var title: String
 	@NSManaged var author: String
