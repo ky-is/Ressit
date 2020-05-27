@@ -28,7 +28,7 @@ private struct SubredditsContainer: View {
 
 	var body: some View {
 		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch, inSplitView: inSplitView)
-				.navigationBarTitle("Subreddits")
+			.navigationBarTitle("Subreddits")
 	}
 }
 
