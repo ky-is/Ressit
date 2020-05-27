@@ -35,7 +35,7 @@ private struct SubredditPostContainer: View {
 
 	var body: some View {
 		ScrollView {
-			VStack {
+			VStack(spacing: 0) {
 				SubredditPostHeader(post: post)
 				if post.previewURL != nil {
 					if post.previewIsVideo {
@@ -66,26 +66,42 @@ private struct PostVideo: View {
 private struct SubredditPostHeader: View {
 	@ObservedObject var post: SubredditPostModel
 
+	@State private var openLink = false
+
 	var body: some View {
-		VStack(alignment: .leading, spacing: 6) {
-			Text(post.title)
-				.font(.headline)
-			HStack {
-				HStack(spacing: 1) {
-					Text("👤")
-					Text(post.author)
+		VStack(spacing: 0) {
+			VStack(alignment: .leading, spacing: 6) {
+				Button(action: {
+					self.openLink = true
+				}) {
+					Text(post.title)
+						.font(.headline)
 				}
-				HStack(spacing: 1) {
-					Text("🗓")
-					Text(post.creationDate?.relativeToNow ?? "")
+				HStack {
+					HStack(spacing: 1) {
+						Text("👤")
+						Text(post.author)
+					}
+					HStack(spacing: 1) {
+						Text("🗓")
+						Text(post.creationDate?.relativeToNow ?? "")
+					}
+					SubredditTitle(name: post.subreddit.name)
+					Spacer()
 				}
-				SubredditTitle(name: post.subreddit.name)
-				Spacer()
+					.font(.caption)
 			}
-				.font(.caption)
+			if post.selftext != nil {
+				Divider()
+					.padding(.vertical)
+				Text(post.selftext!)
+			}
 		}
 			.padding()
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
+			.sheet(isPresented: $openLink) {
+				SafariView(url: self.post.url!)
+			}
 	}
 }
 

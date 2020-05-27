@@ -56,10 +56,10 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	let commentCount: Int
 	let createdAt: TimeInterval
 	let editedAt: TimeInterval?
-	let text: String?
 	let saved: Bool
 	let likes: Bool?
 	let url: URL?
+	let selftext: String?
 	let thumbnail: String?
 
 	let previewURLs: [URL]?
@@ -77,7 +77,7 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 		createdAt = data["created"] as! TimeInterval
 		let editTimestamp = data["edited"] as! TimeInterval
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
-		text = data["selftext"] as? String
+		selftext = (data["selftext"] as? String)?.nonEmpty
 		let urlString = data["url"] as? String
 		url = urlString != nil ? URL(string: urlString!) : nil
 		saved = data["saved"] as! Bool

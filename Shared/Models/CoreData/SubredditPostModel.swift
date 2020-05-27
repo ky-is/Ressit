@@ -14,6 +14,7 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	@NSManaged var creationDate: Date?
 	@NSManaged var thumbnail: URL?
 	@NSManaged var url: URL?
+	@NSManaged var selftext: String?
 
 	@NSManaged var previewURL: URL?
 	@NSManaged var previewIsVideo: Bool
@@ -84,6 +85,7 @@ extension SubredditPostModel {
 		subredditPost.subreddit = subreddit
 		subredditPost.thumbnail = post.thumbnail != nil ? URL(string: post.thumbnail!) : nil
 		subredditPost.url = post.url
+		subredditPost.selftext = post.selftext?.trimmingCharacters(in: .whitespacesAndNewlines)
 		subredditPost.previewURL = post.previewURLs?.first
 		subredditPost.previewIsVideo = post.previewIsVideo
 		subredditPost.previewWidth = post.previewWidth ?? 0

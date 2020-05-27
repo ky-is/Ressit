@@ -14,6 +14,7 @@
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
         <attribute name="previewWidth" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="selftext" optional="YES" attributeType="String"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="url" optional="YES" attributeType="URI"/>
@@ -46,7 +47,7 @@
     </entity>
     <elements>
         <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="283"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="298"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
     </elements>
 </model>

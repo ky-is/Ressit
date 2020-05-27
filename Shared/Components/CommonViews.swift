@@ -1,4 +1,5 @@
 import SwiftUI
+import SafariServices
 
 struct SubredditTitle: View {
 	let name: String?
@@ -44,5 +45,16 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
 			Text(entity.score.description)
 		}
+	}
+}
+
+struct SafariView: UIViewControllerRepresentable {
+	let url: URL
+
+	func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+		return SFSafariViewController(url: url)
+	}
+
+	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
 	}
 }
