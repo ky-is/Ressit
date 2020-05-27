@@ -137,6 +137,7 @@ private struct SubredditPostCommentFromUser: View {
 	}
 }
 
+#if DEBUG
 struct SubredditPostBody_Previews: PreviewProvider {
 	static let comments = RedditListing<SubredditPostComment>(asset: .comments)
 
@@ -148,3 +149,4 @@ struct SubredditPostBody_Previews: PreviewProvider {
 			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}
 }
+#endif
