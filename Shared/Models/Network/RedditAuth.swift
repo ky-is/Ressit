@@ -18,10 +18,6 @@ struct RedditAuthResponse: Decodable {
 	let accessToken: String
 	let refreshToken: String?
 	let expiresIn: TimeInterval
-
-	enum CodingKeys: String, CodingKey {
-		case accessToken, refreshToken, expiresIn
-	}
 }
 
 struct RedditAuthManager {
@@ -44,18 +40,18 @@ struct RedditAuthManager {
 	}
 	private static let accessTokenURL = URL(string: "https://www.reddit.com/api/v1/access_token")!
 
-	static private var authProvider = AuthenticationWindowProvider()
-	static private var refreshToken = UserDefaults.standard.string(forKey: "refresh_token")
-	static private var refreshExpireDuration: TimeInterval = UserDefaults.standard.double(forKey: "expires_in")
-	static private var refreshExpiresAt: Date {
+	private static var authProvider = AuthenticationWindowProvider()
+	private static var refreshToken = UserDefaults.standard.string(forKey: "refresh_token")
+	private static var refreshExpireDuration: TimeInterval = UserDefaults.standard.double(forKey: "expires_in")
+	private static var refreshExpiresAt: Date {
 		Date().addingTimeInterval(refreshExpireDuration)
 	}
 
-	static private var authorizationPublisher: AnyPublisher<RedditAuthResponse, Error>?
-	static private var authorizationSubscription: AnyCancellable?
-	static private var authorizationBody: Data?
+	private static var authorizationPublisher: AnyPublisher<RedditAuthResponse, Error>?
+	private static var authorizationSubscription: AnyCancellable?
+	private static var authorizationBody: Data?
 
-	enum GrantType: String {
+	private enum GrantType: String {
 		case anonymous = "https://oauth.reddit.com/grants/installed_client"
 		case code = "authorization_code"
 		case refresh = "refresh_token"
@@ -80,22 +76,16 @@ struct RedditAuthManager {
 		}
 	}
 
-	static var authorized: Future<Bool, Never> {
-		return Future { promise in
-			promise(.success(true))
-		}
-	}
-
-	private static func canRefresh() -> Bool {
-		return RedditAuthModel.shared.accessToken != nil && refreshToken != nil
-	}
-
 	static func signinIfNeeded() {
 		if canRefresh() {
 			refreshIfNeeded()
 			return
 		}
 		createSignin()
+	}
+
+	private static func canRefresh() -> Bool {
+		return RedditAuthModel.shared.accessToken != nil && refreshToken != nil
 	}
 
 	@discardableResult private static func createSignin() -> AnyPublisher<RedditAuthResponse, Error> {
@@ -140,7 +130,6 @@ struct RedditAuthManager {
 			return createSignin()
 		}
 		return createRefresh()
-
 	}
 
 	static func refreshIfNeeded() {
@@ -149,7 +138,7 @@ struct RedditAuthManager {
 		}
 	}
 
-	static private func createRefresh() -> AnyPublisher<RedditAuthResponse, Error> {
+	private static func createRefresh() -> AnyPublisher<RedditAuthResponse, Error> {
 		return createAuthorization(grantType: .refresh, token: refreshToken)
 	}
 
@@ -163,7 +152,7 @@ struct RedditAuthManager {
 		return decoder
 	}()
 
-	@discardableResult static func createAuthorization(grantType: GrantType, token: String? = nil, promise: ((Result<RedditAuthResponse, Error>) -> Void)? = nil) -> AnyPublisher<RedditAuthResponse, Error> {
+	@discardableResult private static func createAuthorization(grantType: GrantType, token: String? = nil, promise: ((Result<RedditAuthResponse, Error>) -> Void)? = nil) -> AnyPublisher<RedditAuthResponse, Error> {
 		let queryItems = grantType.getQueryItems(with: token)
 		var components = URLComponents()
 		components.queryItems = queryItems
@@ -213,8 +202,9 @@ struct RedditAuthManager {
 				defaults.set(response.accessToken, forKey: "access_token")
 				defaults.set(response.refreshToken, forKey: "refresh_token")
 				defaults.set(response.expiresIn, forKey: "expires_in")
-				defaults.synchronize()
+
 				promise?(.success(response))
+				defaults.synchronize()
 			}
 		return authorizationPublisher
 	}
