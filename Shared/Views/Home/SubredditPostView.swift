@@ -87,6 +87,11 @@ private struct SubredditPostHeader: View {
 						Text(post.creationDate?.relativeToNow ?? "")
 					}
 					SubredditTitle(name: post.subreddit.name)
+					if post.crosspostFrom != nil {
+						Text("←")
+							.foregroundColor(.secondary)
+						SubredditTitle(name: post.crosspostFrom!)
+					}
 					Spacer()
 				}
 					.font(.caption)

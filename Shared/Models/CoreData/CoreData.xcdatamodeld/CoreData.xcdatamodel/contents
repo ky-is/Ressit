@@ -8,6 +8,8 @@
         <attribute name="author" optional="YES" attributeType="String"/>
         <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="crosspostFrom" optional="YES" attributeType="String"/>
+        <attribute name="crosspostID" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="previewHeight" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="previewIsVideo" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -47,7 +49,7 @@
     </entity>
     <elements>
         <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="298"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="328"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
     </elements>
 </model>
