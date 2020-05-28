@@ -14,6 +14,7 @@ struct RedditPostComments: RedditResponsable {
 
 	init(json: Any) {
 		let children = json as! [[String: Any]]
+//		print(children[0]) //SAMPLE post
 		post = RedditListing<SubredditPost>(json: children[0]).values.first!
 		comments = RedditListing<SubredditPostComment>(json: children[1])
 	}
@@ -46,6 +47,16 @@ struct Subreddit: RedditResponsable, RedditIdentifiable {
 	}
 }
 
+private func parseRedditMedia(key: String, from json: [String: Any]) -> (String, Float?, Float?)? {
+	if let videoPreview = json[key] as? [String: Any] {
+		if let urlString = (videoPreview["hls_url"] ?? videoPreview["fallback_url"]) as? String {
+			return (urlString, videoPreview["width"] as? Float, videoPreview["height"] as? Float)
+		}
+		print(key, "unavailable", videoPreview)
+	}
+	return nil
+}
+
 struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	static let type = "t3"
 
@@ -61,6 +72,8 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	let url: URL?
 	let selftext: String?
 	let thumbnail: String?
+	let crosspostID: String?
+	let crosspostFrom: String?
 
 	let previewURLs: [URL]?
 	let previewIsVideo: Bool
@@ -83,19 +96,35 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 		saved = data["saved"] as! Bool
 		likes = data["likes"] as? Bool
 		thumbnail = data["thumbnail"] as? String
+
 		var previewURLStrings: [String]?
 		var isPreviewVideo = false
 		var previewWidth: Float?, previewHeight: Float?
-		if let previews = data["preview"] as? [String: Any] {
-			if let videoPreview = previews["reddit_video_preview"] as? [String: Any] {
-				if let urlString = (videoPreview["hls_url"] ?? videoPreview["fallback_url"]) as? String {
-					isPreviewVideo = true
-					previewURLStrings = [urlString]
-					previewWidth = videoPreview["width"] as? Float
-					previewHeight = videoPreview["height"] as? Float
-				} else {
-					print("reddit_video_preview", videoPreview)
-				}
+
+		let mediaContainerData: [String: Any]
+		crosspostID = data["crosspost_parent"] as? String
+		if let crossposts = data["crosspost_parent_list"] as? [[String: Any]], let crosspost = crossposts.first {
+			mediaContainerData = crosspost
+			crosspostFrom = crosspost["subreddit"] as? String
+		} else {
+			mediaContainerData = data
+			crosspostFrom = nil
+		}
+		if let media = mediaContainerData["media"] as? [String: Any] {
+			if let video = parseRedditMedia(key: "reddit_video", from: media) {
+				isPreviewVideo = true
+				previewURLStrings = [video.0]
+				previewWidth = video.1
+				previewHeight = video.2
+			}
+		}
+
+		if previewURLStrings == nil, let previews = data["preview"] as? [String: Any] {
+			if let video = parseRedditMedia(key: "reddit_video_preview", from: previews) {
+				isPreviewVideo = true
+				previewURLStrings = [video.0]
+				previewWidth = video.1
+				previewHeight = video.2
 			}
 			if previewURLStrings == nil, let images = previews["images"] as? [[String: Any]] {
 				previewURLStrings = images.compactMap { image in
