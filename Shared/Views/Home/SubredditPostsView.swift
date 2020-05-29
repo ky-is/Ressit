@@ -90,6 +90,7 @@ private struct ClearReadModifier: ViewModifier {
 	}
 
 	private func performDelete() {
+		PostUserModel.shared.selected = nil
 		context.perform {
 			self.readPosts.forEach(self.context.delete)
 			self.context.safeSave()
