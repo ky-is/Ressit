@@ -195,13 +195,16 @@ struct RedditAuthManager {
 				DispatchQueue.main.async {
 					RedditAuthModel.shared.accessToken = response.accessToken
 				}
-				refreshToken = response.refreshToken
-				refreshExpireDuration = response.expiresIn
-
 				let defaults = UserDefaults.standard
 				defaults.set(response.accessToken, forKey: "access_token")
-				defaults.set(response.refreshToken, forKey: "refresh_token")
 				defaults.set(response.expiresIn, forKey: "expires_in")
+				if let refreshToken = response.refreshToken {
+					defaults.set(refreshToken, forKey: "refresh_token")
+					self.refreshToken = refreshToken
+				} else {
+					print(#function, grantType, refreshToken ?? "nil", response)
+				}
+				refreshExpireDuration = response.expiresIn
 
 				promise?(.success(response))
 				defaults.synchronize()
