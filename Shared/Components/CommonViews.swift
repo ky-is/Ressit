@@ -32,15 +32,26 @@ struct HiddenNavigationLink<Destination: View>: View {
 	}
 }
 
+struct IconText: View {
+	let iconName: String
+	let label: String
+
+	var body: some View {
+		HStack(spacing: 1) {
+			Image(systemName: iconName)
+				.foregroundColor(.secondary)
+			Text(label)
+		}
+	}
+}
+
 struct ScoreMetadata<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
 
 	var body: some View {
-		HStack(spacing: 0) {
-			Text("⬆︎")
-				.font(.system(size: 26))
+		HStack(spacing: 1) {
+			Image(systemName: "arrow.up")
 				.foregroundColor(entity.voteColor())
-				.padding(.top, -6)
 				.animation(.default)
 				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
 			Text(entity.score.description)
@@ -56,5 +67,12 @@ struct SafariView: UIViewControllerRepresentable {
 	}
 
 	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
+	}
+}
+
+struct LoadingView: View {
+	var body: some View {
+		Image(systemName: "ellipsis")
+			.font(.largeTitle)
 	}
 }

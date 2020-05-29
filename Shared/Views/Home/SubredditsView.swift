@@ -58,8 +58,9 @@ private struct SubredditsSubscriptionList: View {
 					Button(action: {
 						self.showAddSubreddits = true
 					}) {
-						Text("＋")
+						Image(systemName: "plus")
 							.font(.title)
+							.frame(height: 44)
 					}
 				}
 			})

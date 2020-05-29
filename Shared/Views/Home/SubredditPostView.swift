@@ -78,17 +78,11 @@ private struct SubredditPostHeader: View {
 						.font(.headline)
 				}
 				HStack {
-					HStack(spacing: 1) {
-						Text("👤")
-						Text(post.author)
-					}
-					HStack(spacing: 1) {
-						Text("🗓")
-						Text(post.creationDate?.relativeToNow ?? "")
-					}
+					IconText(iconName: "person.fill", label: post.author)
+					IconText(iconName: "calendar", label: post.creationDate?.relativeToNow ?? "")
 					SubredditTitle(name: post.subreddit.name)
 					if post.crosspostFrom != nil {
-						Text("←")
+						Image(systemName: "link")
 							.foregroundColor(.secondary)
 						SubredditTitle(name: post.crosspostFrom!)
 					}

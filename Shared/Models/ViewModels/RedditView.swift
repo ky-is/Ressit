@@ -20,8 +20,7 @@ struct RedditView<VM: RedditViewModel, Content: View>: View {
 				Spacer()
 			} else if viewModel.loading {
 				Spacer()
-				Text("⋯")
-					.font(.title)
+				LoadingView()
 				Spacer()
 			}
 		}
@@ -52,8 +51,7 @@ struct LocalView<VM: RedditViewModel, Result: NSManagedObject & Identifiable, Co
 				Spacer()
 			} else if viewModel.loading {
 				Spacer()
-				Text("⋯")
-					.font(.title)
+				LoadingView()
 				Spacer()
 			}
 		}

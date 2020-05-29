@@ -107,8 +107,7 @@ struct DownloadImageView: View {
 					.resizable()
 					.aspectRatio(contentMode: .fill)
 			} else if isLoading() {
-				Text("⋯")
-					.font(.title)
+				LoadingView()
 			} else {
 				Text(getError()?.localizedDescription ?? "✕")
 			}

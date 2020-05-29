@@ -12,8 +12,7 @@ struct WelcomeView: View {
 					.multilineTextAlignment(.center)
 				Spacer()
 				if redditAuth.loading {
-					Text("⋯")
-						.font(.largeTitle)
+					LoadingView()
 				} else {
 					VStack(spacing: 20) {
 						FillButton(label: "Sign In") {

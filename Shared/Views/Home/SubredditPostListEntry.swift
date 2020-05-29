@@ -18,7 +18,7 @@ struct SubredditPostListEntry: View {
 		ZStack {
 			PostSwipeActionView(action: swipeAction, offset: swipeDistance)
 			SubredditPostButton(post: post)
-				.opacity(post.metadata?.readDate != nil ? 0.5 : 1)
+				.opacity(post.metadata?.readDate != nil ? 2/3 : 1)
 				.offset(x: swipeDistance)
 				.gesture(
 					DragGesture(minimumDistance: 15)
@@ -88,14 +88,14 @@ private struct PostSwipeActionView: View {
 		return ZStack(alignment: alignment) {
 			action.color
 				.frame(width: offset.magnitude)
-			Text(action.icon)
-				.font(.system(size: swipeActivationMagnitude))
+			Image(systemName: action.iconName)
+				.font(.system(size: swipeActivationMagnitude / 2))
 				.foregroundColor(.background)
-				.scaleEffect(activated ? 1 : 0.75)
+				.scaleEffect(activated ? 1 : 0.8)
 				.opacity(activated ? 1 : 0.5)
 				.animation(offset.magnitude > 10 ? .default : nil, value: activated)
 				.frame(width: swipeActivationMagnitude)
-				.offset(x: activationMagnitudeRemaining * -unitVector, y: -4)
+				.offset(x: activationMagnitudeRemaining * -unitVector)
 		}
 			.padding(.vertical, -listInset.top)
 			.offset(x: action.edge == .leading ? -listInset.leading : listInset.trailing)
@@ -122,10 +122,10 @@ private struct SubredditPostButton: View {
 						.font(.headline)
 					HStack {
 						ScoreMetadata(entity: post)
-						Text("💬") + Text(post.commentCount.description)
-						Text("🕓") + Text(post.creationDate?.relativeToNow ?? "")
+						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+						IconText(iconName: "clock", label: post.creationDate?.relativeToNow ?? "")
 						if post.userSaved {
-							Text("❖")
+							Image(systemName: "bookmark.fill")
 								.foregroundColor(.green)
 						}
 					}
@@ -165,24 +165,24 @@ private enum PostSwipeAction {
 			return .red
 		}
 	}
-	var icon: String {
+	var iconName: String {
 		switch self {
 		case .upvote:
-			return "⬆︎"
+			return "arrow.up"
 		case .upvoteRemove:
-			return "⇧"
+			return "arrow.up.circle.fill"
 		case .downvote:
-			return "⬇︎"
+			return "arrow.down"
 		case .downvoteRemove:
-			return "⇩"
+			return "arrow.down.circle.fill"
 		case .markRead:
-			return "⎗"
+			return "envelope.open"
 		case .markUnread:
-			return "⎘"
+			return "envelope.fill"
 		case .save:
-			return "★"
+			return "bookmark.fill"
 		case .unsave:
-			return "☆"
+			return "bookmark"
 		}
 	}
 
