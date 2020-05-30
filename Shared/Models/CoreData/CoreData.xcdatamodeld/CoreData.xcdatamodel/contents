@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="SubredditPostMetadataModel" representedClassName="SubredditPostMetadataModel" syncable="YES">
+        <attribute name="hashID" attributeType="String" defaultValueString=""/>
         <attribute name="readDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SubredditPostModel" inverseName="metadata" inverseEntity="SubredditPostModel"/>
     </entity>
@@ -10,6 +11,7 @@
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="crosspostFrom" optional="YES" attributeType="String"/>
         <attribute name="crosspostID" optional="YES" attributeType="String"/>
+        <attribute name="hashID" attributeType="String" defaultValueString=""/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="previewHeight" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="previewIsVideo" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -48,8 +50,8 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="73"/>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="328"/>
+        <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="88"/>
+        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="343"/>
         <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
     </elements>
 </model>

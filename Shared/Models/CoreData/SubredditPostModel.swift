@@ -7,6 +7,7 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	static let type = "t3"
 
 	@NSManaged var id: String
+	@NSManaged var hashID: String
 	@NSManaged var title: String
 	@NSManaged var author: String
 	@NSManaged var score: Int
@@ -75,8 +76,16 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 
 extension SubredditPostModel {
 	static func create(for post: SubredditPost, subreddit: SubredditSubscriptionModel, in context: NSManagedObjectContext) {
+		let fetchRequest = SubredditPostMetadataModel.fetchRequest()
+		fetchRequest.predicate = \SubredditPostMetadataModel.hashID == post.hashID
+		let request = try? context.fetch(fetchRequest) as? [SubredditPostMetadataModel]
+		let metadata = request?.first
+		if metadata?.readDate != nil {
+			return print("Already read", post.title)
+		}
 		let subredditPost = self.init(context: context)
 		subredditPost.id = post.id
+		subredditPost.hashID = post.hashID
 		subredditPost.title = post.title
 		subredditPost.author = post.author
 		subredditPost.score = post.score
@@ -89,11 +98,13 @@ extension SubredditPostModel {
 		subredditPost.url = post.url
 		subredditPost.crosspostID = post.crosspostID
 		subredditPost.crosspostFrom = post.crosspostFrom
-		subredditPost.selftext = post.selftext?.trimmingCharacters(in: .whitespacesAndNewlines)
+		subredditPost.selftext = post.selftext.trimmingCharacters(in: .whitespacesAndNewlines)
 		subredditPost.previewURL = post.previewURLs?.first
 		subredditPost.previewIsVideo = post.previewIsVideo
 		subredditPost.previewWidth = post.previewWidth ?? 0
 		subredditPost.previewHeight = post.previewHeight ?? 0
+		subredditPost.metadata = metadata
+		metadata?.addToPosts(subredditPost)
 		_ = subredditPost.getThumbnailManager()
 	}
 

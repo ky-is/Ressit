@@ -57,10 +57,31 @@ private func parseRedditMedia(key: String, from json: [String: Any]) -> (String,
 	return nil
 }
 
+private func getHashID(isSelf: Bool, id: String, url: URL?, title: String, selftext: String?) -> String {
+	if isSelf {
+		if let selftext = selftext {
+			let text = title + selftext
+			if text.count > 2, let md5 = text.md5 {
+				return md5
+			}
+		}
+	} else if let url = url?.deletingPathExtension() {
+		if let host = url.host, host.count >= 3 {
+			let hostString = host.starts(with: "www.") ? String(host.dropFirst(4)) : host
+			return hostString + url.path
+		}
+		if url.path.count > 2 {
+			return url.path
+		}
+	}
+	return id
+}
+
 struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	static let type = "t3"
 
 	let id: String
+	let hashID: String
 	let title: String
 	let author: String
 	let score: Int
@@ -70,7 +91,7 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	let saved: Bool
 	let likes: Bool?
 	let url: URL?
-	let selftext: String?
+	let selftext: String
 	let thumbnail: String?
 	let crosspostID: String?
 	let crosspostFrom: String?
@@ -83,19 +104,23 @@ struct SubredditPost: RedditResponsable, RedditIdentifiable {
 	init(json: Any) {
 		let data = Self.defaultJSONData(json)
 		id = data["id"] as! String
+		let urlString = data["url"] as? String
+		url = urlString != nil ? URL(string: urlString!) : nil
 		title = data["title"] as! String
+		selftext = data["selftext"] as! String
+		let isSelf = data["is_self"] as! Bool
+		hashID = getHashID(isSelf: isSelf,id: id, url: url, title: title, selftext: selftext)
+//		print(json, hashID) //SAMPLE
 		author = data["author"] as! String
 		score = data["score"] as! Int
 		commentCount = data["num_comments"] as! Int
 		createdAt = data["created"] as! TimeInterval
 		let editTimestamp = data["edited"] as! TimeInterval
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
-		selftext = (data["selftext"] as? String)?.nonEmpty
-		let urlString = data["url"] as? String
-		url = urlString != nil ? URL(string: urlString!) : nil
 		saved = data["saved"] as! Bool
 		likes = data["likes"] as? Bool
-		thumbnail = data["thumbnail"] as? String
+		let thumbnail = data["thumbnail"] as? String
+		self.thumbnail = thumbnail != "self" ? thumbnail : nil
 
 		var previewURLStrings: [String]?
 		var isPreviewVideo = false
