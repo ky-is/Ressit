@@ -90,9 +90,9 @@ private struct SubredditPostHeader: View {
 				}
 					.font(.caption)
 			}
-			if post.selftext != nil {
+			if post.selftext?.nonEmpty != nil {
 				Divider()
-					.padding(.vertical)
+					.padding(.top)
 				Text(post.selftext!)
 			}
 		}

@@ -18,6 +18,7 @@ struct SubredditPostBody: View {
 					}
 				}
 		}
+			.frame(minHeight: 128)
 	}
 }
 
