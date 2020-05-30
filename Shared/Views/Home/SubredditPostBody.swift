@@ -9,14 +9,21 @@ struct SubredditPostBody: View {
 
 	var body: some View {
 		RedditView(commentsViewModel) { result in
-			SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 20, currentDepth: 0)
-				.padding(.horizontal)
-				.onAppear {
-					self.context.perform {
-						self.post.toggleRead(true, in: self.context)
-						self.context.safeSave()
+			if result.comments.values.isEmpty {
+				Text("No comments yet...")
+					.font(.subheadline)
+					.foregroundColor(.secondary)
+					.padding()
+			} else {
+				SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 20, currentDepth: 0)
+					.padding(.horizontal)
+					.onAppear {
+						self.context.perform {
+							self.post.toggleRead(true, in: self.context)
+							self.context.safeSave()
+						}
 					}
-				}
+			}
 		}
 			.frame(minHeight: 128)
 	}
@@ -29,18 +36,9 @@ private struct SubredditPostCommentGroup: View {
 	let currentDepth: Int
 
 	var body: some View {
-		Group {
-			if comments.values.isEmpty {
-				Text("No comments yet...")
-					.font(.subheadline)
-					.foregroundColor(.secondary)
-					.padding()
-			} else {
-				VStack(alignment: .leading, spacing: 0) {
-					ForEach(comments.values.prefix(maxBreadth)) { comment in
-						SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
-					}
-				}
+		VStack(alignment: .leading, spacing: 0) {
+			ForEach(comments.values.prefix(maxBreadth)) { comment in
+				SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
 			}
 		}
 	}
