@@ -39,7 +39,7 @@ struct ListRowSwipeModifier: ViewModifier {
 
 	func body(content: Content) -> some View {
 		ZStack {
-			if swipeAction != nil {
+			if swipeAction != nil && swipeEdge != nil {
 				PostSwipeActionView(action: swipeAction!, edge: swipeEdge!, offset: swipeDistance)
 			}
 			content
@@ -67,9 +67,9 @@ struct ListRowSwipeModifier: ViewModifier {
 									feedbackGenerator?.prepare()
 								}
 								let isLeadingSwipe = distance > 0
-								swipeEdge = isLeadingSwipe ? .leading : .trailing
+								swipeEdge = isLeadingSwipe ? .leading : (distance < 0 ? .trailing : nil)
 								guard let directionSegments = isLeadingSwipe ? self.leading : self.trailing else {
-									return
+									return //TODO verify
 								}
 								didReachSegment = distance.magnitude > swipeActivationMagnitude
 								let segmentIndex = distance.magnitude > swipeActivationMagnitude * 2 ? 1 : 0
@@ -98,6 +98,7 @@ struct ListRowSwipeModifier: ViewModifier {
 						}
 				)
 		}
+			.animation(swipeDistance == 0 ? .default : nil)
 			.listRowInsets(listInset)
 	}
 }
