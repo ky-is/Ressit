@@ -8,7 +8,7 @@ struct SubredditPostBody: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		RedditView(commentsViewModel) { result in
+		RedditView(commentsViewModel, loadingHeight: 128) { result in
 			if result.comments.values.isEmpty {
 				Text("No comments yet...")
 					.font(.subheadline)
@@ -25,7 +25,6 @@ struct SubredditPostBody: View {
 					}
 			}
 		}
-			.frame(minHeight: 128)
 	}
 }
 

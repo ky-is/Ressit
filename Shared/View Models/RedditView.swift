@@ -3,10 +3,12 @@ import CoreData
 
 struct RedditView<VM: RedditViewModel, Content: View>: View {
 	@ObservedObject var viewModel: VM
+	let loadingHeight: CGFloat?
 	let content: (VM.NetworkResource) -> Content
 
-	init(_ viewModel: VM, @ViewBuilder successContent: @escaping (VM.NetworkResource) -> Content) {
+	init(_ viewModel: VM, loadingHeight: CGFloat? = nil, @ViewBuilder successContent: @escaping (VM.NetworkResource) -> Content) {
 		self.viewModel = viewModel
+		self.loadingHeight = loadingHeight
 		self.content = successContent
 	}
 
@@ -14,17 +16,39 @@ struct RedditView<VM: RedditViewModel, Content: View>: View {
 		Group {
 			if viewModel.result != nil {
 				content(viewModel.result!)
-			} else if viewModel.error != nil {
-				Spacer()
-				Text(viewModel.error!.localizedDescription)
-				Spacer()
-			} else if viewModel.loading {
-				Spacer()
-				LoadingView()
-				Spacer()
+			} else {
+				LoadingPlaceholder(error: viewModel.error, loadingHeight: loadingHeight)
 			}
 		}
 			.onAppear(perform: viewModel.fetch)
+	}
+}
+
+private struct LoadingPlaceholder: View {
+	let error: Error?
+	let loadingHeight: CGFloat?
+
+	private var content: some View {
+		Group {
+			if error != nil {
+				Text(error!.localizedDescription)
+			} else {
+				LoadingView()
+			}
+		}
+	}
+
+	var body: some View {
+		Group {
+			if loadingHeight != nil {
+				content
+					.frame(minHeight: loadingHeight)
+			} else {
+				Spacer()
+				content
+				Spacer()
+			}
+		}
 	}
 }
 
