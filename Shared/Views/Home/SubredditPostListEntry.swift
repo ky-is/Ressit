@@ -1,116 +1,43 @@
 import SwiftUI
 import CoreData
 
-private let listInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
-private let swipeActivationMagnitude: CGFloat = 64
-
-private var activedSwipeAction: PostSwipeAction?
-private var feedbackGenerator: UIImpactFeedbackGenerator?
-
 struct SubredditPostListEntry: View {
 	let post: UserPost
 
-	@State private var swipeAction: PostSwipeAction?
-	@GestureState private var swipeDistance: CGFloat = .zero
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		ZStack {
-			if swipeAction != nil {
-				PostSwipeActionView(action: swipeAction!, offset: swipeDistance)
-			}
-			SubredditPostButton(post: post)
-				.opacity(post.metadata?.readDate != nil ? 2/3 : 1)
-				.offset(x: swipeDistance)
-				.gesture(
-					DragGesture(minimumDistance: 18)
-						.updating($swipeDistance) { value, swipeDistance, transaction in
-							guard value.startLocation.x > 10.5 else { // Prevent overlap with system left edge back gesture
-								return
-							}
-							let distance: CGFloat
-							let displayAction: PostSwipeAction?
-							let didReachAction: Bool
-							if value.translation.height.magnitude > 128 { // Disable action when swiping too far vertically
-								distance = 0
-								displayAction = nil
-								didReachAction = false
-							} else {
-								distance = self.getSwipeDistance(from: value).resist(over: 256)
-
-								if feedbackGenerator == nil {
-									feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
-									feedbackGenerator?.prepare()
-								}
-								didReachAction = distance.magnitude > swipeActivationMagnitude
-								let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
-								if distance > 0 {
-									if reachedSecondAction {
-										displayAction = self.post.userVote < 0 ? .downvoteRemove : .downvote
-									} else {
-										displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
-									}
-								} else {
-									if reachedSecondAction {
-										displayAction = self.post.userSaved ? .unsave : .save
-									} else {
-										displayAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
-									}
-								}
-							}
-							swipeDistance = distance
-							if self.swipeAction != displayAction {
-								DispatchQueue.main.async {
-									self.swipeAction = displayAction
-								}
-							}
-							let activeAction = didReachAction ? displayAction : nil
-							if activedSwipeAction != activeAction {
-								activedSwipeAction = activeAction
-								feedbackGenerator?.impactOccurred(intensity: didReachAction ? 1 : 0.5)
-								feedbackGenerator?.prepare()
-							}
-						}
-						.onEnded { _ in
-							activedSwipeAction?.performActivate(for: self.post, in: self.context)
-							activedSwipeAction = nil
-						}
+		SubredditPostButton(post: post)
+			.modifier(PostEnabledModifier(post: post))
+			.modifier(
+				ListRowSwipeModifier(
+					leading: [
+						SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { self.post.userVote > 0 }) { action in
+							self.post.toggleVote(action == .upvote ? 1 : 0, in: self.context)
+						},
+						SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { self.post.userVote < 0 }) { action in
+							self.post.toggleVote(action == .downvote ? -1 : 0, in: self.context)
+						},
+					],
+					trailing: [
+						SwipeSegment(primary: .markRead, reset: .markUnread, shouldReset: { self.post.metadata?.readDate != nil }) { action in
+							self.post.toggleRead(action == .markRead, in: self.context)
+						},
+						SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.post.userSaved }) { action in
+							self.post.performSaved(action == .save, in: self.context)
+						},
+					]
 				)
-				.frame(maxWidth: .infinity, alignment: .leading)
-		}
-			.animation(swipeDistance == .zero ? .default : nil, value: swipeDistance)
-			.listRowInsets(listInset)
-	}
-
-	private func getSwipeDistance(from value: DragGesture.Value) -> CGFloat {
-		return value.translation.width
+			)
 	}
 }
 
-private struct PostSwipeActionView: View {
-	let action: PostSwipeAction
-	let offset: CGFloat
+private struct PostEnabledModifier: ViewModifier {
+	@ObservedObject var post: UserPost
 
-	var body: some View {
-		let alignment: Alignment = action.edge == .leading ? .leading : .trailing
-		let unitVector = action.edge.unitVector
-		let activationMagnitudeRemaining = max(0, swipeActivationMagnitude - offset.magnitude)
-		let activated = activationMagnitudeRemaining <= 0
-		return ZStack(alignment: alignment) {
-			action.color
-				.frame(width: offset.magnitude)
-			Image(systemName: action.iconName)
-				.font(.system(size: swipeActivationMagnitude / 2))
-				.foregroundColor(.background)
-				.scaleEffect(activated ? 1 : 0.8)
-				.opacity(activated ? 1 : 0.5)
-				.animation(offset.magnitude > 10 ? .default : nil, value: activated)
-				.frame(width: swipeActivationMagnitude)
-				.offset(x: activationMagnitudeRemaining * -unitVector)
-		}
-			.padding(.vertical, -listInset.top)
-			.offset(x: action.edge == .leading ? -listInset.leading : listInset.trailing)
-			.frame(maxWidth: .infinity, alignment: alignment)
+	func body(content: Content) -> some View {
+		content
+			.opacity(post.metadata?.readDate != nil ? 2/3 : 1)
 	}
 }
 
@@ -144,75 +71,6 @@ private struct SubredditPostButton: View {
 				}
 					.padding(.vertical, 6)
 			}
-		}
-	}
-}
-
-private enum PostSwipeAction {
-	case downvote, downvoteRemove
-	case upvote, upvoteRemove
-	case markRead, markUnread
-	case save, unsave
-
-	var edge: Edge {
-		switch self {
-		case .upvote, .upvoteRemove, .downvote, .downvoteRemove:
-			return .leading
-		case .markRead, .markUnread, .save, .unsave:
-			return .trailing
-		}
-	}
-	var color: Color {
-		switch self {
-		case .upvote, .upvoteRemove:
-			return .orange
-		case .downvote, .downvoteRemove:
-			return .blue
-		case .markRead, .markUnread:
-			return .blue
-		case .save:
-			return .green
-		case .unsave:
-			return .red
-		}
-	}
-	var iconName: String {
-		switch self {
-		case .upvote:
-			return "arrow.up"
-		case .upvoteRemove:
-			return "arrow.up.circle.fill"
-		case .downvote:
-			return "arrow.down"
-		case .downvoteRemove:
-			return "arrow.down.circle.fill"
-		case .markRead:
-			return "envelope.open"
-		case .markUnread:
-			return "envelope.fill"
-		case .save:
-			return "bookmark.fill"
-		case .unsave:
-			return "bookmark"
-		}
-	}
-
-	func performActivate(for post: UserPost, in context: NSManagedObjectContext) {
-		switch self {
-		case .upvote:
-			post.toggleVote(1, in: context)
-		case .upvoteRemove, .downvoteRemove:
-			post.toggleVote(0, in: context)
-		case .downvote:
-			post.toggleVote(-1, in: context)
-		case .markRead:
-			post.toggleRead(true, in: context)
-		case .markUnread:
-			post.toggleRead(false, in: context)
-		case .save:
-			post.performSaved(true, in: context)
-		case .unsave:
-			post.performSaved(false, in: context)
 		}
 	}
 }
