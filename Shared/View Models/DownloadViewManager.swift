@@ -106,20 +106,13 @@ struct DownloadImageView: View {
 					.renderingMode(.original)
 					.resizable()
 					.aspectRatio(contentMode: .fill)
-			} else if isLoading() {
-				LoadingView()
+			} else if getError() != nil {
+				Text(getError()!.localizedDescription)
 			} else {
-				Text(getError()?.localizedDescription ?? "✕")
+				LoadingView()
 			}
 		}
 			.onAppear(perform: viewModel.attemptDownload)
-	}
-
-	private func isLoading() -> Bool {
-		guard case .loading = viewModel.state else {
-			return true
-		}
-		return false
 	}
 
 	private func getError() -> Error? {

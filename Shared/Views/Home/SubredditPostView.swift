@@ -23,7 +23,7 @@ private struct SubredditPostContainer: View {
 	let post: UserPost
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
-	private let imageViewModel: ImageDownloadManager
+	private let imageViewModel: ImageDownloadManager?
 	@State private var fullscreenImage: UIImage?
 
 	init(post: UserPost) {
@@ -33,7 +33,11 @@ private struct SubredditPostContainer: View {
 		} else {
 			self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
 		}
-		self.imageViewModel = ImageDownloadManager(url: post.previewURL!)
+		if let previewURL = post.previewURL {
+			self.imageViewModel = ImageDownloadManager(url: previewURL)
+		} else {
+			self.imageViewModel = nil
+		}
 	}
 
 	var body: some View {
@@ -44,12 +48,12 @@ private struct SubredditPostContainer: View {
 					if post.previewIsVideo {
 						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
 					} else {
-						DownloadImageView(viewModel: imageViewModel)
+						DownloadImageView(viewModel: imageViewModel!)
 							.background(Color.background)
 							.frame(maxWidth: .infinity)
 							.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)
 							.onTapGesture {
-								if case let .success(image) = self.imageViewModel.state {
+								if case let .success(image) = self.imageViewModel?.state {
 									self.fullscreenImage = image
 								}
 							}
