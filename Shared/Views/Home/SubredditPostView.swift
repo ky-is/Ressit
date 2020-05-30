@@ -23,6 +23,8 @@ private struct SubredditPostContainer: View {
 	let post: UserPost
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
+	private let imageViewModel: ImageDownloadManager
+	@State private var fullscreenImage: UIImage?
 
 	init(post: UserPost) {
 		self.post = post
@@ -31,6 +33,7 @@ private struct SubredditPostContainer: View {
 		} else {
 			self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
 		}
+		self.imageViewModel = ImageDownloadManager(url: post.previewURL!)
 	}
 
 	var body: some View {
@@ -41,14 +44,34 @@ private struct SubredditPostContainer: View {
 					if post.previewIsVideo {
 						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
 					} else {
-						DownloadImageView(viewModel: ImageDownloadManager(url: post.previewURL!))
+						DownloadImageView(viewModel: imageViewModel)
+							.background(Color.background)
 							.frame(maxWidth: .infinity)
+							.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)
+							.onTapGesture {
+								if case let .success(image) = self.imageViewModel.state {
+									self.fullscreenImage = image
+								}
+							}
 					}
 				}
 			}
 				.fixedSize(horizontal: false, vertical: true)
 			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
 		}
+			.overlay(Group {
+				if fullscreenImage != nil {
+					GeometryReader { geometry in
+						ScrollImageView(image: self.fullscreenImage!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
+							.edgesIgnoringSafeArea(.bottom)
+							.frame(maxWidth: .infinity, maxHeight: .infinity)
+							.background(Color.background.edgesIgnoringSafeArea(.all))
+							.onTapGesture {
+								self.fullscreenImage = nil
+							}
+					}
+				}
+			})
 	}
 }
 
