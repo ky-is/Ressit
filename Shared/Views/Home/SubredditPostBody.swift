@@ -28,9 +28,18 @@ private struct SubredditPostCommentGroup: View {
 	let currentDepth: Int
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 0) {
-			ForEach(comments.values.prefix(maxBreadth)) { comment in
-				SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
+		Group {
+			if comments.values.isEmpty {
+				Text("No comments yet...")
+					.font(.subheadline)
+					.foregroundColor(.secondary)
+					.padding()
+			} else {
+				VStack(alignment: .leading, spacing: 0) {
+					ForEach(comments.values.prefix(maxBreadth)) { comment in
+						SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
+					}
+				}
 			}
 		}
 	}

@@ -37,7 +37,7 @@ struct IconText: View {
 	let label: String
 
 	var body: some View {
-		HStack(spacing: 1) {
+		HStack(spacing: 2) {
 			Image(systemName: iconName)
 				.foregroundColor(.secondary)
 			Text(label)
@@ -49,7 +49,7 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
 
 	var body: some View {
-		HStack(spacing: 1) {
+		HStack(spacing: 2) {
 			Image(systemName: "arrow.up")
 				.foregroundColor(entity.voteColor())
 				.animation(.default)

@@ -101,6 +101,8 @@ private struct SubredditListEntry: View {
 					.foregroundColor(.background)
 					.font(Font.footnote.bold())
 					.frame(minWidth: 18)
+					.lineLimit(1)
+					.fixedSize()
 					.padding(4)
 					.background(
 						Capsule()

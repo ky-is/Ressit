@@ -21,7 +21,7 @@ struct SubredditPostListEntry: View {
 				.opacity(post.metadata?.readDate != nil ? 2/3 : 1)
 				.offset(x: swipeDistance)
 				.gesture(
-					DragGesture(minimumDistance: 15)
+					DragGesture(minimumDistance: 18)
 						.updating($swipeDistance) { value, swipeDistance, transaction in
 							guard value.startLocation.x > 10.5 else { // Prevent overlap with system back gesture
 								return
