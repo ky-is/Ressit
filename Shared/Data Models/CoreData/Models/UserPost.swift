@@ -75,6 +75,28 @@ final class UserPost: NSManagedObject, RedditVotable {
 }
 
 extension UserPost {
+	convenience init(post: RedditPost, insertInto context: NSManagedObjectContext) {
+		self.init(context: context)
+		id = post.id
+		hashID = post.hashID
+		title = post.title
+		author = post.author
+		score = post.score
+		commentCount = post.commentCount
+		creationDate = Date(timeIntervalSince1970: post.createdAt)
+		userSaved = post.saved
+		userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
+		thumbnail = post.thumbnail != nil ? URL(string: post.thumbnail!) : nil
+		url = post.url
+		crosspostID = post.crosspostID
+		crosspostFrom = post.crosspostFrom
+		selftext = post.selftext.trimmingCharacters(in: .whitespacesAndNewlines)
+		previewURL = post.previewURLs?.first
+		previewIsVideo = post.previewIsVideo
+		previewWidth = post.previewWidth ?? 0
+		previewHeight = post.previewHeight ?? 0
+	}
+
 	static func create(for post: RedditPost, subreddit: UserSubreddit, in context: NSManagedObjectContext) {
 		let fetchRequest = UserPostMetadata.fetchRequest()
 		fetchRequest.predicate = \UserPostMetadata.hashID == post.hashID
@@ -83,26 +105,8 @@ extension UserPost {
 		if metadata?.readDate != nil {
 			return print("Already read", post.title)
 		}
-		let subredditPost = self.init(context: context)
-		subredditPost.id = post.id
-		subredditPost.hashID = post.hashID
-		subredditPost.title = post.title
-		subredditPost.author = post.author
-		subredditPost.score = post.score
-		subredditPost.commentCount = post.commentCount
-		subredditPost.creationDate = Date(timeIntervalSince1970: post.createdAt)
-		subredditPost.userSaved = post.saved
-		subredditPost.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
+		let subredditPost = self.init(post: post, insertInto: context)
 		subredditPost.subreddit = subreddit
-		subredditPost.thumbnail = post.thumbnail != nil ? URL(string: post.thumbnail!) : nil
-		subredditPost.url = post.url
-		subredditPost.crosspostID = post.crosspostID
-		subredditPost.crosspostFrom = post.crosspostFrom
-		subredditPost.selftext = post.selftext.trimmingCharacters(in: .whitespacesAndNewlines)
-		subredditPost.previewURL = post.previewURLs?.first
-		subredditPost.previewIsVideo = post.previewIsVideo
-		subredditPost.previewWidth = post.previewWidth ?? 0
-		subredditPost.previewHeight = post.previewHeight ?? 0
 		subredditPost.metadata = metadata
 		metadata?.addToPosts(subredditPost)
 		_ = subredditPost.getThumbnailManager()

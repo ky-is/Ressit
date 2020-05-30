@@ -105,13 +105,10 @@ private struct SubredditPostHeader: View {
 }
 
 struct SubredditPostView_Previews: PreviewProvider {
+	static let post = UserPost(post: RedditListing<RedditPost>(asset: .posts).values.first!, insertInto: CoreDataModel.persistentContainer.viewContext)
+
 	static var previews: some View {
-		let post = UserPost(context: CoreDataModel.persistentContainer.viewContext)
-		post.title = "Test"
-		post.author = "Tester"
-		post.commentCount = 42
-		post.creationDate = Date(timeIntervalSinceNow: -.month)
-		return NavigationView {
+		NavigationView {
 			SubredditPostView(post: post)
 		}
 	}

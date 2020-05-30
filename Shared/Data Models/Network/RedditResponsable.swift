@@ -23,6 +23,7 @@ import UIKit
 
 extension NSDataAssetName {
 	static let comments = Self.init("comments")
+	static let posts = Self.init("posts")
 }
 
 extension RedditResponsable {
