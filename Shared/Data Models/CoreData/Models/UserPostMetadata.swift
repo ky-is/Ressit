@@ -1,16 +1,16 @@
 import Foundation
 import CoreData
 
-@objc(SubredditPostMetadataModel)
-class SubredditPostMetadataModel: NSManagedObject {
+@objc(UserPostMetadata)
+class UserPostMetadata: NSManagedObject {
 	@NSManaged var readDate: Date?
 	@NSManaged var hashID: String
 
-	@NSManaged var posts: Set<SubredditPostModel>
+	@NSManaged var posts: Set<UserPost>
 }
 
-extension SubredditPostMetadataModel {
-	static func create(for post: SubredditPostModel, in context: NSManagedObjectContext) {
+extension UserPostMetadata {
+	static func create(for post: UserPost, in context: NSManagedObjectContext) {
 		let metadata = self.init(context: context)
 		metadata.hashID = post.hashID
 		metadata.readDate = Date()
@@ -18,12 +18,12 @@ extension SubredditPostMetadataModel {
 	}
 }
 
-extension SubredditPostMetadataModel {
+extension UserPostMetadata {
 	@objc(addPostsObject:)
-	@NSManaged public func addToPosts(_ value: SubredditPostModel)
+	@NSManaged public func addToPosts(_ value: UserPost)
 
 	@objc(removePostsObject:)
-	@NSManaged func removeFromPosts(_ value: SubredditPostModel)
+	@NSManaged func removeFromPosts(_ value: UserPost)
 
 	@objc(addPosts:)
 	@NSManaged func addToPosts(_ values: NSSet)

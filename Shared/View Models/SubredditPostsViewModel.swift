@@ -20,12 +20,12 @@ enum RedditPeriod: String, CaseIterable {
 }
 
 final class SubredditPostsViewModel: RedditViewModel, Identifiable {
-	typealias NetworkResource = RedditListing<SubredditPost>
+	typealias NetworkResource = RedditListing<RedditPost>
 
 	static let global = SubredditPostsViewModel(model: nil)
 
 	let id: String
-	let model: SubredditSubscriptionModel?
+	let model: UserSubreddit?
 
 	var request: APIRequest<NetworkResource>?
 	var subscription: AnyCancellable?
@@ -36,7 +36,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	private var context: NSManagedObjectContext?
 	private var period: RedditPeriod?
 
-	init(model: SubredditSubscriptionModel?) {
+	init(model: UserSubreddit?) {
 		self.id = model?.id ?? "$GLOBAL"
 		self.model = model
 	}

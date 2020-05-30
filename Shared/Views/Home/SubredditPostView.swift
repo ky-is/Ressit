@@ -3,7 +3,7 @@ import SwiftUI
 private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
 struct SubredditPostView: View {
-	let post: SubredditPostModel?
+	let post: UserPost?
 
 	var body: some View {
 		Group {
@@ -20,11 +20,11 @@ struct SubredditPostView: View {
 }
 
 private struct SubredditPostContainer: View {
-	let post: SubredditPostModel
+	let post: UserPost
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
 
-	init(post: SubredditPostModel) {
+	init(post: UserPost) {
 		self.post = post
 		if let latest = SubredditPostCommentsViewModel.latest, latest.id == post.id {
 			self.commentsViewModel = latest
@@ -64,7 +64,7 @@ private struct PostVideo: View {
 }
 
 private struct SubredditPostHeader: View {
-	@ObservedObject var post: SubredditPostModel
+	@ObservedObject var post: UserPost
 
 	@State private var openLink = false
 
@@ -106,7 +106,7 @@ private struct SubredditPostHeader: View {
 
 struct SubredditPostView_Previews: PreviewProvider {
 	static var previews: some View {
-		let post = SubredditPostModel(context: CoreDataModel.persistentContainer.viewContext)
+		let post = UserPost(context: CoreDataModel.persistentContainer.viewContext)
 		post.title = "Test"
 		post.author = "Tester"
 		post.commentCount = 42

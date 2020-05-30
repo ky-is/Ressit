@@ -119,16 +119,16 @@ final class APIRequest<Result> {
 }
 
 extension APIRequest {
-	static var subredditsMine: APIRequest<RedditListing<Subreddit>> {
-		APIRequest<RedditListing<Subreddit>>(path: "/subreddits/mine", parameters: ["limit": "100"])
+	static var subredditsMine: APIRequest<RedditListing<RedditSubreddit>> {
+		APIRequest<RedditListing<RedditSubreddit>>(path: "/subreddits/mine", parameters: ["limit": "100"])
 	}
-	static func subreddits(search query: String) -> APIRequest<RedditListing<Subreddit>> {
-		APIRequest<RedditListing<Subreddit>>(path: "/subreddits/search", parameters: ["q": query])
+	static func subreddits(search query: String) -> APIRequest<RedditListing<RedditSubreddit>> {
+		APIRequest<RedditListing<RedditSubreddit>>(path: "/subreddits/search", parameters: ["q": query])
 	}
-	static func topPosts(in subreddit: String, over period: RedditPeriod, count: Int) -> APIRequest<RedditListing<SubredditPost>> {
-		APIRequest<RedditListing<SubredditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
+	static func topPosts(in subreddit: String, over period: RedditPeriod, count: Int) -> APIRequest<RedditListing<RedditPost>> {
+		APIRequest<RedditListing<RedditPost>>(path: "/r/\(subreddit)/top", parameters: ["t": period.rawValue, "limit": count.description])
 	}
-	static func comments(for post: SubredditPostModel) -> APIRequest<RedditPostComments> {
+	static func comments(for post: UserPost) -> APIRequest<RedditPostComments> {
 		APIRequest<RedditPostComments>(path: "/r/\(post.subreddit.name)/comments/\(post.id)", parameters: ["article": post.id, "sort": "top"])
 	}
 	static func save<Entity: RedditIdentifiable>(entity: Entity, enabled: Bool) -> APIRequest<EmptyReddit> {

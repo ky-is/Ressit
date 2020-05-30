@@ -2,8 +2,8 @@ import Foundation
 import CoreData
 import Combine
 
-@objc(SubredditPostModel)
-final class SubredditPostModel: NSManagedObject, RedditVotable {
+@objc(UserPost)
+final class UserPost: NSManagedObject, RedditVotable {
 	static let type = "t3"
 
 	@NSManaged var id: String
@@ -27,8 +27,8 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	@NSManaged var userSaved: Bool
 	@NSManaged var userVote: Int
 
-	@NSManaged var subreddit: SubredditSubscriptionModel
-	@NSManaged var metadata: SubredditPostMetadataModel?
+	@NSManaged var subreddit: UserSubreddit
+	@NSManaged var metadata: UserPostMetadata?
 
 	private var saveSubscription: AnyCancellable?
 	private var voteSubscription: AnyCancellable?
@@ -40,7 +40,7 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 			metadata.readDate = read ? Date() : nil
 			context.refresh(self, mergeChanges: true)
 		} else if read {
-			SubredditPostMetadataModel.create(for: self, in: context)
+			UserPostMetadata.create(for: self, in: context)
 		}
 	}
 	func toggleVote(_ vote: Int, in context: NSManagedObjectContext) {
@@ -50,7 +50,7 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 		performRemoteUpdate(on: \.userSaved, updateTo: saved, request: .save(entity: self, enabled: saved), in: context)
 	}
 
-	private func performRemoteUpdate<Value>(on keyPath: ReferenceWritableKeyPath<SubredditPostModel, Value>, updateTo value: Value, request: APIRequest<EmptyReddit>, in context: NSManagedObjectContext) {
+	private func performRemoteUpdate<Value>(on keyPath: ReferenceWritableKeyPath<UserPost, Value>, updateTo value: Value, request: APIRequest<EmptyReddit>, in context: NSManagedObjectContext) {
 		let oldValue = self[keyPath: keyPath]
 		saveSubscription?.cancel()
 		context.perform {
@@ -74,11 +74,11 @@ final class SubredditPostModel: NSManagedObject, RedditVotable {
 	}
 }
 
-extension SubredditPostModel {
-	static func create(for post: SubredditPost, subreddit: SubredditSubscriptionModel, in context: NSManagedObjectContext) {
-		let fetchRequest = SubredditPostMetadataModel.fetchRequest()
-		fetchRequest.predicate = \SubredditPostMetadataModel.hashID == post.hashID
-		let request = try? context.fetch(fetchRequest) as? [SubredditPostMetadataModel]
+extension UserPost {
+	static func create(for post: RedditPost, subreddit: UserSubreddit, in context: NSManagedObjectContext) {
+		let fetchRequest = UserPostMetadata.fetchRequest()
+		fetchRequest.predicate = \UserPostMetadata.hashID == post.hashID
+		let request = try? context.fetch(fetchRequest) as? [UserPostMetadata]
 		let metadata = request?.first
 		if metadata?.readDate != nil {
 			return print("Already read", post.title)

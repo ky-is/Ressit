@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
-    <entity name="SubredditPostMetadataModel" representedClassName="SubredditPostMetadataModel" syncable="YES">
-        <attribute name="hashID" attributeType="String" defaultValueString=""/>
-        <attribute name="readDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SubredditPostModel" inverseName="metadata" inverseEntity="SubredditPostModel"/>
-    </entity>
-    <entity name="SubredditPostModel" representedClassName="SubredditPostModel" syncable="YES">
+    <entity name="UserPost" representedClassName="UserPost" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String"/>
         <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -24,15 +19,25 @@
         <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="userSaved" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="userVote" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditPostMetadataModel" inverseName="posts" inverseEntity="SubredditPostMetadataModel"/>
-        <relationship name="subreddit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SubredditSubscriptionModel" inverseName="posts" inverseEntity="SubredditSubscriptionModel"/>
+        <relationship name="metadata" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserPostMetadata" inverseName="posts" inverseEntity="UserPostMetadata"/>
+        <relationship name="subreddit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserSubreddit" inverseName="posts" inverseEntity="UserSubreddit"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="SubredditSubscriptionModel" representedClassName="SubredditSubscriptionModel" syncable="YES">
+    <entity name="UserPostMetadata" representedClassName="UserPostMetadata" syncable="YES">
+        <attribute name="hashID" attributeType="String" defaultValueString=""/>
+        <attribute name="readDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserPost" inverseName="metadata" inverseEntity="UserPost"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="hashID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="UserSubreddit" representedClassName="UserSubreddit" syncable="YES">
         <attribute name="accessDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="creationDate" optional="YES" attributeType="Date"/>
         <attribute name="id" attributeType="String" defaultValueString=""/>
@@ -42,7 +47,7 @@
         <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="postCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="posts.@count" usesScalarValueType="YES"/>
-        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SubredditPostModel" inverseName="subreddit" inverseEntity="SubredditPostModel"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UserPost" inverseName="subreddit" inverseEntity="UserPost"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -50,8 +55,8 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="SubredditPostMetadataModel" positionX="270" positionY="279" width="128" height="88"/>
-        <element name="SubredditPostModel" positionX="261" positionY="252" width="128" height="343"/>
-        <element name="SubredditSubscriptionModel" positionX="261" positionY="189" width="128" height="193"/>
+        <element name="UserPost" positionX="261" positionY="252" width="128" height="343"/>
+        <element name="UserPostMetadata" positionX="270" positionY="279" width="128" height="88"/>
+        <element name="UserSubreddit" positionX="261" positionY="189" width="128" height="193"/>
     </elements>
 </model>

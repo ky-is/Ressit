@@ -53,7 +53,7 @@ struct SubredditsManage: View {
 	}
 }
 
-private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.NetworkResource == RedditListing<Subreddit> {
+private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.NetworkResource == RedditListing<RedditSubreddit> {
 	let viewModel: VM
 	let subscriptions: [SubredditPostsViewModel]
 
@@ -67,8 +67,8 @@ private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.Networ
 }
 
 private struct SubredditsManageEntry: View {
-	let subreddit: Subreddit
-	let subscriptionModel: SubredditSubscriptionModel?
+	let subreddit: RedditSubreddit
+	let subscriptionModel: UserSubreddit?
 
 	@Environment(\.managedObjectContext) private var context
 
@@ -78,7 +78,7 @@ private struct SubredditsManageEntry: View {
 				if let subscriptionModel = self.subscriptionModel {
 					self.context.delete(subscriptionModel)
 				} else {
-					SubredditSubscriptionModel.create(for: self.subreddit, in: self.context)
+					UserSubreddit.create(for: self.subreddit, in: self.context)
 				}
 				self.context.safeSave()
 			}

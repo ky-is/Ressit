@@ -104,7 +104,7 @@ private struct PostSwipeActionView: View {
 }
 
 private struct SubredditPostButton: View {
-	let post: SubredditPostModel
+	let post: UserPost
 
 	var body: some View {
 		Button(action: {
@@ -186,7 +186,7 @@ private enum PostSwipeAction {
 		}
 	}
 
-	func performActivate(for post: SubredditPostModel, in context: NSManagedObjectContext) {
+	func performActivate(for post: UserPost, in context: NSManagedObjectContext) {
 		switch self {
 		case .upvote:
 			post.toggleVote(1, in: context)
@@ -208,7 +208,7 @@ private enum PostSwipeAction {
 
 struct SubredditPostListEntry_Previews: PreviewProvider {
 	static var previews: some View {
-		let post = SubredditPostModel(context: CoreDataModel.persistentContainer.viewContext)
+		let post = UserPost(context: CoreDataModel.persistentContainer.viewContext)
 		post.title = "Test"
 		post.score = 42
 		post.commentCount = 8001

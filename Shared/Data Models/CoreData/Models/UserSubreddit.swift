@@ -1,8 +1,8 @@
 import Foundation
 import CoreData
 
-@objc(SubredditSubscriptionModel)
-final class SubredditSubscriptionModel: NSManagedObject, RedditIdentifiable {
+@objc(UserSubreddit)
+final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 	static let type = "t5"
 
 	@NSManaged var id: String
@@ -16,7 +16,7 @@ final class SubredditSubscriptionModel: NSManagedObject, RedditIdentifiable {
 	@NSManaged var periodWeekDate: Date?
 	@NSManaged var postCount: Int
 
-	@NSManaged var posts: Set<SubredditPostModel>
+	@NSManaged var posts: Set<UserPost>
 
 	func needsUpdate(for period: RedditPeriod) -> Bool {
 		let date: Date?
@@ -36,9 +36,9 @@ final class SubredditSubscriptionModel: NSManagedObject, RedditIdentifiable {
 		return previousDate.timeIntervalSinceNow > period.minimumUpdate
 	}
 
-	func performUpdate(posts: [SubredditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
+	func performUpdate(posts: [RedditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
 		context.perform {
-			posts.forEach { SubredditPostModel.create(for: $0, subreddit: self, in: context) }
+			posts.forEach { UserPost.create(for: $0, subreddit: self, in: context) }
 			let date = Date()
 			switch period {
 			case .all:
@@ -56,8 +56,8 @@ final class SubredditSubscriptionModel: NSManagedObject, RedditIdentifiable {
 	}
 }
 
-extension SubredditSubscriptionModel {
-	static func create(for subreddit: Subreddit, in context: NSManagedObjectContext) {
+extension UserSubreddit {
+	static func create(for subreddit: RedditSubreddit, in context: NSManagedObjectContext) {
 		let subredditSubscription = self.init(context: context)
 		subredditSubscription.id = subreddit.id
 		subredditSubscription.name = subreddit.name

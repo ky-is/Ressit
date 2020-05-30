@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SubredditPostBody: View {
-	let post: SubredditPostModel
+	let post: UserPost
 
 	let commentsViewModel: SubredditPostCommentsViewModel
 
@@ -22,7 +22,7 @@ struct SubredditPostBody: View {
 }
 
 private struct SubredditPostCommentGroup: View {
-	let comments: RedditListing<SubredditPostComment>
+	let comments: RedditListing<RedditComment>
 	let maxBreadth: Int
 	let maxDepth: Int
 	let currentDepth: Int
@@ -46,14 +46,14 @@ private struct SubredditPostCommentGroup: View {
 }
 
 private struct SubredditPostCommentTree: View {
-	let comment: SubredditPostComment
+	let comment: RedditComment
 	let maxBreadth: Int
 	let maxDepth: Int
 	let currentDepth: Int
 
 	@State private var collapsed = false
 
-	init(comment: SubredditPostComment, maxBreadth: Int, maxDepth: Int, currentDepth: Int) {
+	init(comment: RedditComment, maxBreadth: Int, maxDepth: Int, currentDepth: Int) {
 		self.comment = comment
 		self.maxBreadth = maxBreadth
 		self.maxDepth = maxDepth
@@ -97,7 +97,7 @@ private struct SubredditPostCommentTree: View {
 }
 
 private struct SubredditPostCommentContent: View {
-	let comment: SubredditPostComment
+	let comment: RedditComment
 	let currentDepth: Int
 	let collapsed: Bool
 
@@ -123,7 +123,7 @@ private struct SubredditPostCommentContent: View {
 }
 
 private struct SubredditPostCommentFromUser: View {
-	let comment: SubredditPostComment
+	let comment: RedditComment
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 2) {
@@ -148,7 +148,7 @@ private struct SubredditPostCommentFromUser: View {
 
 #if DEBUG
 struct SubredditPostBody_Previews: PreviewProvider {
-	static let comments = RedditListing<SubredditPostComment>(asset: .comments)
+	static let comments = RedditListing<RedditComment>(asset: .comments)
 
 	static var previews: some View {
 		ScrollView {

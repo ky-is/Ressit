@@ -9,14 +9,14 @@ struct EmptyReddit: RedditResponsable {
 }
 
 struct RedditPostComments: RedditResponsable {
-	let post: SubredditPost
-	let comments: RedditListing<SubredditPostComment>
+	let post: RedditPost
+	let comments: RedditListing<RedditComment>
 
 	init(json: Any) {
 		let children = json as! [[String: Any]]
 //		print(children[0]) //SAMPLE post
-		post = RedditListing<SubredditPost>(json: children[0]).values.first!
-		comments = RedditListing<SubredditPostComment>(json: children[1])
+		post = RedditListing<RedditPost>(json: children[0]).values.first!
+		comments = RedditListing<RedditComment>(json: children[1])
 	}
 }
 

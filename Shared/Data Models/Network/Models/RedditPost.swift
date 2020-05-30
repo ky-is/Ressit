@@ -1,6 +1,6 @@
 import Foundation
 
-struct SubredditPost: RedditResponsable, RedditIdentifiable {
+struct RedditPost: RedditResponsable, RedditIdentifiable {
 	static let type = "t3"
 
 	let id: String

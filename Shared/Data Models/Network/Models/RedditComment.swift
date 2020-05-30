@@ -1,6 +1,6 @@
 import Foundation
 
-final class SubredditPostComment: RedditResponsable, RedditVotable {
+final class RedditComment: RedditResponsable, RedditVotable {
 	static let type = "t1"
 
 	let id: String
@@ -9,7 +9,7 @@ final class SubredditPostComment: RedditResponsable, RedditVotable {
 	let creationDate: Date?
 	let editedAt: TimeInterval?
 	let score: Int
-	let replies: RedditListing<SubredditPostComment>?
+	let replies: RedditListing<RedditComment>?
 	let childIDs: [String]?
 
 	@Published var userVote: Int
@@ -32,7 +32,7 @@ final class SubredditPostComment: RedditResponsable, RedditVotable {
 
 		let author = data["author"] as? String
 		if let rawReplies = data["replies"] as? [String: Any] {
-			replies = RedditListing<SubredditPostComment>(json: rawReplies)
+			replies = RedditListing<RedditComment>(json: rawReplies)
 		} else {
 			replies = nil
 		}

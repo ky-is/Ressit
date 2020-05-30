@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 final class SubredditsMineViewModel: RedditViewModel {
-	typealias NetworkResource = RedditListing<Subreddit>
+	typealias NetworkResource = RedditListing<RedditSubreddit>
 
 	static let shared = SubredditsMineViewModel()
 
@@ -14,7 +14,7 @@ final class SubredditsMineViewModel: RedditViewModel {
 }
 
 final class SubredditsSearchViewModel: RedditViewModel {
-	typealias NetworkResource = RedditListing<Subreddit>
+	typealias NetworkResource = RedditListing<RedditSubreddit>
 
 	@Published var query = ""
 	var querySubscription: AnyCancellable?
@@ -55,7 +55,7 @@ final class SubredditPostCommentsViewModel: RedditViewModel {
 	var error: Error?
 	var result: NetworkResource?
 
-	init(post: SubredditPostModel) {
+	init(post: UserPost) {
 		self.id = post.id
 		self.request = .comments(for: post)
 		Self.latest = self

@@ -9,5 +9,5 @@ final class SubredditUserModel: ObservableObject {
 final class PostUserModel: ObservableObject {
 	static let shared = PostUserModel()
 
-	@Published var selected: SubredditPostModel?
+	@Published var selected: UserPost?
 }

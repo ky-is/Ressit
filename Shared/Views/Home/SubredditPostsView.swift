@@ -25,10 +25,10 @@ struct SubredditPostsView: View {
 
 private struct OneSubredditPostsView: View {
 	let subscription: SubredditPostsViewModel
-	let model: SubredditSubscriptionModel
+	let model: UserSubreddit
 
 	var body: some View {
-		LocalView(subscription, sortDescriptor: postSort, predicate: NSPredicate(format: "subreddit = %@", model)) { (result: FetchedResults<SubredditPostModel>) in
+		LocalView(subscription, sortDescriptor: postSort, predicate: NSPredicate(format: "subreddit = %@", model)) { (result: FetchedResults<UserPost>) in
 			SubredditPostsList(posts: result)
 				.modifier(ClearReadModifier(model: self.model, posts: result))
 		}
@@ -36,7 +36,7 @@ private struct OneSubredditPostsView: View {
 }
 
 private struct AllSubredditPostsView: View {
-	@FetchRequest(sortDescriptors: [postSort]) private var fetchedResults: FetchedResults<SubredditPostModel>
+	@FetchRequest(sortDescriptors: [postSort]) private var fetchedResults: FetchedResults<UserPost>
 
 	var body: some View {
 		SubredditPostsList(posts: fetchedResults)
@@ -45,7 +45,7 @@ private struct AllSubredditPostsView: View {
 }
 
 private struct SubredditPostsList: View {
-	let posts: FetchedResults<SubredditPostModel>
+	let posts: FetchedResults<UserPost>
 
 	@ObservedObject private var postModel = PostUserModel.shared
 
@@ -63,12 +63,12 @@ private struct SubredditPostsList: View {
 }
 
 private struct ClearReadModifier: ViewModifier {
-	let readPosts: [SubredditPostModel]
-	let model: SubredditSubscriptionModel?
+	let readPosts: [UserPost]
+	let model: UserSubreddit?
 
 	@Environment(\.managedObjectContext) private var context
 
-	init(model: SubredditSubscriptionModel?, posts: FetchedResults<SubredditPostModel>) {
+	init(model: UserSubreddit?, posts: FetchedResults<UserPost>) {
 		self.model = model
 		self.readPosts = posts.filter { $0.metadata?.readDate != nil }
 	}
@@ -103,7 +103,7 @@ private struct ClearReadModifier: ViewModifier {
 
 struct SubredditPostsView_Previews: PreviewProvider {
 	static var previews: some View {
-		let subredditSubscription = SubredditSubscriptionModel(context: CoreDataModel.persistentContainer.viewContext)
+		let subredditSubscription = UserSubreddit(context: CoreDataModel.persistentContainer.viewContext)
 		subredditSubscription.name = "Test"
 		subredditSubscription.creationDate = Date()
 		return NavigationView {
