@@ -4,65 +4,76 @@ import CoreData
 private let listInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
 
-private var activeSwipeAction: PostSwipeAction?
+private var activedSwipeAction: PostSwipeAction?
 private var feedbackGenerator: UIImpactFeedbackGenerator?
 
 struct SubredditPostListEntry: View {
-	let post: SubredditPostModel
+	let post: UserPost
 
-	@State private var swipeAction: PostSwipeAction = .upvote
+	@State private var swipeAction: PostSwipeAction?
 	@GestureState private var swipeDistance: CGFloat = .zero
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		ZStack {
-			PostSwipeActionView(action: swipeAction, offset: swipeDistance)
+			if swipeAction != nil {
+				PostSwipeActionView(action: swipeAction!, offset: swipeDistance)
+			}
 			SubredditPostButton(post: post)
 				.opacity(post.metadata?.readDate != nil ? 2/3 : 1)
 				.offset(x: swipeDistance)
 				.gesture(
 					DragGesture(minimumDistance: 18)
 						.updating($swipeDistance) { value, swipeDistance, transaction in
-							guard value.startLocation.x > 10.5 else { // Prevent overlap with system back gesture
+							guard value.startLocation.x > 10.5 else { // Prevent overlap with system left edge back gesture
 								return
 							}
-							let distance = self.getSwipeDistance(from: value).resist(over: 256)
-							swipeDistance = distance
-							if feedbackGenerator == nil {
-								feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
-								feedbackGenerator?.prepare()
-							}
-							let reachedAction = distance.magnitude > swipeActivationMagnitude
-							let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
-							let displayAction: PostSwipeAction
-							if distance > 0 {
-								if reachedSecondAction {
-									displayAction = self.post.userVote < 0 ? .downvoteRemove : .downvote
-								} else {
-									displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
-								}
+							let distance: CGFloat
+							let displayAction: PostSwipeAction?
+							let didReachAction: Bool
+							if value.translation.height.magnitude > 128 { // Disable action when swiping too far vertically
+								distance = 0
+								displayAction = nil
+								didReachAction = false
 							} else {
-								if reachedSecondAction {
-									displayAction = self.post.userSaved ? .unsave : .save
+								distance = self.getSwipeDistance(from: value).resist(over: 256)
+
+								if feedbackGenerator == nil {
+									feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
+									feedbackGenerator?.prepare()
+								}
+								didReachAction = distance.magnitude > swipeActivationMagnitude
+								let reachedSecondAction = distance.magnitude > swipeActivationMagnitude * 2
+								if distance > 0 {
+									if reachedSecondAction {
+										displayAction = self.post.userVote < 0 ? .downvoteRemove : .downvote
+									} else {
+										displayAction = self.post.userVote > 0 ? .upvoteRemove : .upvote
+									}
 								} else {
-									displayAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
+									if reachedSecondAction {
+										displayAction = self.post.userSaved ? .unsave : .save
+									} else {
+										displayAction = self.post.metadata?.readDate != nil ? .markUnread : .markRead
+									}
 								}
 							}
-							if displayAction != self.swipeAction {
+							swipeDistance = distance
+							if self.swipeAction != displayAction {
 								DispatchQueue.main.async {
 									self.swipeAction = displayAction
 								}
 							}
-							let activeAction = reachedAction ? displayAction : nil
-							if activeSwipeAction != activeAction {
-								activeSwipeAction = activeAction
-								feedbackGenerator?.impactOccurred(intensity: reachedAction ? 1 : 0.5)
+							let activeAction = didReachAction ? displayAction : nil
+							if activedSwipeAction != activeAction {
+								activedSwipeAction = activeAction
+								feedbackGenerator?.impactOccurred(intensity: didReachAction ? 1 : 0.5)
 								feedbackGenerator?.prepare()
 							}
 						}
 						.onEnded { _ in
-							activeSwipeAction?.performActivate(for: self.post, in: self.context)
-							activeSwipeAction = nil
+							activedSwipeAction?.performActivate(for: self.post, in: self.context)
+							activedSwipeAction = nil
 						}
 				)
 				.frame(maxWidth: .infinity, alignment: .leading)
