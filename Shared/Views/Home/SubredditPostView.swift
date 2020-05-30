@@ -131,6 +131,7 @@ private struct SubredditPostHeader: View {
 	}
 }
 
+#if DEBUG
 struct SubredditPostView_Previews: PreviewProvider {
 	static let post = UserPost(post: RedditListing<RedditPost>(asset: .posts).values.first!, insertInto: CoreDataModel.persistentContainer.viewContext)
 
@@ -140,3 +141,4 @@ struct SubredditPostView_Previews: PreviewProvider {
 		}
 	}
 }
+#endif
