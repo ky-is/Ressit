@@ -185,6 +185,7 @@ struct RedditAuthManager {
 			.sink(receiveCompletion: { completion in
 				RedditAuthModel.shared.toggleLoading(false)
 				authorizationBody = nil
+				authorizationSubscription = nil
 				switch completion {
 				case .failure(let error):
 					promise?(.failure(error))

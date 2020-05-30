@@ -9,6 +9,9 @@ struct CoreDataModel {
 			}
 			container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 			container.viewContext.automaticallyMergesChangesFromParent = true
+//#if DEBUG
+//			try! container.viewContext.execute(NSBatchDeleteRequest(fetchRequest: SubredditPostMetadataModel.fetchRequest())) //SAMPLE
+//#endif
 		}
 		return container
 	}()
