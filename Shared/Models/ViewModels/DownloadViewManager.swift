@@ -11,39 +11,39 @@ enum DownloadError: Error {
 }
 
 final class ImageDownloadManager: ObservableObject {
-	let id: String
 	let url: URL
+	private let localURL: URL?
 
 	@Published var state: DownloadState
 
-	private let localURL: URL?
 	private var subscription: AnyCancellable?
-
-	private static let localDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
 	private static let backgroundQueue = DispatchQueue.global(qos: .background)
 
-	init(id: String, url: URL, cache: Bool) {
-		self.id = id
+	init(url: URL) {
 		self.url = url
-		self.localURL = cache ? Self.localDirectory.appendingPathComponent(id + "/t").appendingPathExtension(url.pathExtension) : nil
+		self.localURL = nil
+		self.state = .loading
+		attemptDownload()
+	}
+
+	init<Object: RedditVotable>(url: URL, cacheFor object: Object, cacheName: String) {
+		self.url = url
+		self.localURL = object.cacheURL(for: url, name: cacheName)
 		self.state = .loading
 		if let localURL = localURL, FileManager.default.fileExists(atPath: localURL.path) {
-			try? FileManager.default.removeItem(at: localURL) //SAMPLE
+//			try? FileManager.default.removeItem(at: localURL) //SAMPLE
 			subscribe(to:
 				Future<UIImage, DownloadError> { promise in
 					if let image = UIImage(contentsOfFile: localURL.path) {
 						promise(.success(image))
 					} else {
-						promise(.failure(DownloadError.invalidImage))
+						promise(.failure(.invalidImage))
 						try? FileManager.default.removeItem(at: localURL)
 					}
 				}
 					.subscribe(on: Self.backgroundQueue)
+					.catch { _ in self.downloadPublisher }
 					.receive(on: RunLoop.main)
-					.catch { error -> AnyPublisher<UIImage, Error> in
-						self.state = .failure(error: error)
-						return self.downloadPublisher
-					}
 					.eraseToAnyPublisher()
 			)
 		} else {

@@ -102,7 +102,7 @@ extension SubredditPostModel {
 			return nil
 		}
 		guard let thumbnailLoader = thumbnailLoader else {
-			let loader = ImageDownloadManager(id: id, url: thumbnail, cache: true)
+			let loader = ImageDownloadManager(url: thumbnail, cacheFor: self, cacheName: "thumb")
 			self.thumbnailLoader = loader
 			return loader
 		}

@@ -18,9 +18,16 @@ protocol RedditVotable: RedditIdentifiable, ObservableObject {
 	var score: Int { get }
 
 	func voteColor() -> Color
+	func cacheURL(for source: URL, name: String) -> URL
 }
 
+private let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+
 extension RedditVotable {
+	func cacheURL(for source: URL, name: String) -> URL {
+		return cacheDirectory.appendingPathComponent(id).appendingPathComponent(name).appendingPathExtension(source.pathExtension)
+	}
+
 	func voteColor() -> Color {
 		if userVote > 0 {
 			return .orange

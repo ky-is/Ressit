@@ -41,7 +41,7 @@ private struct SubredditPostContainer: View {
 					if post.previewIsVideo {
 						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
 					} else {
-						DownloadImageView(viewModel: ImageDownloadManager(id: "", url: post.previewURL!, cache: false))
+						DownloadImageView(viewModel: ImageDownloadManager(url: post.previewURL!))
 							.frame(maxWidth: .infinity)
 					}
 				}
