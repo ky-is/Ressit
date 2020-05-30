@@ -61,7 +61,9 @@ private struct SubredditsSubscriptionList: View {
 						Image(systemName: "plus")
 							.font(.title)
 							.frame(height: 44)
+							.padding(.horizontal, 16)
 					}
+						.padding(.trailing, -16)
 				}
 			})
 			.sheet(isPresented: $showAddSubreddits) {
