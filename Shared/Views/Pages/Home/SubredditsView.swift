@@ -53,12 +53,16 @@ private struct SubredditsSubscriptionList: View {
 		}
 		return List {
 			if totalPostCount > 0 {
-				Section(header: Text("Collections")) {
+				SectionVibrant(label: "Collections") {
 					SubredditListEntry(subscription: .global, postCount: totalPostCount)
 				}
 			}
-			SubredditsSubscriptionsSection(header: "Subreddits", subscriptions: availableSubscriptions)
-			SubredditsSubscriptionsSection(header: "Unavailable", subscriptions: unavailableSubscriptions)
+			if !availableSubscriptions.isEmpty {
+				SubredditsSubscriptionsSection(header: "Subreddits", subscriptions: availableSubscriptions)
+			}
+			if !unavailableSubscriptions.isEmpty {
+				SubredditsSubscriptionsSection(header: "Unavailable", subscriptions: unavailableSubscriptions)
+			}
 		}
 			.navigationBarItems(trailing: Group {
 				if !inSplitView {
@@ -93,8 +97,8 @@ private struct SubredditsSubscriptionsSection: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		Section(header: Text(header)) {
-			ForEach(subscriptions) { subreddit in
+		SectionVibrant(label: header) {
+			ForEach(self.subscriptions) { subreddit in
 				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}
 				.onDelete { indices in
@@ -120,7 +124,7 @@ private struct SubredditListEntry: View {
 			}) {
 				SubredditTitle(name: subscription.model?.name)
 					.font(.system(size: 21))
-					.frame(minHeight: 44)
+					.padding(.vertical)
 			}
 			if postCount > 0 {
 				Spacer()
