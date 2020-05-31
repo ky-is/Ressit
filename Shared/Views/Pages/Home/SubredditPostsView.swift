@@ -100,12 +100,18 @@ private struct ClearReadModifier: ViewModifier {
 }
 
 struct SubredditPostsView_Previews: PreviewProvider {
-	static var previews: some View {
-		let subredditSubscription = UserSubreddit(context: CoreDataModel.persistentContainer.viewContext)
+	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static var subredditSubscription: UserSubreddit = {
+		let subredditSubscription = UserSubreddit(context: context)
 		subredditSubscription.name = "Test"
 		subredditSubscription.creationDate = Date()
-		return NavigationView {
+		return subredditSubscription
+	}()
+
+	static var previews: some View {
+		NavigationView {
 			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription), inSplitView: false)
 		}
+			.environment(\.managedObjectContext, context)
 	}
 }

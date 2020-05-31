@@ -73,12 +73,20 @@ private struct SubredditPostButton: View {
 }
 
 struct SubredditPostListEntry_Previews: PreviewProvider {
-	static var previews: some View {
-		let post = UserPost(context: CoreDataModel.persistentContainer.viewContext)
+	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static var post: UserPost = {
+		let post = UserPost(context: context)
 		post.title = "Test"
 		post.score = 42
 		post.commentCount = 8001
 		post.creationDate = Date(timeIntervalSinceReferenceDate: 0)
-		return SubredditPostListEntry(post: post)
+		return post
+	}()
+
+	static var previews: some View {
+		List {
+			SubredditPostListEntry(post: post)
+		}
+			.environment(\.managedObjectContext, context)
 	}
 }

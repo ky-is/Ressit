@@ -117,8 +117,10 @@ private struct SubredditListEntry: View {
 }
 
 struct SubredditsView_Previews: PreviewProvider {
+	private static let context = CoreDataModel().persistentContainer.viewContext
+
 	static var previews: some View {
 		SubredditsView(subscriptions: [], inSplitView: false)
-			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
+			.environment(\.managedObjectContext, context)
 	}
 }

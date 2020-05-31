@@ -7,7 +7,6 @@ struct LocalView<VM: RedditViewModel, Result: NSManagedObject & Identifiable, Co
 	let content: (FetchedResults<Result>) -> Content
 
 	@FetchRequest private var fetchedResults: FetchedResults<Result>
-	@Environment(\.managedObjectContext) private var context
 
 	init(_ viewModel: VM, loadingHeight: CGFloat? = nil, sortDescriptor: NSSortDescriptor, predicate: NSPredicate, @ViewBuilder successContent: @escaping (FetchedResults<Result>) -> Content) {
 		self.viewModel = viewModel

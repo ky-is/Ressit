@@ -1,7 +1,7 @@
 import CoreData
 
 struct CoreDataModel {
-	static var persistentContainer: NSPersistentCloudKitContainer = {
+	var persistentContainer: NSPersistentCloudKitContainer = {
 		let container = NSPersistentCloudKitContainer(name: "CoreData")
 		container.loadPersistentStores { storeDescription, error in
 			if let error = error as NSError? {
@@ -16,7 +16,7 @@ struct CoreDataModel {
 		return container
 	}()
 
-	static func saveContext() {
+	func saveIfNeeded() {
 		let context = persistentContainer.viewContext
 		if context.hasChanges {
 			context.safeSave()
