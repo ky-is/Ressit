@@ -121,9 +121,8 @@ private func getHashID(isSelf: Bool, id: String, url: URL?, title: String, selft
 			}
 		}
 	} else if let url = url?.deletingPathExtension() {
-		if let host = url.host, host.count >= 3 {
-			let hostString = host.starts(with: "www.") ? String(host.dropFirst(4)) : host
-			return hostString + url.path
+		if let host = url.hostDescription, host.count >= 3 {
+			return host + url.path
 		}
 		if url.path.count > 2 {
 			return url.path

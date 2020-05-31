@@ -22,6 +22,15 @@ extension Array {
 	}
 }
 
+extension URL {
+	var hostDescription: String? {
+		guard let host = host else {
+			return nil
+		}
+		return host.starts(with: "www.") ? String(host.dropFirst(4)) : host
+	}
+}
+
 extension TimeInterval {
 	static let minute: Self = 60
 	static let hour: Self = minute * 60

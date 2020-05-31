@@ -34,6 +34,10 @@ final class UserPost: NSManagedObject, RedditVotable {
 
 	var thumbnailLoader: ImageDownloadViewModel?
 
+	var isYoutubeLink: Bool {
+		url?.hostDescription == "youtube.com"
+	}
+
 	func performRead(_ read: Bool, in context: NSManagedObjectContext) {
 		context.perform {
 			if let metadata = self.metadata {
@@ -75,9 +79,9 @@ extension UserPost {
 		fetchRequest.predicate = \UserPostMetadata.hashID == post.hashID
 		let request = try? context.fetch(fetchRequest) as? [UserPostMetadata]
 		let metadata = request?.first
-		if metadata?.readDate != nil { //SAMPLE
-			return print("Already read", post.title)
-		}
+//		if metadata?.readDate != nil { //SAMPLE
+//			return print("Already read", post.title)
+//		}
 		let subredditPost = self.init(post: post, insertInto: context)
 		subredditPost.subreddit = subreddit
 		subredditPost.metadata = metadata

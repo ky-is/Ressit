@@ -42,15 +42,19 @@ private struct SubredditPostContainer: View {
 
 	var body: some View {
 		List {
-			VStack(spacing: 0) {
-				SubredditPostHeader(post: post)
-				if post.previewURL != nil {
+			SubredditPostHeader(post: post)
+				.fixedSize(horizontal: false, vertical: true)
+			if post.previewURL != nil {
+				Group {
 					if post.previewIsVideo {
 						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
+					} else if post.isYoutubeLink {
+						YoutubeEmbedView(url: post.url!)
+							.aspectRatio(16/9, contentMode: .fit)
+							.frame(minHeight: 200)
 					} else {
 						ImageDownloadView(viewModel: imageViewModel!)
 							.background(Color.background)
-							.frame(maxWidth: .infinity)
 							.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)
 							.onTapGesture {
 								if case let .success(image) = self.imageViewModel?.state {
@@ -59,9 +63,9 @@ private struct SubredditPostContainer: View {
 							}
 					}
 				}
+					.frame(maxWidth: .infinity)
+					.listRowInsets(.zero)
 			}
-				.fixedSize(horizontal: false, vertical: true)
-				.listRowInsets(.zero)
 			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
 		}
 			.overlay(Group {
@@ -97,13 +101,18 @@ private struct SubredditPostHeader: View {
 	@State private var openLink = false
 
 	var body: some View {
-		VStack(spacing: 0) {
-			VStack(alignment: .leading, spacing: 6) {
+		Group {
+			VStack(alignment: .leading, spacing: 0) {
 				Button(action: {
 					self.openLink = true
 				}) {
 					Text(post.title)
 						.font(.headline)
+				}
+				if post.url?.host != nil {
+					Text(post.url!.hostDescription!)
+						.font(.subheadline)
+						.foregroundColor(.secondary)
 				}
 				HStack {
 					IconText(iconName: "person.fill", label: post.author)
@@ -117,14 +126,13 @@ private struct SubredditPostHeader: View {
 					Spacer()
 				}
 					.font(.caption)
+					.padding(.top, 6)
 			}
 			if post.selftext?.nonEmpty != nil {
-				Divider()
-					.padding(.top)
 				Text(post.selftext!)
 			}
 		}
-			.padding()
+			.padding(.vertical, 8)
 			.navigationBarTitle(Text(post.title), displayMode: .inline)
 			.sheet(isPresented: $openLink) {
 				SafariView(url: self.post.url!)
