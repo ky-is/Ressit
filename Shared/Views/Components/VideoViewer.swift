@@ -33,6 +33,7 @@ struct VideoViewer: UIViewControllerRepresentable {
 	}
 }
 
+#if DEBUG
 struct VideoViewer_Previews: PreviewProvider {
 	static let post = RedditListing<RedditPost>(asset: .posts).values.first!
 
@@ -40,3 +41,4 @@ struct VideoViewer_Previews: PreviewProvider {
 		VideoViewer(url: post.previewURLs!.first!, aspectRatio: .constant(CGFloat(post.previewWidth! / post.previewHeight!)))
 	}
 }
+#endif
