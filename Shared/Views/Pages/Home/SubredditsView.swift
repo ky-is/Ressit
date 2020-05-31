@@ -42,16 +42,23 @@ private struct SubredditsSubscriptionList: View {
 
 	var body: some View {
 		let totalPostCount = subscriptions.count < 2 ? 0 : subscriptions.reduce(0, +, \.model!.postCount)
+		var availableSubscriptions: [SubredditPostsViewModel] = []
+		var unavailableSubscriptions: [SubredditPostsViewModel] = []
+		subscriptions.forEach {
+			if $0.model!.postCount > 0 {
+				availableSubscriptions.append($0)
+			} else {
+				unavailableSubscriptions.append($0)
+			}
+		}
 		return List {
 			if totalPostCount > 0 {
-				SubredditListEntry(subscription: .global, postCount: totalPostCount)
-			}
-			ForEach(subscriptions) { subreddit in
-				SubredditListEntry(subscription: subreddit, postCount: nil)
-			}
-				.onDelete { indices in
-					self.subscriptions.performDelete(at: indices, from: self.context)
+				Section(header: Text("Collections")) {
+					SubredditListEntry(subscription: .global, postCount: totalPostCount)
 				}
+			}
+			SubredditsSubscriptionsSection(header: "Subreddits", subscriptions: availableSubscriptions)
+			SubredditsSubscriptionsSection(header: "Unavailable", subscriptions: unavailableSubscriptions)
 		}
 			.navigationBarItems(trailing: Group {
 				if !inSplitView {
@@ -76,6 +83,24 @@ private struct SubredditsSubscriptionList: View {
 					self.showAddSubreddits = true
 				}
 			}
+	}
+}
+
+private struct SubredditsSubscriptionsSection: View {
+	let header: String
+	let subscriptions: [SubredditPostsViewModel]
+
+	@Environment(\.managedObjectContext) private var context
+
+	var body: some View {
+		Section(header: Text(header)) {
+			ForEach(subscriptions) { subreddit in
+				SubredditListEntry(subscription: subreddit, postCount: nil)
+			}
+				.onDelete { indices in
+					self.subscriptions.performDelete(at: indices, from: self.context)
+				}
+		}
 	}
 }
 
