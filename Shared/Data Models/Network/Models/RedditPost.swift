@@ -95,7 +95,6 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 	}
 }
 
-
 private func parseRedditMedia(key: String, from json: [String: Any]) -> (String, Float?, Float?)? {
 	if let videoPreview = json[key] as? [String: Any] {
 		if let urlString = (videoPreview["hls_url"] ?? videoPreview["fallback_url"]) as? String {

@@ -94,18 +94,19 @@ private struct SubredditListEntry: View {
 				SubredditUserModel.shared.selected = self.subscription
 			}) {
 				SubredditTitle(name: subscription.model?.name)
-					.font(.system(size: 22))
-					.padding(.vertical, 8)
+					.font(.system(size: 21))
+					.frame(minHeight: 44)
 			}
 			if postCount > 0 {
 				Spacer()
 				Text(postCount.description)
 					.foregroundColor(.background)
-					.font(Font.footnote.bold())
+					.font(.system(size: 17, weight: .bold))
 					.frame(minWidth: 18)
 					.lineLimit(1)
 					.fixedSize()
-					.padding(4)
+					.padding(.vertical, 2)
+					.padding(.horizontal, 3)
 					.background(
 						Capsule()
 							.fill(Color.secondary)
