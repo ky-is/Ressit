@@ -34,12 +34,15 @@ final class UserPost: NSManagedObject, RedditVotable {
 
 	var thumbnailLoader: ImageDownloadViewModel?
 
-	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
-		if let metadata = metadata {
-			metadata.readDate = read ? Date() : nil
-			context.refresh(self, mergeChanges: true)
-		} else if read {
-			UserPostMetadata.create(for: self, in: context)
+	func performRead(_ read: Bool, in context: NSManagedObjectContext) {
+		context.perform {
+			if let metadata = self.metadata {
+				metadata.readDate = read ? Date() : nil
+				context.refresh(self, mergeChanges: true)
+			} else if read {
+				UserPostMetadata.create(for: self, in: context)
+			}
+			context.safeSave()
 		}
 	}
 }
@@ -72,7 +75,7 @@ extension UserPost {
 		fetchRequest.predicate = \UserPostMetadata.hashID == post.hashID
 		let request = try? context.fetch(fetchRequest) as? [UserPostMetadata]
 		let metadata = request?.first
-		if metadata?.readDate != nil {
+		if metadata?.readDate != nil { //SAMPLE
 			return print("Already read", post.title)
 		}
 		let subredditPost = self.init(post: post, insertInto: context)

@@ -17,10 +17,7 @@ struct SubredditPostBody: View {
 			} else {
 				SubredditPostCommentGroup(comments: result.comments, maxDepth: 20, currentDepth: 0)
 					.onAppear {
-						self.context.perform {
-							self.post.toggleRead(true, in: self.context)
-							self.context.safeSave()
-						}
+						self.post.performRead(true, in: self.context)
 					}
 			}
 		}

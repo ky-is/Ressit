@@ -21,7 +21,7 @@ struct SubredditPostListEntry: View {
 					],
 					trailing: [
 						SwipeSegment(primary: .markRead, reset: .markUnread, shouldReset: { self.post.metadata?.readDate != nil }) { action in
-							self.post.toggleRead(action == .markRead, in: self.context)
+							self.post.performRead(action == .markRead, in: self.context)
 						},
 						SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.post.userSaved }) { action in
 							self.post.performSaved(action == .save, in: self.context)
