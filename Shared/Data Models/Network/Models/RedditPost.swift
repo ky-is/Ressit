@@ -76,7 +76,14 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 			}
 			if previewURLStrings == nil, let images = previews["images"] as? [[String: Any]] {
 				previewURLStrings = images.compactMap { image in
-					guard let source = image["source"] as? [String: Any], let urlString = source["url"] as? String else {
+					let base: [String: Any]
+					if let variants = image["variants"] as? [String: Any], let videoVariant = (variants["mp4"] ?? variants["gif"]) as? [String: Any] {
+						base = videoVariant
+						isPreviewVideo = true
+					} else {
+						base = image
+					}
+					guard let source = base["source"] as? [String: Any], let urlString = source["url"] as? String else {
 						print("images", image)
 						return nil
 					}
