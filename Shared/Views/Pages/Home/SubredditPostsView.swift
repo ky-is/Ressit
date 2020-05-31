@@ -28,9 +28,29 @@ private struct OneSubredditPostsView: View {
 	let model: UserSubreddit
 
 	var body: some View {
-		LocalView(subscription, sortDescriptor: postSort, predicate: NSPredicate(format: "subreddit = %@", model)) { (result: FetchedResults<UserPost>) in
-			SubredditPostsList(posts: result)
-				.modifier(ClearReadModifier(model: self.model, posts: result))
+		LocalView(subscription, sortDescriptor: postSort, predicate: \UserPost.subreddit == model) { (result: FetchedResults<UserPost>) in
+			if result.isEmpty {
+				EmptyPostsPlaceholder(subscription: self.subscription)
+			} else {
+				SubredditPostsList(posts: result)
+					.modifier(ClearReadModifier(model: self.model, posts: result))
+			}
+		}
+	}
+}
+
+private struct EmptyPostsPlaceholder: View {
+	let subscription: SubredditPostsViewModel
+
+	var body: some View {
+		let nextPeriod = subscription.model?.nextMostFrequentUpdate
+		return VStack {
+			if nextPeriod != nil {
+				Text("Next update for top:")
+					.foregroundColor(.secondary)
+				Text("\(nextPeriod!.0.rawValue) \(nextPeriod!.1.relativeToNow)")
+					.font(.headline)
+			}
 		}
 	}
 }

@@ -18,22 +18,39 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 
 	@NSManaged var posts: Set<UserPost>
 
-	func needsUpdate(for period: RedditPeriod) -> Bool {
-		let date: Date?
+	private func nextDate(for period: RedditPeriod) -> Date? {
 		switch period {
 		case .all:
-			date = periodAllDate
+			return periodAllDate?.advanced(by: RedditPeriod.all.minimumUpdate)
 		case .year:
-			date = periodYearDate
+			return periodYearDate?.advanced(by: RedditPeriod.year.minimumUpdate)
 		case .month:
-			date = periodMonthDate
+			return periodMonthDate?.advanced(by: RedditPeriod.month.minimumUpdate)
 		case .week:
-			date = periodWeekDate
+			return periodWeekDate?.advanced(by: RedditPeriod.week.minimumUpdate)
 		}
-		guard let previousDate = date else {
+	}
+
+	var nextMostFrequentUpdate: (RedditPeriod, Date) {
+		guard periodWeekDate != nil else {
+			return (.week, Date())
+		}
+		return (.week, nextDate(for: .week)!)
+	}
+
+	var nextUpdate: (RedditPeriod, Date) {
+		guard periodAllDate != nil, periodYearDate != nil, periodMonthDate != nil, periodWeekDate != nil else {
+			return (.all, Date())
+		}
+		let periods: [RedditPeriod] = [.all, .year, .month, .week]
+		return periods.map({ ($0, nextDate(for: $0)!) }).sorted { $0.1 < $1.1 }.first!
+	}
+
+	func needsUpdate(for period: RedditPeriod) -> Bool {
+		guard let nextDate = nextDate(for: period) else {
 			return true
 		}
-		return previousDate.timeIntervalSinceNow > period.minimumUpdate
+		return nextDate.timeIntervalSinceNow < 0
 	}
 
 	func performUpdate(posts: [RedditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {

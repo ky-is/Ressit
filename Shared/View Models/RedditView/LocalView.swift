@@ -12,17 +12,11 @@ struct LocalView<VM: RedditViewModel, Result: NSManagedObject & Identifiable, Co
 		self.viewModel = viewModel
 		self.loadingHeight = loadingHeight
 		self.content = successContent
-		self._fetchedResults = FetchRequest<Result>(sortDescriptors: [sortDescriptor], predicate: predicate)
+		self._fetchedResults = FetchRequest(sortDescriptors: [sortDescriptor], predicate: predicate)
 	}
 
 	var body: some View {
-		Group {
-			if !fetchedResults.isEmpty {
-				content(fetchedResults)
-			} else {
-				LoadingPlaceholder(error: viewModel.error, loadingHeight: loadingHeight)
-			}
-		}
+		content(fetchedResults)
 			.onAppear(perform: viewModel.fetch)
 	}
 }
