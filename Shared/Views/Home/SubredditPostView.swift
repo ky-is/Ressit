@@ -41,7 +41,7 @@ private struct SubredditPostContainer: View {
 	}
 
 	var body: some View {
-		ScrollView {
+		List {
 			VStack(spacing: 0) {
 				SubredditPostHeader(post: post)
 				if post.previewURL != nil {
@@ -61,6 +61,7 @@ private struct SubredditPostContainer: View {
 				}
 			}
 				.fixedSize(horizontal: false, vertical: true)
+				.listRowInsets(.zero)
 			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
 		}
 			.overlay(Group {

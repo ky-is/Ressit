@@ -54,6 +54,9 @@ extension Edge {
 		}
 	}
 }
+extension EdgeInsets {
+	static let zero = Self(top: 0, leading: 0, bottom: 0, trailing: 0)
+}
 
 extension Sequence {
 	func reduce<Result>(_ initialValue: Result, _ operation: (Result, Result) -> Result, _ keyPath: KeyPath<Element, Result>) -> Result {

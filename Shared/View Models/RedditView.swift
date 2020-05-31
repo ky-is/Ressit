@@ -36,6 +36,7 @@ private struct LoadingPlaceholder: View {
 				LoadingView()
 			}
 		}
+			.frame(maxWidth: .infinity)
 	}
 
 	var body: some View {

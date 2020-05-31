@@ -5,6 +5,8 @@ import Combine
 @objc(UserPost)
 final class UserPost: NSManagedObject, RedditVotable {
 	static let type = "t3"
+	internal var saveSubscription: AnyCancellable?
+	internal var voteSubscription: AnyCancellable?
 
 	@NSManaged var id: String
 	@NSManaged var hashID: String
@@ -30,9 +32,6 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var subreddit: UserSubreddit
 	@NSManaged var metadata: UserPostMetadata?
 
-	private var saveSubscription: AnyCancellable?
-	private var voteSubscription: AnyCancellable?
-
 	var thumbnailLoader: ImageDownloadManager?
 
 	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
@@ -42,35 +41,6 @@ final class UserPost: NSManagedObject, RedditVotable {
 		} else if read {
 			UserPostMetadata.create(for: self, in: context)
 		}
-	}
-	func toggleVote(_ vote: Int, in context: NSManagedObjectContext) {
-		performRemoteUpdate(on: \.userVote, updateTo: vote, request: .vote(entity: self, vote: vote), in: context)
-	}
-	func performSaved(_ saved: Bool, in context: NSManagedObjectContext) {
-		performRemoteUpdate(on: \.userSaved, updateTo: saved, request: .save(entity: self, enabled: saved), in: context)
-	}
-
-	private func performRemoteUpdate<Value>(on keyPath: ReferenceWritableKeyPath<UserPost, Value>, updateTo value: Value, request: APIRequest<EmptyReddit>, in context: NSManagedObjectContext) {
-		let oldValue = self[keyPath: keyPath]
-		saveSubscription?.cancel()
-		context.perform {
-			self[keyPath: keyPath] = value
-			context.safeSave()
-		}
-		self.saveSubscription = RedditClient.shared.send(request)
-			.sink(receiveCompletion: { completion in
-				switch completion {
-				case .failure(let error):
-					print("Undo", keyPath, self.title, oldValue, error)
-					context.perform {
-						self[keyPath: keyPath] = oldValue
-						context.safeSave()
-					}
-				case .finished:
-					break
-				}
-			}, receiveValue: { _ in })
-
 	}
 }
 

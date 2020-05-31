@@ -1,7 +1,7 @@
 import SwiftUI
 import CoreData
 
-private let listInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
+private let defaultListInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
 
 private var activatedSwipeSegment: SwipeSegment?
@@ -26,8 +26,17 @@ struct SwipeSegment: Equatable {
 }
 
 struct ListRowSwipeModifier: ViewModifier {
+	let inList: Bool
+	let insets: EdgeInsets
 	let leading: [SwipeSegment]?
 	let trailing: [SwipeSegment]?
+
+	init(inList: Bool = true, insets: EdgeInsets = defaultListInset, leading: [SwipeSegment]? = nil, trailing: [SwipeSegment]? = nil) {
+		self.inList = inList
+		self.leading = leading
+		self.trailing = trailing
+		self.insets = insets
+	}
 
 	@State private var swipeAction: PostSwipeAction?
 	@State private var swipeEdge: Edge?
@@ -41,10 +50,13 @@ struct ListRowSwipeModifier: ViewModifier {
 		ZStack {
 			if swipeAction != nil && swipeEdge != nil {
 				PostSwipeActionView(action: swipeAction!, edge: swipeEdge!, offset: swipeDistance)
+					.padding(.vertical, inList ? -insets.top : -0.5)
+					.offset(x: swipeEdge == .leading ? -insets.leading : insets.trailing)
 			}
 			content
 				.frame(maxWidth: .infinity, alignment: .leading)
 				.offset(x: swipeDistance)
+				.padding(inList ? .zero : insets)
 				.gesture(
 					DragGesture(minimumDistance: 18)
 						.updating($swipeDistance) { value, swipeDistance, transaction in
@@ -52,28 +64,30 @@ struct ListRowSwipeModifier: ViewModifier {
 								return
 							}
 							let distance: CGFloat
+							let didReachSegment: Bool
 							let displaySegment: SwipeSegment?
 							let swipeEdge: Edge?
-							let didReachSegment: Bool
 							if value.translation.height.magnitude > 128 { // Disable action when swiping too far vertically
 								distance = 0
-								displaySegment = nil
 								didReachSegment = false
+								displaySegment = nil
 								swipeEdge = nil
 							} else {
 								distance = self.getSwipeDistance(from: value).resist(over: 256)
-								if feedbackGenerator == nil {
-									feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
-									feedbackGenerator?.prepare()
-								}
 								let isLeadingSwipe = distance > 0
 								swipeEdge = isLeadingSwipe ? .leading : (distance < 0 ? .trailing : nil)
-								guard let directionSegments = isLeadingSwipe ? self.leading : self.trailing else {
-									return //TODO verify
+								if let directionSegments = isLeadingSwipe ? self.leading : self.trailing {
+									didReachSegment = distance.magnitude > swipeActivationMagnitude
+									let segmentIndex = distance.magnitude > swipeActivationMagnitude * 2 ? 1 : 0
+									displaySegment = directionSegments[safe: segmentIndex]
+									if feedbackGenerator == nil {
+										feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
+										feedbackGenerator?.prepare()
+									}
+								} else {
+									didReachSegment = false
+									displaySegment = nil
 								}
-								didReachSegment = distance.magnitude > swipeActivationMagnitude
-								let segmentIndex = distance.magnitude > swipeActivationMagnitude * 2 ? 1 : 0
-								displaySegment = directionSegments[safe: segmentIndex]
 							}
 							swipeDistance = distance
 							let displayAction = displaySegment?.enabledAction
@@ -98,8 +112,8 @@ struct ListRowSwipeModifier: ViewModifier {
 						}
 				)
 		}
-			.animation(swipeDistance == 0 ? .default : nil)
-			.listRowInsets(listInset)
+			.listRowInsets(inList ? insets : .zero)
+			.animation(swipeDistance == 0 ? .default : nil, value: swipeDistance)
 	}
 }
 
@@ -125,8 +139,6 @@ private struct PostSwipeActionView: View {
 				.frame(width: swipeActivationMagnitude)
 				.offset(x: activationMagnitudeRemaining * -unitVector)
 		}
-			.padding(.vertical, -listInset.top)
-			.offset(x: edge == .leading ? -listInset.leading : listInset.trailing)
 			.frame(maxWidth: .infinity, alignment: alignment)
 	}
 }
@@ -136,6 +148,7 @@ enum PostSwipeAction {
 	case upvote, upvoteRemove
 	case markRead, markUnread
 	case save, unsave
+	case collapse, collapseReset
 
 	var color: Color {
 		switch self {
@@ -143,7 +156,7 @@ enum PostSwipeAction {
 			return .orange
 		case .downvote, .downvoteRemove:
 			return .blue
-		case .markRead, .markUnread:
+		case .markRead, .markUnread, .collapse, .collapseReset:
 			return .blue
 		case .save:
 			return .green
@@ -170,6 +183,10 @@ enum PostSwipeAction {
 			return "bookmark.fill"
 		case .unsave:
 			return "bookmark"
+		case .collapse:
+			return "arrow.down.right.and.arrow.up.left"
+		case .collapseReset:
+			return "arrow.up.left.and.arrow.down.right"
 		}
 	}
 }

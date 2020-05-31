@@ -15,8 +15,7 @@ struct SubredditPostBody: View {
 					.foregroundColor(.secondary)
 					.padding()
 			} else {
-				SubredditPostCommentGroup(comments: result.comments, maxBreadth: 99, maxDepth: 20, currentDepth: 0)
-					.padding(.horizontal)
+				SubredditPostCommentGroup(comments: result.comments, maxDepth: 20, currentDepth: 0)
 					.onAppear {
 						self.context.perform {
 							self.post.toggleRead(true, in: self.context)
@@ -30,46 +29,41 @@ struct SubredditPostBody: View {
 
 private struct SubredditPostCommentGroup: View {
 	let comments: RedditListing<RedditComment>
-	let maxBreadth: Int
 	let maxDepth: Int
 	let currentDepth: Int
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 0) {
-			ForEach(comments.values.prefix(maxBreadth)) { comment in
-				SubredditPostCommentTree(comment: comment, maxBreadth: self.maxBreadth, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
-			}
+		ForEach(comments.values) { comment in
+			SubredditPostCommentTree(comment: comment, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
 		}
+			.listRowInsets(.zero)
 	}
 }
 
+private let insets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+
 private struct SubredditPostCommentTree: View {
 	let comment: RedditComment
-	let maxBreadth: Int
 	let maxDepth: Int
 	let currentDepth: Int
+	private let isRoot: Bool
 
 	@State private var collapsed = false
 
-	init(comment: RedditComment, maxBreadth: Int, maxDepth: Int, currentDepth: Int) {
+	init(comment: RedditComment, maxDepth: Int, currentDepth: Int) {
 		self.comment = comment
-		self.maxBreadth = maxBreadth
 		self.maxDepth = maxDepth
 		self.currentDepth = currentDepth
 		self._collapsed = State(initialValue: comment.deleted)
+		self.isRoot = currentDepth == 0
 	}
-
-	private static let horizontalPadding: CGFloat = 12
-	private static let veritcalPadding: CGFloat = 12
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 0) {
 			Divider()
-				.background(currentDepth == 0 ? Color.secondary : nil)
-			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: collapsed)
-				.padding(.vertical, Self.veritcalPadding)
-				.frame(maxWidth: .infinity, alignment: .leading)
-				.contentShape(Rectangle())
+				.background(isRoot ? Color.secondary : nil)
+				.padding(.leading, isRoot ? 16 - insets.leading : 0)
+			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: $collapsed)
 				.onTapGesture {
 					if self.comment.childIDs == nil {
 						withAnimation {
@@ -77,34 +71,27 @@ private struct SubredditPostCommentTree: View {
 						}
 					}
 				}
-				.background(Group {
-					if currentDepth > 0 {
-						Color.accentColor
-							.hueRotation(.degrees(Double(self.currentDepth - 1) * 31))
-							.frame(width: 1)
-							.padding(.bottom, Self.veritcalPadding)
-							.offset(x: -Self.horizontalPadding)
-					}
-				}, alignment: .topLeading)
 			if !collapsed && comment.replies != nil && currentDepth < maxDepth {
-				SubredditPostCommentGroup(comments: comment.replies!, maxBreadth: maxBreadth, maxDepth: maxDepth, currentDepth: currentDepth + 1)
+				SubredditPostCommentGroup(comments: comment.replies!, maxDepth: maxDepth, currentDepth: currentDepth + 1)
 			}
 		}
-			.padding(.leading, currentDepth > 0 ? Self.horizontalPadding : 0)
+			.padding(.leading, insets.leading)
 	}
 }
 
 private struct SubredditPostCommentContent: View {
 	let comment: RedditComment
 	let currentDepth: Int
-	let collapsed: Bool
+	@Binding var collapsed: Bool
+
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		Group {
 			if !collapsed && !comment.deleted {
 				SubredditPostCommentFromUser(comment: comment)
 			} else {
-				Group {
+				VStack(alignment: .leading) {
 					if collapsed {
 						Text("\(comment.deleted ? "deleted, " : "")collapsed " + (comment.replies?.values.count ?? 0).pluralize("direct reply", drops: 1, suffix: "ies"))
 					} else if comment.childIDs != nil {
@@ -113,18 +100,60 @@ private struct SubredditPostCommentContent: View {
 						Text("deleted \(comment.creationDate!.relativeToNow)")
 					}
 				}
+					.frame(minHeight: 24)
 					.foregroundColor(.secondary)
-					.font(.caption)
+					.font(.footnote)
 			}
 		}
+			.background(Group {
+				if currentDepth > 0 {
+					Color.accentColor
+						.hueRotation(.degrees(Double(self.currentDepth - 1) * 31))
+						.frame(width: 1)
+						.offset(x: -insets.leading - 1)
+				}
+			}, alignment: .topLeading)
+			.frame(maxWidth: .infinity, alignment: .leading)
+			.contentShape(Rectangle())
+			.modifier(
+				ListRowSwipeModifier(
+					inList: false, insets: insets,
+					leading: collapsed ? nil : [
+						SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { self.comment.userVote > 0 }) { action in
+							self.comment.toggleVote(action == .upvote ? 1 : 0, in: self.context)
+						},
+						SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { self.comment.userVote < 0 }) { action in
+							self.comment.toggleVote(action == .downvote ? -1 : 0, in: self.context)
+						},
+					],
+					trailing: collapsed
+						? [
+							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { self.collapsed }) { action in
+								withAnimation {
+									self.collapsed = action == .collapse
+								}
+							},
+						]
+						: [
+							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { self.collapsed }) { action in
+								withAnimation {
+									self.collapsed = action == .collapse
+								}
+							},
+							SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.comment.userSaved }) { action in
+								self.comment.performSaved(action == .save, in: self.context)
+							},
+						]
+				)
+			)
 	}
 }
 
 private struct SubredditPostCommentFromUser: View {
-	let comment: RedditComment
+	@ObservedObject var comment: RedditComment
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 2) {
+		VStack(alignment: .leading, spacing: 3) {
 			Text(comment.body!.trimmingCharacters(in: .whitespacesAndNewlines))
 				.foregroundColor(comment.body != nil ? nil : .secondary)
 				.font(.callout)
@@ -138,6 +167,10 @@ private struct SubredditPostCommentFromUser: View {
 				if comment.creationDate != nil {
 					Text(comment.creationDate!.relativeToNow)
 				}
+				if comment.userSaved {
+					Image(systemName: "bookmark.fill")
+						.foregroundColor(.green)
+				}
 			}
 				.font(Font.caption.monospacedDigit())
 		}
@@ -149,9 +182,8 @@ struct SubredditPostBody_Previews: PreviewProvider {
 	static let comments = RedditListing<RedditComment>(asset: .comments)
 
 	static var previews: some View {
-		ScrollView {
-			SubredditPostCommentGroup(comments: comments, maxBreadth: 2, maxDepth: 2, currentDepth: 0)
-				.padding(.horizontal)
+		List {
+			SubredditPostCommentGroup(comments: comments, maxDepth: 2, currentDepth: 0)
 		}
 			.environment(\.managedObjectContext, CoreDataModel.persistentContainer.viewContext)
 	}

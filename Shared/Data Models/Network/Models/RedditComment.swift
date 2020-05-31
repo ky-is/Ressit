@@ -1,7 +1,10 @@
 import Foundation
+import Combine
 
 final class RedditComment: RedditResponsable, RedditVotable {
 	static let type = "t1"
+	internal var saveSubscription: AnyCancellable?
+	internal var voteSubscription: AnyCancellable?
 
 	let id: String
 	let author: String?
@@ -13,6 +16,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 	let childIDs: [String]?
 
 	@Published var userVote: Int
+	@Published var userSaved: Bool
 
 	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -48,6 +52,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		score = data["score"] as? Int ?? 0
 		let likes = data["likes"] as? Bool
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
+		userSaved = data["saved"] as! Bool
 	}
 
 	var deleted: Bool {
