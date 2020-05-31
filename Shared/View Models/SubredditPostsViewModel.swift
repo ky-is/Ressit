@@ -42,15 +42,23 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	}
 
 	func updateIfNeeded(in context: NSManagedObjectContext) {
-		guard let model = model, subscription == nil, model.postCount < 5 else { //TODO 5 is priority dependant
+		guard let model = model, subscription == nil else {
+			return
+		}
+		let fetchCount = 2 + model.priority * 2
+		guard model.postCount < max(4, fetchCount) else {
 			return
 		}
 		self.context = context
-		self.period = RedditPeriod.allCases.first(where: model.needsUpdate(for:))
+		var cases = RedditPeriod.allCases
+		if model.priority < 1 {
+			cases = cases.dropLast()
+		}
+		self.period = cases.first(where: model.needsUpdate(for:))
 		guard let period = period else {
 			return
 		}
-		fetch(.topPosts(in: model.name, over: period, count: 5))
+		fetch(.topPosts(in: model.name, over: period, count: fetchCount))
 	}
 
 	func onLoaded(_ result: NetworkResource) {
