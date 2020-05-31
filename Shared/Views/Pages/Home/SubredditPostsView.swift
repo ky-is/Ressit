@@ -51,7 +51,7 @@ private struct EmptyPostsPlaceholder: View {
 					.foregroundColor(.secondary)
 				Text("\(nextPeriod!.0.rawValue) \(nextPeriod!.1.relativeToNow)")
 					.font(.headline)
-				PriorityButton(subreddit: model!, size: 16)
+				PriorityButton(subreddit: model!, size: 16, tooltip: true)
 				Text("Increase priority to get more posts now")
 			}
 		}

@@ -129,7 +129,7 @@ private struct SubredditListEntry: View {
 			}
 			Spacer()
 			if subscription.model != nil {
-				PriorityButton(subreddit: subscription.model!, size: 8)
+				PriorityButton(subreddit: subscription.model!, size: 8, tooltip: true)
 			}
 			Text(postCount.description)
 				.foregroundColor(.background)

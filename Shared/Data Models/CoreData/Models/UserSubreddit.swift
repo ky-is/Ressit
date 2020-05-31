@@ -20,6 +20,11 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 
 	@NSManaged var posts: Set<UserPost>
 
+
+	var fetchCount: Int {
+		2 + priority * 2
+	}
+
 	private func nextDate(for period: RedditPeriod) -> Date? {
 		switch period {
 		case .all:

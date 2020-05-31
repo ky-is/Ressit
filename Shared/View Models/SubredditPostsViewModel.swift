@@ -45,7 +45,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 		guard let model = model, subscription == nil else {
 			return
 		}
-		let fetchCount = 2 + model.priority * 2
+		let fetchCount = model.fetchCount
 		guard model.postCount < max(4, fetchCount) else {
 			return
 		}
