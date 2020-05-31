@@ -4,18 +4,18 @@ struct SubredditTitle: View {
 	let name: String?
 
 	var body: some View {
-		Group {
+		HStack(spacing: 1) {
 			if name != nil {
-				HStack(spacing: 1) {
-					Text("r/")
-						.foregroundColor(.secondary)
-					Text(name!)
-				}
-					.lineLimit(1)
+				Text("r/")
+					.foregroundColor(.secondary)
+				Text(name!)
 			} else {
-				Text("🌏 Global Feed")
+				Image(systemName: "globe")
+					.foregroundColor(.accentColor)
+				Text(" Global Feed")
 			}
 		}
+			.lineLimit(1)
 	}
 }
 

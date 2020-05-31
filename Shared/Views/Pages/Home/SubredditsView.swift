@@ -79,6 +79,7 @@ private struct SubredditsSubscriptionList: View {
 			})
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
+					.accentColor(.tint)
 					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
