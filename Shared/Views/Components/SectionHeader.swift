@@ -25,17 +25,22 @@ private struct HeaderView: View {
 		ZStack(alignment: .leading) {
 			BlurView(style: .systemChromeMaterial)
 			Text(label)
+				.font(Font.headline.smallCaps())
 				.padding(.horizontal)
+				.padding(.vertical, 5)
 		}
 	}
 }
 
 struct SectionVibrant_Previews: PreviewProvider {
 	static var previews: some View {
-		List {
-			SectionVibrant(label: "TEST") {
-				Text("Test")
+		NavigationView {
+			List {
+				SectionVibrant(label: "Test") {
+					Text("Test")
+				}
 			}
+				.navigationBarTitle("Test", displayMode: .inline)
 		}
 	}
 }
