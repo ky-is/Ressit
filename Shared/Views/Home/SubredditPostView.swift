@@ -23,7 +23,7 @@ private struct SubredditPostContainer: View {
 	let post: UserPost
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
-	private let imageViewModel: ImageDownloadManager?
+	private let imageViewModel: ImageDownloadViewModel?
 	@State private var fullscreenImage: UIImage?
 
 	init(post: UserPost) {
@@ -34,7 +34,7 @@ private struct SubredditPostContainer: View {
 			self.commentsViewModel = SubredditPostCommentsViewModel(post: post)
 		}
 		if let previewURL = post.previewURL {
-			self.imageViewModel = ImageDownloadManager(url: previewURL)
+			self.imageViewModel = ImageDownloadViewModel(url: previewURL)
 		} else {
 			self.imageViewModel = nil
 		}
@@ -48,7 +48,7 @@ private struct SubredditPostContainer: View {
 					if post.previewIsVideo {
 						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
 					} else {
-						DownloadImageView(viewModel: imageViewModel!)
+						ImageDownloadView(viewModel: imageViewModel!)
 							.background(Color.background)
 							.frame(maxWidth: .infinity)
 							.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)

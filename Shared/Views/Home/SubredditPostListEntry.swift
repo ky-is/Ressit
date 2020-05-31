@@ -50,7 +50,7 @@ private struct SubredditPostButton: View {
 		}) {
 			HStack(alignment: .top) {
 				if post.thumbnail != nil {
-					DownloadImageView(viewModel: post.getThumbnailManager()!)
+					ImageDownloadView(viewModel: post.getThumbnailManager()!)
 						.frame(width: 80, height: 80)
 						.clipped()
 						.cornerRadius(2)

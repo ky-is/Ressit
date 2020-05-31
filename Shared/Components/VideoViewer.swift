@@ -32,3 +32,11 @@ struct VideoViewer: UIViewControllerRepresentable {
 	func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<Self>) {
 	}
 }
+
+struct VideoViewer_Previews: PreviewProvider {
+	static let post = RedditListing<RedditPost>(asset: .posts).values.first!
+
+	static var previews: some View {
+		VideoViewer(url: post.previewURLs!.first!, aspectRatio: .constant(CGFloat(post.previewWidth! / post.previewHeight!)))
+	}
+}

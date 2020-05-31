@@ -32,7 +32,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var subreddit: UserSubreddit
 	@NSManaged var metadata: UserPostMetadata?
 
-	var thumbnailLoader: ImageDownloadManager?
+	var thumbnailLoader: ImageDownloadViewModel?
 
 	func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
 		if let metadata = metadata {
@@ -82,12 +82,12 @@ extension UserPost {
 		_ = subredditPost.getThumbnailManager()
 	}
 
-	func getThumbnailManager() -> ImageDownloadManager? {
+	func getThumbnailManager() -> ImageDownloadViewModel? {
 		guard let thumbnail = thumbnail else {
 			return nil
 		}
 		guard let thumbnailLoader = thumbnailLoader else {
-			let loader = ImageDownloadManager(url: thumbnail, cacheFor: self, cacheName: "thumb")
+			let loader = ImageDownloadViewModel(url: thumbnail, cacheFor: self, cacheName: "thumb")
 			self.thumbnailLoader = loader
 			return loader
 		}
