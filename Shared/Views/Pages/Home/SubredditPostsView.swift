@@ -29,13 +29,39 @@ private struct OneSubredditPostsView: View {
 
 	var body: some View {
 		LocalView(subscription, sortDescriptor: postSort, predicate: \UserPost.subreddit == model) { (result: FetchedResults<UserPost>) in
-			if result.isEmpty {
-				EmptyPostsPlaceholder(subscription: self.subscription)
-			} else {
-				SubredditPostsList(posts: result)
-					.modifier(ClearReadModifier(model: self.model, posts: result))
+			Group {
+				if result.isEmpty {
+					EmptyPostsPlaceholder(subscription: self.subscription)
+				} else {
+					SubredditPostsList(subscription: self.subscription, posts: result)
+						.modifier(ClearReadModifier(model: self.model, posts: result))
+				}
 			}
+				.onAppear {
+					PostUserModel.shared.selected = nil
+				}
 		}
+	}
+}
+
+private struct UpcomingPostsRow: View {
+	@ObservedObject var model: UserSubreddit
+
+	var body: some View {
+		let nextPeriod = model.nextMostFrequentUpdate
+		return VStack(alignment: .center) {
+			PriorityButton(subreddit: model, size: 16, tooltip: true)
+			Group {
+				if nextPeriod.1.timeIntervalSinceNow < 0 {
+					Text("Update ready")
+				} else {
+					Text("Next update for top \(nextPeriod.0.rawValue) \(nextPeriod.1.relativeToNow)")
+				}
+			}
+				.font(.subheadline)
+				.foregroundColor(.secondary)
+		}
+			.frame(maxWidth: .infinity, minHeight: 128, alignment: .center)
 	}
 }
 
@@ -43,17 +69,28 @@ private struct EmptyPostsPlaceholder: View {
 	let subscription: SubredditPostsViewModel
 
 	var body: some View {
-		let model = subscription.model
-		let nextPeriod = model?.nextMostFrequentUpdate
-		return VStack {
-			if nextPeriod != nil {
-				Text("Next update for top:")
-					.foregroundColor(.secondary)
-				Text("\(nextPeriod!.0.rawValue) \(nextPeriod!.1.relativeToNow)")
-					.font(.headline)
-				PriorityButton(subreddit: model!, size: 16, tooltip: true)
-				Text("Increase priority to get more posts now")
+		Group {
+			if subscription.model != nil {
+				EmptyPostsPlaceholderContent(model: subscription.model!)
+			} else {
+				EmptyView()
 			}
+		}
+	}
+}
+
+private struct EmptyPostsPlaceholderContent: View {
+	@ObservedObject var model: UserSubreddit
+
+	var body: some View {
+		let nextPeriod = model.nextUpdate
+		return VStack {
+			Text("Next update for top:")
+				.foregroundColor(.secondary)
+			Text("\(nextPeriod.0.rawValue) \(nextPeriod.1.relativeToNow)")
+				.font(.headline)
+			PriorityButton(subreddit: model, size: 16, tooltip: true)
+			Text("Increase priority to get more posts now")
 		}
 	}
 }
@@ -62,12 +99,13 @@ private struct AllSubredditPostsView: View {
 	@FetchRequest(sortDescriptors: [postSort]) private var fetchedResults: FetchedResults<UserPost>
 
 	var body: some View {
-		SubredditPostsList(posts: fetchedResults)
+		SubredditPostsList(subscription: nil, posts: fetchedResults)
 			.modifier(ClearReadModifier(model: nil, posts: fetchedResults))
 	}
 }
 
 private struct SubredditPostsList: View {
+	let subscription: SubredditPostsViewModel?
 	let posts: FetchedResults<UserPost>
 
 	var body: some View {
@@ -76,10 +114,10 @@ private struct SubredditPostsList: View {
 				SubredditPostListEntry(post: post)
 					.tag(post)
 			}
-		}
-			.onAppear {
-				PostUserModel.shared.selected = nil
+			if subscription?.model != nil {
+				UpcomingPostsRow(model: subscription!.model!)
 			}
+		}
 	}
 }
 
