@@ -62,10 +62,7 @@ private struct SubredditPostButton: View {
 						ScoreMetadata(entity: post)
 						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
 						IconText(iconName: "clock", label: post.creationDate?.relativeToNow ?? "")
-						if post.userSaved {
-							Image(systemName: "bookmark.fill")
-								.foregroundColor(.green)
-						}
+						SaveadMetadata(entity: post)
 					}
 						.font(Font.caption.monospacedDigit())
 				}

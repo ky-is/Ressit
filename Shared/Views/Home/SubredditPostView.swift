@@ -92,7 +92,7 @@ private struct PostVideo: View {
 }
 
 private struct SubredditPostHeader: View {
-	@ObservedObject var post: UserPost
+	let post: UserPost
 
 	@State private var openLink = false
 

@@ -59,6 +59,19 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 	}
 }
 
+struct SaveadMetadata<Entity: RedditVotable>: View {
+	@ObservedObject var entity: Entity
+
+	var body: some View {
+		Group {
+			if entity.userSaved {
+				Image(systemName: "bookmark.fill")
+					.foregroundColor(.green)
+			}
+		}
+	}
+}
+
 struct SafariView: UIViewControllerRepresentable {
 	let url: URL
 

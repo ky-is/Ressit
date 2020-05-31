@@ -150,7 +150,7 @@ private struct SubredditPostCommentContent: View {
 }
 
 private struct SubredditPostCommentFromUser: View {
-	@ObservedObject var comment: RedditComment
+	let comment: RedditComment
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 3) {
@@ -167,10 +167,7 @@ private struct SubredditPostCommentFromUser: View {
 				if comment.creationDate != nil {
 					Text(comment.creationDate!.relativeToNow)
 				}
-				if comment.userSaved {
-					Image(systemName: "bookmark.fill")
-						.foregroundColor(.green)
-				}
+				SaveadMetadata(entity: comment)
 			}
 				.font(Font.caption.monospacedDigit())
 		}
