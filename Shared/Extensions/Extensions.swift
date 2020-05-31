@@ -10,6 +10,18 @@ extension Collection {
 	}
 }
 
+extension Array {
+	subscript(clamped index: Index) -> Element {
+		guard index >= startIndex else {
+			return first!
+		}
+		guard index <= endIndex else {
+			return last!
+		}
+		return self[index]
+	}
+}
+
 extension TimeInterval {
 	static let minute: Self = 60
 	static let hour: Self = minute * 60

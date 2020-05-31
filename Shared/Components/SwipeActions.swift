@@ -64,12 +64,12 @@ struct ListRowSwipeModifier: ViewModifier {
 								return
 							}
 							let distance: CGFloat
-							let didReachSegment: Bool
+							let didActivateSegment: Bool
 							let displaySegment: SwipeSegment?
 							let swipeEdge: Edge?
 							if value.translation.height.magnitude > 128 { // Disable action when swiping too far vertically
 								distance = 0
-								didReachSegment = false
+								didActivateSegment = false
 								displaySegment = nil
 								swipeEdge = nil
 							} else {
@@ -77,15 +77,16 @@ struct ListRowSwipeModifier: ViewModifier {
 								let isLeadingSwipe = distance > 0
 								swipeEdge = isLeadingSwipe ? .leading : (distance < 0 ? .trailing : nil)
 								if let directionSegments = isLeadingSwipe ? self.leading : self.trailing {
-									didReachSegment = distance.magnitude > swipeActivationMagnitude
-									let segmentIndex = distance.magnitude > swipeActivationMagnitude * 2 ? 1 : 0
-									displaySegment = directionSegments[safe: segmentIndex]
+									let activationsSwipedCount = distance.magnitude / swipeActivationMagnitude
+									let segmentIndex = Int(floor(activationsSwipedCount)) - 1
+									didActivateSegment = segmentIndex >= 0
+									displaySegment = directionSegments[clamped: segmentIndex]
 									if feedbackGenerator == nil {
 										feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
 										feedbackGenerator?.prepare()
 									}
 								} else {
-									didReachSegment = false
+									didActivateSegment = false
 									displaySegment = nil
 								}
 							}
@@ -97,10 +98,10 @@ struct ListRowSwipeModifier: ViewModifier {
 									self.swipeEdge = swipeEdge
 								}
 							}
-							let activeSection = didReachSegment ? displaySegment : nil
-							if activatedSwipeSegment != activeSection {
-								activatedSwipeSegment = activeSection
-								feedbackGenerator?.impactOccurred(intensity: didReachSegment ? 1 : 0.5)
+							let activatedSection = didActivateSegment ? displaySegment : nil
+							if activatedSwipeSegment != activatedSection {
+								activatedSwipeSegment = activatedSection
+								feedbackGenerator?.impactOccurred(intensity: didActivateSegment ? 1 : 0.5)
 								feedbackGenerator?.prepare()
 							}
 						}
