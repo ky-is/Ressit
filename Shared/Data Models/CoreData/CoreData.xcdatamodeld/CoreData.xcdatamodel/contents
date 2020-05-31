@@ -47,6 +47,7 @@
         <attribute name="periodWeekDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="periodYearDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="postCount" optional="YES" attributeType="Integer 64" derived="YES" derivationExpression="posts.@count" usesScalarValueType="YES"/>
+        <attribute name="priority" attributeType="Integer 64" defaultValueString="1" usesScalarValueType="YES"/>
         <relationship name="posts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="UserPost" inverseName="subreddit" inverseEntity="UserPost"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -57,6 +58,6 @@
     <elements>
         <element name="UserPost" positionX="261" positionY="252" width="128" height="343"/>
         <element name="UserPostMetadata" positionX="270" positionY="279" width="128" height="88"/>
-        <element name="UserSubreddit" positionX="261" positionY="189" width="128" height="193"/>
+        <element name="UserSubreddit" positionX="261" positionY="189" width="128" height="208"/>
     </elements>
 </model>

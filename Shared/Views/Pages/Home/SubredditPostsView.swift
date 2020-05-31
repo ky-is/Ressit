@@ -43,13 +43,16 @@ private struct EmptyPostsPlaceholder: View {
 	let subscription: SubredditPostsViewModel
 
 	var body: some View {
-		let nextPeriod = subscription.model?.nextMostFrequentUpdate
+		let model = subscription.model
+		let nextPeriod = model?.nextMostFrequentUpdate
 		return VStack {
 			if nextPeriod != nil {
 				Text("Next update for top:")
 					.foregroundColor(.secondary)
 				Text("\(nextPeriod!.0.rawValue) \(nextPeriod!.1.relativeToNow)")
 					.font(.headline)
+				PriorityButton(subreddit: model!, size: 16)
+				Text("Increase priority to get more posts now")
 			}
 		}
 	}

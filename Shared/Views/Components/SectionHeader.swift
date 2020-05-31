@@ -29,3 +29,13 @@ private struct HeaderView: View {
 		}
 	}
 }
+
+struct SectionVibrant_Previews: PreviewProvider {
+	static var previews: some View {
+		List {
+			SectionVibrant(label: "TEST") {
+				Text("Test")
+			}
+		}
+	}
+}

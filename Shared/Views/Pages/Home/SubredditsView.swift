@@ -126,21 +126,23 @@ private struct SubredditListEntry: View {
 					.font(.system(size: 21))
 					.padding(.vertical)
 			}
-			if postCount > 0 {
-				Spacer()
-				Text(postCount.description)
-					.foregroundColor(.background)
-					.font(.system(size: 17, weight: .bold))
-					.frame(minWidth: 18)
-					.lineLimit(1)
-					.fixedSize()
-					.padding(.vertical, 2)
-					.padding(.horizontal, 3)
-					.background(
-						Capsule()
-							.fill(Color.secondary)
-					)
+			Spacer()
+			if subscription.model != nil {
+				PriorityButton(subreddit: subscription.model!, size: 8)
 			}
+			Text(postCount.description)
+				.foregroundColor(.background)
+				.font(.system(size: 17, weight: .bold))
+				.frame(minWidth: 18)
+				.lineLimit(1)
+				.fixedSize()
+				.padding(.vertical, 2)
+				.padding(.horizontal, 3)
+				.background(
+					Capsule()
+						.fill(Color.secondary)
+				)
+				.hidden(postCount == 0)
 		}
 	}
 }

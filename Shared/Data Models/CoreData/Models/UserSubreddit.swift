@@ -16,6 +16,8 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 	@NSManaged var periodWeekDate: Date?
 	@NSManaged var postCount: Int
 
+	@NSManaged var priority: Int
+
 	@NSManaged var posts: Set<UserPost>
 
 	private func nextDate(for period: RedditPeriod) -> Date? {
