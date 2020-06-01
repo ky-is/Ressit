@@ -25,7 +25,7 @@ struct SubredditsManage: View {
 	let subscriptions: [SubredditPostsViewModel]
 	@ObservedObject var subredditSearch: SubredditsSearchViewModel
 
-	@State private var title = "Add"
+	@State private var title = "Manage"
 
 	var body: some View {
 		ZStack(alignment: .top) {
@@ -46,8 +46,8 @@ struct SubredditsManage: View {
 		}
 			.navigationBarTitle(Text("\(title) subreddits"), displayMode: .inline)
 			.onAppear {
-				if !self.subscriptions.isEmpty {
-					self.title = "Manage"
+				if self.subscriptions.isEmpty {
+					self.title = "Add"
 				}
 			}
 	}
@@ -84,9 +84,9 @@ private struct SubredditsManageEntry: View {
 			}
 		}) {
 			HStack {
-				Text(subscriptionModel != nil ? "✔︎" : "◯")
+				Image(systemName: subscriptionModel != nil ? "checkmark" : "circle")
+					.font(Font.body.weight(subscriptionModel != nil ? .bold : .light))
 					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
-					.frame(width: 16)
 				SubredditTitle(name: subreddit.name)
 			}
 		}
