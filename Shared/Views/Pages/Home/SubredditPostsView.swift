@@ -52,10 +52,10 @@ private struct UpcomingPostsRow: View {
 		return VStack(alignment: .center) {
 			PriorityButton(subreddit: model, size: 16, tooltip: true)
 			Group {
-				if nextPeriod.1.timeIntervalSinceNow < 0 {
+				if nextPeriod.date.timeIntervalSinceNow < 0 {
 					Text("Update ready")
 				} else {
-					Text("Next update for top \(nextPeriod.0.rawValue) \(nextPeriod.1.relativeToNow)")
+					Text("Next update for top \(nextPeriod.period.rawValue) \(nextPeriod.date.relativeToNow)")
 				}
 			}
 				.font(.subheadline)
@@ -87,7 +87,7 @@ private struct EmptyPostsPlaceholderContent: View {
 		return VStack {
 			Text("Next update for top:")
 				.foregroundColor(.secondary)
-			Text("\(nextPeriod.0.rawValue) \(nextPeriod.1.relativeToNow)")
+			Text("\(nextPeriod.period.rawValue) \(nextPeriod.date.relativeToNow)")
 				.font(.headline)
 			PriorityButton(subreddit: model, size: 16, tooltip: true)
 			Text("Increase priority to get more posts now")

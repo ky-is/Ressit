@@ -50,6 +50,24 @@ extension RelativeDateTimeFormatter {
 }
 
 extension Date {
+	private static let checkComponents: [(interval: TimeInterval, label: String)] = [(.year, "y"), (.month, "m"), (.week, "w"), (.day, "d"), (.hour, "h"), (.minute, "m"), (1, "s")]
+
+	func relativeComponents(maxCount: Int = 1) -> String {
+		var interval = abs(timeIntervalSinceNow)
+		var components: [String] = []
+		for check in Self.checkComponents {
+			if interval > check.interval {
+				let n = (interval / check.interval).rounded(.down)
+				components.append("\(Int(n))\(check.label)")
+				if components.count >= maxCount {
+					break
+				}
+				interval = interval.truncatingRemainder(dividingBy: .year)
+			}
+		}
+		return components.joined(separator: " ")
+	}
+
 	var relativeToNow: String {
 		RelativeDateTimeFormatter.default.localizedString(for: self, relativeTo: Date())
 	}

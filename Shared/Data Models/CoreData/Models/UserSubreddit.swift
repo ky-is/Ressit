@@ -3,6 +3,7 @@ import CoreData
 
 @objc(UserSubreddit)
 final class UserSubreddit: NSManagedObject, RedditIdentifiable {
+	typealias PeriodDate = (period: RedditPeriod, date: Date)
 	static let type = "t5"
 
 	@NSManaged var id: String
@@ -38,7 +39,7 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 		}
 	}
 
-	var nextMostFrequentUpdate: (RedditPeriod, Date) {
+	var nextMostFrequentUpdate: PeriodDate {
 		let minPeriod: RedditPeriod = priority > 0 ? .week : .month
 		guard periodWeekDate != nil else {
 			return (minPeriod, Date())
@@ -46,12 +47,12 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 		return (minPeriod, nextDate(for: minPeriod)!)
 	}
 
-	var nextUpdate: (RedditPeriod, Date) {
+	var nextUpdate: PeriodDate {
 		guard periodAllDate != nil, periodYearDate != nil, periodMonthDate != nil, periodWeekDate != nil else {
 			return (.all, Date())
 		}
 		let periods: [RedditPeriod] = [.all, .year, .month, .week]
-		return periods.map({ ($0, nextDate(for: $0)!) }).sorted { $0.1 < $1.1 }.first!
+		return periods.map({ ($0, nextDate(for: $0)!) }).sorted { $0.date < $1.date }.first!
 	}
 
 	func needsUpdate(for period: RedditPeriod) -> Bool {

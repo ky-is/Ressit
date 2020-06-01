@@ -111,12 +111,7 @@ private struct SubredditsSubscriptionsSection: View {
 
 private struct SubredditListEntry: View {
 	let subscription: SubredditPostsViewModel
-	let postCount: Int
-
-	init(subscription: SubredditPostsViewModel, postCount: Int? = nil) {
-		self.subscription = subscription
-		self.postCount = postCount ?? subscription.model!.postCount
-	}
+	let postCount: Int?
 
 	var body: some View {
 		HStack {
@@ -129,22 +124,48 @@ private struct SubredditListEntry: View {
 			}
 			Spacer()
 			if subscription.model != nil {
-				PriorityButton(subreddit: subscription.model!, size: 8, tooltip: true)
+				SubredditEntryDynamic(subreddit: subscription.model!)
+			} else if postCount != nil {
+				SubredditEntryPostCount(count: postCount!)
 			}
-			Text(postCount.description)
-				.foregroundColor(.background)
-				.font(.system(size: 17, weight: .bold))
-				.frame(minWidth: 18)
-				.lineLimit(1)
-				.fixedSize()
-				.padding(.vertical, 2)
-				.padding(.horizontal, 3)
-				.background(
-					Capsule()
-						.fill(Color.secondary)
-				)
-				.hidden(postCount == 0)
 		}
+	}
+}
+
+private struct SubredditEntryDynamic: View {
+	@ObservedObject var subreddit: UserSubreddit
+
+	var body: some View {
+		let postCount = subreddit.postCount
+		return Group {
+			PriorityButton(subreddit: subreddit, size: 8, tooltip: true)
+			if postCount > 0 {
+				SubredditEntryPostCount(count: postCount)
+			} else {
+				Text(subreddit.nextUpdate.date.relativeComponents(maxCount: 1))
+					.font(Font.caption.monospacedDigit())
+			}
+		}
+			.frame(width: 32)
+	}
+}
+
+private struct SubredditEntryPostCount: View {
+	let count: Int
+
+	var body: some View {
+		Text(count.description)
+			.foregroundColor(.background)
+			.font(.system(size: 17, weight: .bold))
+			.frame(minWidth: 18)
+			.lineLimit(1)
+			.fixedSize()
+			.padding(.vertical, 2)
+			.padding(.horizontal, 3)
+			.background(
+				Capsule()
+					.fill(Color.secondary)
+		)
 	}
 }
 
