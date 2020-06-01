@@ -58,10 +58,10 @@ private struct SubredditsSubscriptionList: View {
 				}
 			}
 			if !availableSubscriptions.isEmpty {
-				SubredditsSubscriptionsSection(header: "Subreddits", subscriptions: availableSubscriptions)
+				SubredditsSubscriptionsSection(header: "Available", subscriptions: availableSubscriptions)
 			}
 			if !unavailableSubscriptions.isEmpty {
-				SubredditsSubscriptionsSection(header: "Unavailable", subscriptions: unavailableSubscriptions)
+				SubredditsSubscriptionsSection(header: "Upcoming", subscriptions: unavailableSubscriptions)
 			}
 		}
 			.navigationBarItems(trailing: Group {
@@ -143,7 +143,8 @@ private struct SubredditEntryDynamic: View {
 				SubredditEntryPostCount(count: postCount)
 			} else {
 				Text(subreddit.nextUpdate.date.relativeComponents(maxCount: 1))
-					.font(Font.caption.monospacedDigit())
+					.foregroundColor(.secondary)
+					.font(Font.caption.bold().monospacedDigit())
 			}
 		}
 			.frame(width: 32)

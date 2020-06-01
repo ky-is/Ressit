@@ -26,6 +26,7 @@ private struct HeaderView: View {
 			BlurView(style: .systemChromeMaterial)
 			Text(label)
 				.font(Font.headline.smallCaps())
+				.foregroundColor(.secondary)
 				.padding(.horizontal)
 				.padding(.vertical, 5)
 		}

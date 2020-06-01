@@ -87,6 +87,7 @@ private struct SubredditsManageEntry: View {
 				Image(systemName: subscriptionModel != nil ? "checkmark" : "circle")
 					.font(Font.body.weight(subscriptionModel != nil ? .bold : .light))
 					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
+					.frame(width: 20)
 				SubredditTitle(name: subreddit.name)
 			}
 		}
