@@ -60,8 +60,8 @@ private struct SubredditPostButton: View {
 					HStack {
 						ScoreMetadata(entity: post)
 						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
-						IconText(iconName: "clock", label: post.creationDate?.relativeToNow ?? "")
-						SaveadMetadata(entity: post)
+						RelativeIcon(since: post.creationDate)
+						SavedMetadata(entity: post)
 					}
 						.font(Font.caption.monospacedDigit())
 				}

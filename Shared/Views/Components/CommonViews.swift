@@ -58,7 +58,7 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 	}
 }
 
-struct SaveadMetadata<Entity: RedditVotable>: View {
+struct SavedMetadata<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
 
 	var body: some View {

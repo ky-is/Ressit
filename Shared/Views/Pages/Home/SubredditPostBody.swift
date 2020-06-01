@@ -94,7 +94,7 @@ private struct SubredditPostCommentContent: View {
 					} else if comment.childIDs != nil {
 						Text("+\(comment.childIDs!.count) more")
 					} else {
-						Text("deleted \(comment.creationDate!.relativeToNow)")
+						RelativeText("deleted", since: comment.creationDate!, "ago")
 					}
 				}
 					.frame(minHeight: 24)
@@ -161,10 +161,8 @@ private struct SubredditPostCommentFromUser: View {
 					.foregroundColor(.secondary)
 				+
 				Text(comment.author!)
-				if comment.creationDate != nil {
-					Text(comment.creationDate!.relativeToNow)
-				}
-				SaveadMetadata(entity: comment)
+				RelativeIcon(since: comment.creationDate)
+				SavedMetadata(entity: comment)
 			}
 				.font(Font.caption.monospacedDigit())
 		}

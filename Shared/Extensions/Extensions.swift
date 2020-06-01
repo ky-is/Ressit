@@ -38,6 +38,24 @@ extension TimeInterval {
 	static let week: Self = day * 7
 	static let month: Self = year / 12
 	static let year: Self = day * 365.25
+
+	private static let componentLabels: [(interval: TimeInterval, label: String)] = [(.year, "y"), (.month, "mo"), (.week, "w"), (.day, "d"), (.hour, "h"), (.minute, "m"), (1, "s")]
+
+	func relativeComponents(maxCount: Int = 1) -> String {
+		var interval = abs(self)
+		var components: [String] = []
+		for check in Self.componentLabels {
+			if interval > check.interval {
+				let n = (interval / check.interval).rounded(.down)
+				components.append("\(Int(n))\(check.label)")
+				if components.count >= maxCount {
+					break
+				}
+				interval = interval.truncatingRemainder(dividingBy: .year)
+			}
+		}
+		return components.joined(separator: " ")
+	}
 }
 
 extension RelativeDateTimeFormatter {
@@ -50,22 +68,8 @@ extension RelativeDateTimeFormatter {
 }
 
 extension Date {
-	private static let checkComponents: [(interval: TimeInterval, label: String)] = [(.year, "y"), (.month, "m"), (.week, "w"), (.day, "d"), (.hour, "h"), (.minute, "m"), (1, "s")]
-
 	func relativeComponents(maxCount: Int = 1) -> String {
-		var interval = abs(timeIntervalSinceNow)
-		var components: [String] = []
-		for check in Self.checkComponents {
-			if interval > check.interval {
-				let n = (interval / check.interval).rounded(.down)
-				components.append("\(Int(n))\(check.label)")
-				if components.count >= maxCount {
-					break
-				}
-				interval = interval.truncatingRemainder(dividingBy: .year)
-			}
-		}
-		return components.joined(separator: " ")
+		return timeIntervalSinceNow.relativeComponents(maxCount: maxCount)
 	}
 
 	var relativeToNow: String {

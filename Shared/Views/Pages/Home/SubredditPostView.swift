@@ -116,7 +116,7 @@ private struct SubredditPostHeader: View {
 				}
 				HStack {
 					IconText(iconName: "person.fill", label: post.author)
-					IconText(iconName: "calendar", label: post.creationDate?.relativeToNow ?? "")
+					RelativeIcon(since: post.creationDate)
 					SubredditTitle(name: post.subreddit.name)
 					if post.crosspostFrom != nil {
 						Image(systemName: "link")
