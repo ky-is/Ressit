@@ -12,7 +12,7 @@ struct PriorityButton: View {
 	var body: some View {
 		Button(action: {
 			self.context.perform {
-				if self.subreddit.priority >= 3  {
+				if self.subreddit.priority >= 3 {
 					self.subreddit.priority = 0
 				} else {
 					self.subreddit.priority += 1

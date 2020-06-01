@@ -1,5 +1,4 @@
 import SwiftUI
-import CoreData
 
 struct SubredditPostListEntry: View {
 	let post: UserPost

@@ -1,5 +1,4 @@
 import SwiftUI
-import CoreData
 
 private let defaultListInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
