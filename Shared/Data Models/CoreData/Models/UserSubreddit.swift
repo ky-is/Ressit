@@ -63,6 +63,9 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 
 	func performUpdate(posts: [RedditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
 		context.perform {
+			if self.managedObjectContext != context {
+				return
+			}
 			posts.forEach { UserPost.create(for: $0, subreddit: self, in: context) }
 			let date = Date()
 			switch period {
