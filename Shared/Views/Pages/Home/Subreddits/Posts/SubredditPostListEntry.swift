@@ -2,11 +2,12 @@ import SwiftUI
 
 struct SubredditPostListEntry: View {
 	let post: UserPost
+	let hasSubredditContext: Bool
 
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		SubredditPostButton(post: post)
+		SubredditPostButton(post: post, hasSubredditContext: hasSubredditContext)
 			.modifier(PostEnabledModifier(post: post))
 			.modifier(
 				ListRowSwipeModifier(
@@ -42,6 +43,7 @@ private struct PostEnabledModifier: ViewModifier {
 
 private struct SubredditPostButton: View {
 	let post: UserPost
+	let hasSubredditContext: Bool
 
 	var body: some View {
 		Button(action: {
@@ -55,8 +57,15 @@ private struct SubredditPostButton: View {
 						.cornerRadius(2)
 				}
 				VStack(alignment: .leading, spacing: 4) {
-					Text(post.title)
-						.font(.headline)
+					VStack(alignment: .leading) {
+						Text(post.title)
+							.font(.headline)
+						if !hasSubredditContext {
+							SubredditTitle(name: post.subreddit.name)
+								.font(.subheadline)
+								.foregroundColor(.secondary)
+						}
+					}
 					HStack {
 						ScoreMetadata(entity: post)
 						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
@@ -84,7 +93,7 @@ struct SubredditPostListEntry_Previews: PreviewProvider {
 
 	static var previews: some View {
 		List {
-			SubredditPostListEntry(post: post)
+			SubredditPostListEntry(post: post, hasSubredditContext: false)
 		}
 			.environment(\.managedObjectContext, context)
 	}

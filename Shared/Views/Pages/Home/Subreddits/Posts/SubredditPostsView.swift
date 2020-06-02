@@ -109,9 +109,10 @@ private struct SubredditPostsList: View {
 	let posts: FetchedResults<UserPost>
 
 	var body: some View {
-		List {
+		let hasSubredditContext = subscription != nil
+		return List {
 			ForEach(posts) { post in
-				SubredditPostListEntry(post: post)
+				SubredditPostListEntry(post: post, hasSubredditContext: hasSubredditContext)
 					.tag(post)
 			}
 			if subscription?.model != nil {
