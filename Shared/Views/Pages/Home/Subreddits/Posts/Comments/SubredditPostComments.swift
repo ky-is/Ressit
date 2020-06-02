@@ -172,7 +172,7 @@ private struct SubredditPostCommentFromUser: View {
 
 #if DEBUG
 struct SubredditPostComments_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 	private static let comments = RedditListing<RedditComment>(asset: .comments)
 
 	static var previews: some View {

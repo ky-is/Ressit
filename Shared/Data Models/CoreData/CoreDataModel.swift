@@ -1,6 +1,8 @@
 import CoreData
 
 struct CoreDataModel {
+	static let shared = CoreDataModel()
+
 	var persistentContainer: NSPersistentCloudKitContainer = {
 		let container = NSPersistentCloudKitContainer(name: "CoreData")
 		container.loadPersistentStores { storeDescription, error in

@@ -6,12 +6,9 @@ var globalPresentationAnchor: ASPresentationAnchor?
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	var window: UIWindow?
-	var coreDataModel: CoreDataModel?
 
 	func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-		let coreDataModel = CoreDataModel()
-		self.coreDataModel = coreDataModel
-		let contentView = ContentView().environment(\.managedObjectContext, coreDataModel.persistentContainer.viewContext)
+		let contentView = ContentView().environment(\.managedObjectContext, CoreDataModel.shared.persistentContainer.viewContext)
 		if let windowScene = scene as? UIWindowScene {
 			let window = UIWindow(windowScene: windowScene)
 			window.rootViewController = UIHostingController(rootView: contentView)
@@ -22,7 +19,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 	}
 
 	func sceneWillResignActive(_ scene: UIScene) {
-		coreDataModel?.saveIfNeeded()
+		CoreDataModel.shared.saveIfNeeded()
 	}
 
 	func sceneWillEnterForeground(_ scene: UIScene) {

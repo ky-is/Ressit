@@ -86,7 +86,7 @@ private struct StrengthIcon: View {
 }
 
 struct PriorityButton_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 	private static let size: CGFloat = 16
 
 	static var previews: some View {

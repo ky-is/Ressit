@@ -61,7 +61,7 @@ private struct SubredditPostButton: View {
 }
 
 struct SubredditPostListEntry_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 	private static var post: UserPost = {
 		let post = UserPost(context: context)
 		post.title = "Test"

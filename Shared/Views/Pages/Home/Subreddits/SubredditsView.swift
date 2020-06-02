@@ -187,7 +187,7 @@ private struct SubredditEntryPostCount: View {
 }
 
 struct SubredditsView_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 
 	static var previews: some View {
 		SubredditsView(subscriptions: [], inSplitView: false)

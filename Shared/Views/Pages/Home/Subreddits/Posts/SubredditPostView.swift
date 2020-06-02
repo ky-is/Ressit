@@ -158,7 +158,7 @@ private struct SubredditPostHeader: View {
 
 #if DEBUG
 struct SubredditPostView_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 	private static let post = UserPost(post: RedditListing<RedditPost>(asset: .posts).values.first!, insertInto: context)
 
 	static var previews: some View {

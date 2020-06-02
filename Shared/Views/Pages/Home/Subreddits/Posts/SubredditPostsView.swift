@@ -162,7 +162,7 @@ private struct ClearReadModifier: ViewModifier {
 }
 
 struct SubredditPostsView_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 	private static var subredditSubscription: UserSubreddit = {
 		let subredditSubscription = UserSubreddit(context: context)
 		subredditSubscription.name = "Test"

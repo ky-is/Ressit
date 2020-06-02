@@ -95,7 +95,7 @@ private struct SubredditsManageEntry: View {
 }
 
 struct SubredditsManage_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 
 	static var previews: some View {
 		SubredditsManage(subscriptions: [], subredditSearch: SubredditsSearchViewModel())

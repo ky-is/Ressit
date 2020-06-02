@@ -81,7 +81,7 @@ struct SelectedPostLink: View {
 }
 
 struct BrowseView_Previews: PreviewProvider {
-	private static let context = CoreDataModel().persistentContainer.viewContext
+	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 
 	static var previews: some View {
 		BrowseView()
