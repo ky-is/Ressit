@@ -66,7 +66,7 @@ private struct SubredditPostContainer: View {
 					.frame(maxWidth: .infinity)
 					.listRowInsets(.zero)
 			}
-			SubredditPostBody(post: post, commentsViewModel: commentsViewModel)
+			SubredditPostComments(post: post, commentsViewModel: commentsViewModel)
 		}
 			.overlay(Group {
 				if fullscreenImage != nil {

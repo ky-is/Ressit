@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SubredditPostBody: View {
+struct SubredditPostComments: View {
 	let post: UserPost
 
 	let commentsViewModel: SubredditPostCommentsViewModel
@@ -170,7 +170,7 @@ private struct SubredditPostCommentFromUser: View {
 }
 
 #if DEBUG
-struct SubredditPostBody_Previews: PreviewProvider {
+struct SubredditPostComments_Previews: PreviewProvider {
 	private static let context = CoreDataModel().persistentContainer.viewContext
 	private static let comments = RedditListing<RedditComment>(asset: .comments)
 
