@@ -44,6 +44,7 @@ private struct SubredditPostContainer: View {
 		List {
 			SubredditPostHeader(post: post)
 				.fixedSize(horizontal: false, vertical: true)
+				.modifier(PostListRowSwipeModifier(post: post))
 			if post.previewURL != nil {
 				Group {
 					if post.previewIsVideo {
@@ -65,6 +66,10 @@ private struct SubredditPostContainer: View {
 				}
 					.frame(maxWidth: .infinity)
 					.listRowInsets(.zero)
+			}
+			if post.selftext?.nonEmpty != nil {
+				Text(post.selftext!)
+					.padding(.vertical, 4)
 			}
 			SubredditPostComments(post: post, commentsViewModel: commentsViewModel)
 		}
@@ -114,22 +119,32 @@ private struct SubredditPostHeader: View {
 						.font(.subheadline)
 						.foregroundColor(.secondary)
 				}
-				HStack {
-					IconText(iconName: "person.fill", label: post.author)
-					RelativeIcon(since: post.creationDate)
-					SubredditTitle(name: post.subreddit.name)
-					if post.crosspostFrom != nil {
-						Image(systemName: "link")
-							.foregroundColor(.secondary)
-						SubredditTitle(name: post.crosspostFrom!)
+				VStack(alignment: .leading, spacing: 4) {
+					HStack {
+						IconText(iconName: "person.fill", label: post.author)
+						RelativeIcon(since: post.creationDate)
+						SubredditTitle(name: post.subreddit.name)
+						if post.crosspostFrom != nil {
+							Image(systemName: "link")
+								.foregroundColor(.secondary)
+							SubredditTitle(name: post.crosspostFrom!)
+						}
+						SavedMetadata(entity: post)
 					}
-					Spacer()
+					HStack {
+						HStack(spacing: 2) {
+							ScoreMetadata(entity: post)
+							if post.scoreProportion > 0 {
+								Text("(\(Int(post.scoreProportion * 100))%)")
+									.foregroundColor(.secondary)
+							}
+						}
+						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+					}
+						.font(Font.caption.monospacedDigit())
 				}
 					.font(.caption)
 					.padding(.top, 6)
-			}
-			if post.selftext?.nonEmpty != nil {
-				Text(post.selftext!)
 			}
 		}
 			.padding(.vertical, 8)

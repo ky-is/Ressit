@@ -24,6 +24,35 @@ struct SwipeSegment: Equatable {
 	}
 }
 
+struct PostListRowSwipeModifier: ViewModifier {
+	let post: UserPost
+
+	@Environment(\.managedObjectContext) private var context
+
+	func body(content: Content) -> some View {
+		content.modifier(
+			ListRowSwipeModifier(
+				leading: [
+					SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { self.post.userVote > 0 }) { action in
+						self.post.toggleVote(action == .upvote ? 1 : 0, in: self.context)
+					},
+					SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { self.post.userVote < 0 }) { action in
+						self.post.toggleVote(action == .downvote ? -1 : 0, in: self.context)
+					},
+				],
+				trailing: [
+					SwipeSegment(primary: .markRead, reset: .markUnread, shouldReset: { self.post.metadata?.readDate != nil }) { action in
+						self.post.performRead(action == .markRead, in: self.context)
+					},
+					SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.post.userSaved }) { action in
+						self.post.performSaved(action == .save, in: self.context)
+					},
+				]
+			)
+		)
+	}
+}
+
 struct ListRowSwipeModifier: ViewModifier {
 	let inList: Bool
 	let insets: EdgeInsets
