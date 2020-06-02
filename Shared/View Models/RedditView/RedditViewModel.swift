@@ -10,6 +10,7 @@ protocol RedditViewModel: ObservableObject {
 	var loading: Bool { get set }
 	var error: Error? { get set }
 	var result: NetworkResource? { get set }
+	var refreshOnAppear: Bool { get }
 
 	func fetch()
 	func fetch(_: APIRequest<NetworkResource>)
@@ -21,6 +22,9 @@ extension RedditViewModel {
 		guard let request = request ?? self.request else {
 			return
 		}
+		if !refreshOnAppear && result != nil {
+			return
+		}
 		fetch(request)
 	}
 
@@ -28,6 +32,7 @@ extension RedditViewModel {
 		guard subscription == nil else {
 			return
 		}
+//		print(#function, NetworkResource.self) //SAMPLE
 		self.request = request
 		loading = true
 		subscription = RedditClient.shared.send(request)

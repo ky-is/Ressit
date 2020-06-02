@@ -32,6 +32,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	var loading = true
 	var error: Error?
 	var result: NetworkResource?
+	let refreshOnAppear = true
 
 	private var context: NSManagedObjectContext?
 	private var period: RedditPeriod?

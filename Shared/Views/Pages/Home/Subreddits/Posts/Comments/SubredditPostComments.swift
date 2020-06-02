@@ -8,17 +8,29 @@ struct SubredditPostComments: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		RedditView(commentsViewModel, loadingHeight: 128) { result in
-			if result.comments.values.isEmpty {
+		RedditView(commentsViewModel, loadingHeight: 128) { postComments in
+			SubredditPostCommentsContainer(userPost: self.post, postComments: postComments)
+		}
+	}
+}
+
+private struct SubredditPostCommentsContainer: View {
+	let comments: RedditListing<RedditComment>
+
+	init(userPost: UserPost, postComments: RedditPostComments) {
+		self.comments = postComments.comments
+		userPost.update(fromRemote: postComments.post, in: CoreDataModel.shared.persistentContainer.viewContext)
+	}
+
+	var body: some View {
+		Group {
+			if comments.values.isEmpty {
 				Text("No comments yet...")
 					.font(.subheadline)
 					.foregroundColor(.secondary)
 					.padding()
 			} else {
-				SubredditPostCommentGroup(comments: result.comments, maxDepth: 20, currentDepth: 0)
-					.onAppear {
-						self.post.update(fromRemote: result.post, in: self.context)
-					}
+				SubredditPostCommentGroup(comments: comments, maxDepth: 20, currentDepth: 0)
 			}
 		}
 	}

@@ -11,6 +11,7 @@ final class SubredditsMineViewModel: RedditViewModel {
 	var loading = true
 	var error: Error?
 	var result: NetworkResource?
+	let refreshOnAppear = true
 }
 
 final class SubredditsSearchViewModel: RedditViewModel {
@@ -24,6 +25,7 @@ final class SubredditsSearchViewModel: RedditViewModel {
 	var loading = true
 	var error: Error?
 	var result: NetworkResource?
+	let refreshOnAppear = true
 
 	init() {
 		querySubscription = $query
@@ -54,6 +56,7 @@ final class SubredditPostCommentsViewModel: RedditViewModel {
 	var loading = true
 	var error: Error?
 	var result: NetworkResource?
+	let refreshOnAppear = false
 
 	init(post: UserPost) {
 		self.id = post.id
