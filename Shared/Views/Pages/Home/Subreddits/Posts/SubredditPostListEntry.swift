@@ -47,8 +47,9 @@ private struct SubredditPostButton: View {
 					}
 					HStack {
 						ScoreMetadata(entity: post)
-						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+						CommentsMetadata(post: post)
 						RelativeIcon(since: post.creationDate)
+						AwardsMetadata(entity: post)
 						SavedMetadata(entity: post)
 					}
 						.font(Font.caption.monospacedDigit())

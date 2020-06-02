@@ -12,6 +12,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 	let creationDate: Date?
 	let editedAt: TimeInterval?
 	let score: Int
+	var awardCount: Int
 	let replies: RedditListing<RedditComment>?
 	let childIDs: [String]?
 
@@ -50,6 +51,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		let editTimestamp = data["edited"] as? TimeInterval ?? 0
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
 		score = data["score"] as? Int ?? 0
+		awardCount = data["total_awards_received"] as! Int
 		let likes = data["likes"] as? Bool
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 		userSaved = data["saved"] as! Bool

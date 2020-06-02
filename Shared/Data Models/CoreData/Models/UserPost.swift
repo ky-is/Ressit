@@ -15,7 +15,8 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var score: Int
 	@NSManaged var scoreProportion: Double
 	@NSManaged var commentCount: Int
-	@NSManaged var creationDate: Date?
+	@NSManaged var awardCount: Int
+	@NSManaged var creationDate: Date
 	@NSManaged var thumbnail: URL?
 	@NSManaged var url: URL?
 	@NSManaged var selftext: String?
@@ -45,6 +46,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 			self.score = post.score
 			self.scoreProportion = post.scoreProportion
 			self.commentCount = post.commentCount
+			self.awardCount = post.awardCount
 			self.userSaved = post.saved
 			self.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
 			context.safeSave()
@@ -78,6 +80,7 @@ extension UserPost {
 		score = post.score
 		scoreProportion = post.scoreProportion
 		commentCount = post.commentCount
+		awardCount = post.awardCount
 		creationDate = Date(timeIntervalSince1970: post.createdAt)
 		userSaved = post.saved
 		userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)

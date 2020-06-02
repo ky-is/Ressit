@@ -2,21 +2,22 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E287" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="UserPost" representedClassName="UserPost" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String"/>
-        <attribute name="commentCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="awardCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="commentCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="creationDate" attributeType="Date" defaultDateTimeInterval="599558400" usesScalarValueType="NO"/>
         <attribute name="crosspostFrom" optional="YES" attributeType="String"/>
         <attribute name="crosspostID" optional="YES" attributeType="String"/>
         <attribute name="hashID" attributeType="String" defaultValueString=""/>
-        <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="previewHeight" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
+        <attribute name="previewHeight" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="previewIsVideo" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
-        <attribute name="previewWidth" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="scoreProportion" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="previewWidth" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="score" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scoreProportion" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="selftext" optional="YES" attributeType="String"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="title" attributeType="String" defaultValueString=""/>
         <attribute name="url" optional="YES" attributeType="URI"/>
         <attribute name="userSaved" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="userVote" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -57,7 +58,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="UserPost" positionX="261" positionY="252" width="128" height="358"/>
+        <element name="UserPost" positionX="261" positionY="252" width="128" height="373"/>
         <element name="UserPostMetadata" positionX="270" positionY="279" width="128" height="88"/>
         <element name="UserSubreddit" positionX="261" positionY="189" width="128" height="208"/>
     </elements>

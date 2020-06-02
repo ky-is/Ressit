@@ -60,6 +60,26 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 	}
 }
 
+struct CommentsMetadata: View {
+	@ObservedObject var post: UserPost
+
+	var body: some View {
+		IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+	}
+}
+
+struct AwardsMetadata<Entity: RedditVotable>: View {
+	@ObservedObject var entity: Entity
+
+	var body: some View {
+		Group {
+			if entity.awardCount > 0 {
+				IconText(iconName: "gift", label: entity.awardCount.description)
+			}
+		}
+	}
+}
+
 struct SavedMetadata<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
 

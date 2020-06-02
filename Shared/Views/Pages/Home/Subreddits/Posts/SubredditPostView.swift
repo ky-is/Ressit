@@ -139,7 +139,8 @@ private struct SubredditPostHeader: View {
 									.foregroundColor(.secondary)
 							}
 						}
-						IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+						CommentsMetadata(post: post)
+						AwardsMetadata(entity: post)
 					}
 						.font(Font.caption.monospacedDigit())
 				}

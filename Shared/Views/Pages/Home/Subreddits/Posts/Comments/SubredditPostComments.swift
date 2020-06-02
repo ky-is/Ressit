@@ -157,6 +157,7 @@ private struct SubredditPostCommentFromUser: View {
 				.fixedSize(horizontal: false, vertical: true)
 			HStack {
 				ScoreMetadata(entity: comment)
+				AwardsMetadata(entity: comment)
 				Text("u/")
 					.foregroundColor(.secondary)
 				+

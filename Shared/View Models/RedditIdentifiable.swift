@@ -19,6 +19,7 @@ protocol RedditVotable: RedditIdentifiable, ObservableObject {
 	var userVote: Int { get set }
 	var userSaved: Bool { get set }
 	var score: Int { get }
+	var awardCount: Int { get }
 	var saveSubscription: AnyCancellable? { get set }
 	var voteSubscription: AnyCancellable? { get set }
 

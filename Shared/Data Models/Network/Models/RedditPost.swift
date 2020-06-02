@@ -10,6 +10,7 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 	let score: Int
 	let scoreProportion: Double
 	let commentCount: Int
+	let awardCount: Int
 	let createdAt: TimeInterval
 	let editedAt: TimeInterval?
 	let saved: Bool
@@ -39,6 +40,7 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 		score = data["score"] as! Int
 		scoreProportion = data["upvote_ratio"] as! Double
 		commentCount = data["num_comments"] as! Int
+		awardCount = data["total_awards_received"] as! Int
 		createdAt = data["created"] as! TimeInterval
 		let editTimestamp = data["edited"] as! TimeInterval
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
