@@ -123,12 +123,14 @@ private struct SubredditListEntry: View {
 					.padding(.vertical)
 			}
 			Spacer()
-			if subscription.model != nil {
-				PriorityButton(subreddit: subscription.model!, size: 8, tooltip: true)
-					.padding(2)
-					.frame(minWidth: 40, minHeight: 40, alignment: .trailing)
+			HStack(spacing: 2) {
+				if subscription.model != nil {
+					PriorityButton(subreddit: subscription.model!, size: 8, tooltip: true)
+						.padding(2)
+						.frame(minWidth: 40, minHeight: 40, alignment: .trailing)
+				}
+				SubredditEntryLabel(subscription: subscription, postCount: postCount)
 			}
-			SubredditEntryLabel(subscription: subscription, postCount: postCount)
 		}
 	}
 }
@@ -138,7 +140,7 @@ private struct SubredditEntryLabel: View {
 	let postCount: Int?
 
 	var body: some View {
-		Group {
+		HStack {
 			if subscription.model != nil {
 				SubredditEntryDynamic(subreddit: subscription.model!)
 			} else if postCount != nil {
@@ -146,7 +148,7 @@ private struct SubredditEntryLabel: View {
 			}
 		}
 			.font(.system(size: 17, weight: .bold))
-			.frame(width: 32, alignment: .trailing)
+			.frame(width: 36, alignment: .trailing)
 	}
 }
 

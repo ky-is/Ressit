@@ -40,6 +40,7 @@ struct IconText: View {
 			Image(systemName: iconName)
 				.foregroundColor(.secondary)
 			Text(label)
+				.fixedSize()
 		}
 	}
 }
@@ -54,6 +55,7 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 				.animation(.default)
 				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
 			Text(entity.score.description)
+				.fixedSize()
 		}
 	}
 }
