@@ -8,7 +8,7 @@ enum RedditPeriod: String, CaseIterable {
 	var minimumUpdate: TimeInterval {
 		switch self {
 		case .week:
-			return .day
+			return .day - .hour * 2
 		case .month:
 			return .week
 		case .year:
