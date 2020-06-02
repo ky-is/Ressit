@@ -13,7 +13,7 @@
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
         <attribute name="previewWidth" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="scoreProportion" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="scoreProportion" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="selftext" optional="YES" attributeType="String"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
         <attribute name="title" optional="YES" attributeType="String"/>

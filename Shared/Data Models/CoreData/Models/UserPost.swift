@@ -13,7 +13,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var title: String
 	@NSManaged var author: String
 	@NSManaged var score: Int
-	@NSManaged var scoreProportion: Float
+	@NSManaged var scoreProportion: Double
 	@NSManaged var commentCount: Int
 	@NSManaged var creationDate: Date?
 	@NSManaged var thumbnail: URL?
