@@ -161,7 +161,7 @@ private struct SubredditEntryDynamic: View {
 			if postCount > 0 {
 				SubredditEntryPostCount(count: postCount)
 			} else {
-				RelativeText(since: subreddit.nextUpdate.date, font: nil)
+				RelativeText(since: subreddit.nextUpdate.date)
 					.foregroundColor(.secondary)
 			}
 		}

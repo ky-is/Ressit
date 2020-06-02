@@ -24,22 +24,22 @@ struct RelativeText: View {
 	let reference: TimeInterval
 	let prefix: String?
 	let suffix: String?
-	let font: Font?
 
 	@State private var components: String
 
-	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil, font: Font? = .caption) {
+	@Environment(\.font) private var font
+
+	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil) {
 		let reference = date.timeIntervalSinceReferenceDate
 		self.reference = reference
 		self.prefix = prefix
 		self.suffix = suffix
-		self.font = font?.monospacedDigit()
 		self._components = State(initialValue: timeComponents(since: reference))
 	}
 
 	var body: some View {
 		Text(text)
-			.font(font)
+			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
 				let new = timeComponents(at: interval, since: self.reference)
 				if new != self.components {
@@ -62,20 +62,20 @@ struct RelativeText: View {
 
 struct RelativeIcon: View {
 	let reference: TimeInterval?
-	let font: Font
 
 	@State private var components: String
 
-	init(since date: Date?, font: Font = .caption) {
+	@Environment(\.font) private var font
+
+	init(since date: Date?) {
 		let reference = date?.timeIntervalSinceReferenceDate
 		self.reference = reference
-		self.font = font.monospacedDigit()
 		self._components = State(initialValue: reference != nil ? timeComponents(since: reference!) : "?")
 	}
 
 	var body: some View {
 		IconText(iconName: "clock", label: components)
-			.font(font)
+			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
 				if let reference = self.reference {
 					let new = timeComponents(at: interval, since: reference)
