@@ -13,6 +13,7 @@
         <attribute name="previewURL" optional="YES" attributeType="URI"/>
         <attribute name="previewWidth" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scoreProportion" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="selftext" optional="YES" attributeType="String"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
         <attribute name="title" optional="YES" attributeType="String"/>
@@ -56,7 +57,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="UserPost" positionX="261" positionY="252" width="128" height="343"/>
+        <element name="UserPost" positionX="261" positionY="252" width="128" height="358"/>
         <element name="UserPostMetadata" positionX="270" positionY="279" width="128" height="88"/>
         <element name="UserSubreddit" positionX="261" positionY="189" width="128" height="208"/>
     </elements>

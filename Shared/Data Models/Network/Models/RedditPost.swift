@@ -8,6 +8,7 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 	let title: String
 	let author: String
 	let score: Int
+	let scoreProportion: Float
 	let commentCount: Int
 	let createdAt: TimeInterval
 	let editedAt: TimeInterval?
@@ -36,6 +37,7 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 //		print(json, hashID) //SAMPLE
 		author = data["author"] as! String
 		score = data["score"] as! Int
+		scoreProportion = data["upvote_ratio"] as! Float
 		commentCount = data["num_comments"] as! Int
 		createdAt = data["created"] as! TimeInterval
 		let editTimestamp = data["edited"] as! TimeInterval

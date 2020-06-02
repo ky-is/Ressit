@@ -13,6 +13,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var title: String
 	@NSManaged var author: String
 	@NSManaged var score: Int
+	@NSManaged var scoreProportion: Float
 	@NSManaged var commentCount: Int
 	@NSManaged var creationDate: Date?
 	@NSManaged var thumbnail: URL?
@@ -59,6 +60,7 @@ extension UserPost {
 		title = post.title
 		author = post.author
 		score = post.score
+		scoreProportion = post.scoreProportion
 		commentCount = post.commentCount
 		creationDate = Date(timeIntervalSince1970: post.createdAt)
 		userSaved = post.saved
