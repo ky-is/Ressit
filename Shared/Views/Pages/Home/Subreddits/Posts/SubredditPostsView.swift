@@ -37,9 +37,6 @@ private struct OneSubredditPostsView: View {
 						.modifier(ClearReadModifier(model: self.model, posts: result))
 				}
 			}
-				.onAppear {
-					PostUserModel.shared.selected = nil
-				}
 		}
 	}
 }
@@ -150,7 +147,7 @@ private struct ClearReadModifier: ViewModifier {
 	}
 
 	private func performDelete() {
-		PostUserModel.shared.selected = nil
+		PostUserModel.shared.isActive = false
 		context.perform {
 			self.readPosts.forEach(self.context.delete)
 			self.context.safeSave()

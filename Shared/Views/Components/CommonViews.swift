@@ -20,11 +20,11 @@ struct SubredditTitle: View {
 }
 
 struct HiddenNavigationLink<Destination: View>: View {
-	let isActive: Bool
+	@Binding var isActive: Bool
 	let destination: Destination
 
 	var body: some View {
-		NavigationLink(destination: destination, isActive: .constant(isActive)) {
+		NavigationLink(destination: destination, isActive: $isActive) {
 			EmptyView()
 		}
 			.hidden()

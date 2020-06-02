@@ -41,10 +41,6 @@ struct BrowseSidebar: View {
 		NavigationView {
 			SubredditsManage(subscriptions: subscriptions, subredditSearch: SubredditsSearchViewModel())
 				.edgesIgnoringSafeArea(.horizontal)
-				.onAppear {
-					SubredditUserModel.shared.selected = nil
-					PostUserModel.shared.selected = nil
-				}
 				.background(
 					SelectedPostLink(inSplitView: true)
 				)
@@ -60,7 +56,7 @@ struct SelectedSubredditLink: View {
 
 	var body: some View {
 		HiddenNavigationLink(
-			isActive: subredditUserModel.selected != nil,
+			isActive: $subredditUserModel.isActive,
 			destination: SubredditPostsView(subscription: subredditUserModel.selected ?? .global, inSplitView: inSplitView)
 		)
 	}
@@ -74,8 +70,10 @@ struct SelectedPostLink: View {
 
 	var body: some View {
 		HiddenNavigationLink(
-			isActive: inSplitView ? subredditUserModel.selected != nil || postUserModel.selected != nil : postUserModel.selected != nil,
-			destination: SubredditPostView(post: postUserModel.selected).navigationBarBackButtonHidden(inSplitView)
+			isActive: inSplitView ? $subredditUserModel.isActive : $postUserModel.isActive,
+			destination:
+				SubredditPostView(post: postUserModel.selected)
+					.navigationBarBackButtonHidden(inSplitView)
 		)
 	}
 }

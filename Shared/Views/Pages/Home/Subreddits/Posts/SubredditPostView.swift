@@ -13,9 +13,6 @@ struct SubredditPostView: View {
 				EmptyView()
 			}
 		}
-			.onDisappear {
-				PostUserModel.shared.selected = nil
-			}
 	}
 }
 

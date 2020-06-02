@@ -13,10 +13,6 @@ struct SubredditsView: View {
 				)
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
-			.onAppear {
-				SubredditUserModel.shared.selected = nil
-				PostUserModel.shared.selected = nil
-			}
 	}
 }
 
@@ -83,7 +79,6 @@ private struct SubredditsSubscriptionList: View {
 					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
-				SubredditUserModel.shared.selected = nil
 				if !self.inSplitView && self.subscriptions.isEmpty {
 					self.showAddSubreddits = true
 				}
