@@ -128,15 +128,25 @@ private struct SubredditListEntry: View {
 					.padding(2)
 					.frame(minWidth: 40, minHeight: 40, alignment: .trailing)
 			}
-			Group {
-				if subscription.model != nil {
-					SubredditEntryDynamic(subreddit: subscription.model!)
-				} else if postCount != nil {
-					SubredditEntryPostCount(count: postCount!)
-				}
-			}
-				.frame(width: 32, alignment: .trailing)
+			SubredditEntryLabel(subscription: subscription, postCount: postCount)
 		}
+	}
+}
+
+private struct SubredditEntryLabel: View {
+	let subscription: SubredditPostsViewModel
+	let postCount: Int?
+
+	var body: some View {
+		Group {
+			if subscription.model != nil {
+				SubredditEntryDynamic(subreddit: subscription.model!)
+			} else if postCount != nil {
+				SubredditEntryPostCount(count: postCount!)
+			}
+		}
+			.font(.system(size: 17, weight: .bold))
+			.frame(width: 32, alignment: .trailing)
 	}
 }
 
@@ -149,7 +159,7 @@ private struct SubredditEntryDynamic: View {
 			if postCount > 0 {
 				SubredditEntryPostCount(count: postCount)
 			} else {
-				RelativeText(since: subreddit.nextUpdate.date, font: Font.caption.bold())
+				RelativeText(since: subreddit.nextUpdate.date, font: nil)
 					.foregroundColor(.secondary)
 			}
 		}
@@ -162,7 +172,6 @@ private struct SubredditEntryPostCount: View {
 	var body: some View {
 		Text(count.description)
 			.foregroundColor(.background)
-			.font(.system(size: 17, weight: .bold))
 			.frame(minWidth: 18)
 			.lineLimit(1)
 			.fixedSize()

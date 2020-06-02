@@ -24,16 +24,16 @@ struct RelativeText: View {
 	let reference: TimeInterval
 	let prefix: String?
 	let suffix: String?
-	let font: Font
+	let font: Font?
 
 	@State private var components: String
 
-	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil, font: Font = .caption) {
+	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil, font: Font? = .caption) {
 		let reference = date.timeIntervalSinceReferenceDate
 		self.reference = reference
 		self.prefix = prefix
 		self.suffix = suffix
-		self.font = font.monospacedDigit()
+		self.font = font?.monospacedDigit()
 		self._components = State(initialValue: timeComponents(since: reference))
 	}
 
