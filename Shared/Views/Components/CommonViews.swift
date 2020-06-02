@@ -54,7 +54,7 @@ struct ScoreMetadata<Entity: RedditVotable>: View {
 				.foregroundColor(entity.voteColor())
 				.animation(.default)
 				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
-			Text(entity.score.description)
+			Text(entity.score.estimatedDescription)
 				.fixedSize()
 		}
 	}

@@ -41,3 +41,20 @@ extension URL {
 		return host.starts(with: "www.") ? String(host.dropFirst(4)) : host
 	}
 }
+
+extension Int {
+	var estimatedDescription: String {
+		guard self >= 1000 else {
+			return description
+		}
+		let thousands = Double(self) / 1000
+		let estimate: String
+		if thousands > 100 {
+			estimate = Int(thousands.rounded(.down)).description
+		} else {
+			let formattedThousands = String(format: "%.1f", thousands)
+			estimate = formattedThousands.last == "0" ? String(formattedThousands.dropLast(2)) : formattedThousands
+		}
+		return estimate + "K"
+	}
+}
