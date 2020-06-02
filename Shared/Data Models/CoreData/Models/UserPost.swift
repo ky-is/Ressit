@@ -39,15 +39,31 @@ final class UserPost: NSManagedObject, RedditVotable {
 		url?.hostDescription == "youtube.com"
 	}
 
+	func update(fromRemote post: RedditPost, in context: NSManagedObjectContext) {
+		context.perform {
+			self.toggleRead(true, in: context)
+			self.score = post.score
+			self.scoreProportion = post.scoreProportion
+			self.commentCount = post.commentCount
+			self.userSaved = post.saved
+			self.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
+			context.safeSave()
+		}
+	}
+
 	func performRead(_ read: Bool, in context: NSManagedObjectContext) {
 		context.perform {
-			if let metadata = self.metadata {
-				metadata.readDate = read ? Date() : nil
-				context.refresh(self, mergeChanges: true)
-			} else if read {
-				UserPostMetadata.create(for: self, in: context)
-			}
+			self.toggleRead(read, in: context)
 			context.safeSave()
+		}
+	}
+
+	private func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
+		if let metadata = self.metadata {
+			metadata.readDate = read ? Date() : nil
+			context.refresh(self, mergeChanges: true)
+		} else if read {
+			UserPostMetadata.create(for: self, in: context)
 		}
 	}
 }

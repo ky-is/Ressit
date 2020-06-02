@@ -17,7 +17,7 @@ struct SubredditPostComments: View {
 			} else {
 				SubredditPostCommentGroup(comments: result.comments, maxDepth: 20, currentDepth: 0)
 					.onAppear {
-						self.post.performRead(true, in: self.context)
+						self.post.update(fromRemote: result.post, in: self.context)
 					}
 			}
 		}
