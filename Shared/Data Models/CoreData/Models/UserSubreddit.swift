@@ -40,10 +40,7 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 
 	var nextMostFrequentUpdate: PeriodDate {
 		let minPeriod: RedditPeriod = priority > 0 ? .week : .month
-		guard periodWeekDate != nil else {
-			return (minPeriod, Date())
-		}
-		return (minPeriod, nextDate(for: minPeriod)!)
+		return (minPeriod, nextDate(for: minPeriod) ?? Date())
 	}
 
 	var nextUpdate: PeriodDate {

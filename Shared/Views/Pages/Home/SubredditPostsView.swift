@@ -90,7 +90,7 @@ private struct EmptyPostsPlaceholderContent: View {
 			RelativeText(nextPeriod.period.rawValue, since: nextPeriod.date)
 				.font(.headline)
 			PriorityButton(subreddit: model, size: 16, tooltip: true)
-			Text("Increase priority to get more posts now")
+			Text("Increase priority to get more posts")
 		}
 	}
 }
