@@ -11,12 +11,12 @@ extension Collection {
 }
 
 extension Array {
-	subscript(clamped index: Index) -> Element {
+	subscript(clamped index: Index) -> Element? {
 		guard index >= startIndex else {
-			return first!
+			return first
 		}
 		guard index <= endIndex else {
-			return last!
+			return last
 		}
 		return self[index]
 	}
