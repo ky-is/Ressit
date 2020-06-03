@@ -10,6 +10,7 @@
 		2401CE37248456D9002FD434 /* CommonModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2401CE36248456D9002FD434 /* CommonModifiers.swift */; };
 		24047A1D2479046B0015BD80 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24047A1C2479046B0015BD80 /* CloudKit.framework */; };
 		2406656C2486A807004005ED /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2406656B2486A807004005ED /* Formatting.swift */; };
+		240A2F8B248835FE00020B57 /* ShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240A2F8A248835FE00020B57 /* ShareView.swift */; };
 		24124C3B24855C1A0063F07F /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24124C3A24855C1A0063F07F /* SafariView.swift */; };
 		24124C3D24855C430063F07F /* ScrollImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24124C3C24855C430063F07F /* ScrollImageView.swift */; };
 		24124C3F24855C6E0063F07F /* YoutubeEmbedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24124C3E24855C6E0063F07F /* YoutubeEmbedView.swift */; };
@@ -69,6 +70,7 @@
 		24047A1A247904680015BD80 /* Ressit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ressit.entitlements; sourceTree = "<group>"; };
 		24047A1C2479046B0015BD80 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		2406656B2486A807004005ED /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
+		240A2F8A248835FE00020B57 /* ShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareView.swift; sourceTree = "<group>"; };
 		24124C3A24855C1A0063F07F /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		24124C3C24855C430063F07F /* ScrollImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollImageView.swift; sourceTree = "<group>"; };
 		24124C3E24855C6E0063F07F /* YoutubeEmbedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeEmbedView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				24B8FFB0243506980029734C /* SearchBar.swift */,
 				24341BE6247D938E00D53AF8 /* VideoViewer.swift */,
 				24124C3E24855C6E0063F07F /* YoutubeEmbedView.swift */,
+				240A2F8A248835FE00020B57 /* ShareView.swift */,
 			);
 			path = UIRepresentable;
 			sourceTree = "<group>";
@@ -479,6 +482,7 @@
 				247DFD0E2484081800B53B49 /* LoadingViews.swift in Sources */,
 				24B35B722434FED00088569E /* BrowseView.swift in Sources */,
 				24B7CEC82477330800823BB1 /* RedditContainers.swift in Sources */,
+				240A2F8B248835FE00020B57 /* ShareView.swift in Sources */,
 				24B7CEC12474FF8800823BB1 /* Colors.swift in Sources */,
 				24D7411F2433DAA300407F8B /* SubredditsView.swift in Sources */,
 				24B8FFB424351E740029734C /* RedditClient.swift in Sources */,

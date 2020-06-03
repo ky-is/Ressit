@@ -70,19 +70,50 @@ private struct SubredditPostContainer: View {
 			}
 			SubredditPostComments(post: post, commentsViewModel: commentsViewModel)
 		}
-			.overlay(Group {
-				if fullscreenImage != nil {
-					GeometryReader { geometry in
-						ScrollImageView(image: self.fullscreenImage!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
-							.edgesIgnoringSafeArea(.bottom)
+			.overlay(PostImageOverlay(post: self.post, image: $fullscreenImage))
+	}
+}
+
+private struct PostImageOverlay: View {
+	let post: UserPost
+	@Binding var image: UIImage?
+
+	@State private var share = false
+
+	var body: some View {
+		Group {
+			if image != nil {
+				GeometryReader { geometry in
+					ZStack(alignment: .bottom) {
+						ScrollImageView(image: self.image!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
 							.frame(maxWidth: .infinity, maxHeight: .infinity)
 							.background(Color.background.edgesIgnoringSafeArea(.all))
 							.onTapGesture {
-								self.fullscreenImage = nil
+								self.image = nil
 							}
+						ZStack(alignment: .top) {
+							BlurView(style: .systemChromeMaterial)
+							HStack {
+								Button(action: {
+									self.share = true
+								}) {
+									Image(systemName: "square.and.arrow.up")
+										.frame(minWidth: 44, maxHeight: .infinity)
+								}
+							}
+								.frame(height: 44)
+								.font(.system(size: 20))
+						}
+							.frame(height: 44 + geometry.safeAreaInsets.bottom)
 					}
 				}
-			})
+					.edgesIgnoringSafeArea(.all)
+					.frame(maxWidth: .infinity, maxHeight: .infinity)
+					.sheet(isPresented: self.$share) {
+						ShareSheet(activityItems: [self.image!])
+					}
+			}
+		}
 	}
 }
 
