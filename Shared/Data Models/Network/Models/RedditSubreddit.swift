@@ -5,10 +5,15 @@ struct RedditSubreddit: RedditResponsable, RedditIdentifiable {
 
 	let id: String
 	let name: String
+	let subscribers: String
 
-	init(json: Any) {
+	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
-		id = data["id"] as! String
-		name = data["display_name"] as! String
+		guard let subscribers = data["subscribers"] as? Int else {
+			return nil
+		}
+		self.id = data["id"] as! String
+		self.name = data["display_name"] as! String
+		self.subscribers = subscribers.estimatedDescription
 	}
 }

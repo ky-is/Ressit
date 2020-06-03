@@ -83,12 +83,15 @@ private struct SubredditsManageEntry: View {
 				self.context.safeSave()
 			}
 		}) {
-			HStack {
+			HStack(alignment: .firstTextBaseline) {
 				Image(systemName: subscriptionModel != nil ? "checkmark" : "circle")
 					.font(Font.body.weight(subscriptionModel != nil ? .bold : .light))
 					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
 					.frame(width: 20)
 				SubredditTitle(name: subreddit.name)
+				Text(subreddit.subscribers + " members")
+					.font(.caption)
+					.foregroundColor(.secondary)
 			}
 		}
 	}

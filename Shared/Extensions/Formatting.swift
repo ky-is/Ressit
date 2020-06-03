@@ -48,7 +48,14 @@ extension Int {
 		guard self >= 1000 else {
 			return description
 		}
-		let thousands = Double(self) / 1000
+		var thousands = Double(self) / 1000
+		let suffix: String
+		if thousands >= 1000 {
+			thousands /= 1000
+			suffix = "M"
+		} else {
+			suffix = "K"
+		}
 		let estimate: String
 		if thousands > 100 {
 			estimate = Int(thousands.rounded(.down)).description
@@ -56,6 +63,6 @@ extension Int {
 			let formattedThousands = String(format: "%.1f", thousands)
 			estimate = formattedThousands.last == "0" ? String(formattedThousands.dropLast(2)) : formattedThousands
 		}
-		return estimate + "K"
+		return estimate + suffix
 	}
 }
