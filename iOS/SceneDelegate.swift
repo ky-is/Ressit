@@ -24,5 +24,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 	func sceneWillEnterForeground(_ scene: UIScene) {
 		RedditAuthManager.refreshIfNeeded()
+		RelativeTimer.shared.update()
 	}
 }

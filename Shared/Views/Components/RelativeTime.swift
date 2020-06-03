@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-fileprivate final class RelativeTimer: ObservableObject {
+final class RelativeTimer: ObservableObject {
 	static let shared = RelativeTimer()
 
 	@Published var minute = Date().timeIntervalSinceReferenceDate
@@ -13,6 +13,13 @@ fileprivate final class RelativeTimer: ObservableObject {
 			.autoconnect()
 			.map(\.timeIntervalSinceReferenceDate)
 			.assign(to: \.minute, on: self)
+	}
+
+	func update() {
+		let now = Date.timeIntervalSinceReferenceDate
+		if now - minute > .minute {
+			minute = now
+		}
 	}
 }
 
