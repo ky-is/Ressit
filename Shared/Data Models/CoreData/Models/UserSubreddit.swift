@@ -48,7 +48,7 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 			return (.all, Date())
 		}
 		let periods: [RedditPeriod] = [.all, .year, .month, .week]
-		return periods.map({ ($0, nextDate(for: $0)!) }).sorted { $0.date < $1.date }.first!
+		return periods.map({ ($0, nextDate(for: $0)!) }).sorted(\.date, <).first!
 	}
 
 	func needsUpdate(for period: RedditPeriod) -> Bool {

@@ -152,6 +152,7 @@
 				24124C3A24855C1A0063F07F /* SafariView.swift */,
 				24124C3C24855C430063F07F /* ScrollImageView.swift */,
 				24B8FFB0243506980029734C /* SearchBar.swift */,
+				24341BE6247D938E00D53AF8 /* VideoViewer.swift */,
 				24124C3E24855C6E0063F07F /* YoutubeEmbedView.swift */,
 			);
 			path = UIRepresentable;
@@ -273,7 +274,6 @@
 				24BA8A402479834200E04579 /* CommonViews.swift */,
 				24124C4024855EEF0063F07F /* RelativeTime.swift */,
 				248E2C8B2484550E00CAAAFA /* PriorityIcon.swift */,
-				24341BE6247D938E00D53AF8 /* VideoViewer.swift */,
 				247DFD0D2484081800B53B49 /* LoadingViews.swift */,
 				248E2C892484424600CAAAFA /* SectionHeader.swift */,
 			);
