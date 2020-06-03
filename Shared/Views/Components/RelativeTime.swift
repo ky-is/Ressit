@@ -17,40 +17,51 @@ final class RelativeTimer: ObservableObject {
 
 	func update() {
 		let now = Date.timeIntervalSinceReferenceDate
-		if now - minute > .minute {
+		if now - minute > .second {
 			minute = now
 		}
 	}
 }
 
-private func timeComponents(at now: TimeInterval = Date().timeIntervalSinceReferenceDate, since reference: TimeInterval) -> String {
-	return (now - reference).relativeComponents()
+private func timeComponents(at now: TimeInterval = Date().timeIntervalSinceReferenceDate, since reference: TimeInterval, allowPast: Bool) -> String {
+	let difference = reference - now
+	return allowPast || difference > 0 ? difference.relativeComponents() : "⋯"
 }
 
 struct RelativeText: View {
 	let reference: TimeInterval
 	let prefix: String?
 	let suffix: String?
+	let atZero: (() -> Void)?
 
 	@State private var components: String
 
 	@Environment(\.font) private var font
 
-	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil) {
+	private func updateAtZero() {
+		if let atZero = self.atZero, components == "⋯" {
+			atZero()
+		}
+	}
+
+	init(_ prefix: String? = nil, since date: Date, _ suffix: String? = nil, atZero: (() -> Void)? = nil) {
 		let reference = date.timeIntervalSinceReferenceDate
 		self.reference = reference
 		self.prefix = prefix
 		self.suffix = suffix
-		self._components = State(initialValue: timeComponents(since: reference))
+		self.atZero = atZero
+		self._components = State(initialValue: timeComponents(since: reference, allowPast: atZero == nil))
+		updateAtZero()
 	}
 
 	var body: some View {
 		Text(text)
 			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
-				let new = timeComponents(at: interval, since: self.reference)
+				let new = timeComponents(at: interval, since: self.reference, allowPast: self.atZero == nil)
 				if new != self.components {
 					self.components = new
+					self.updateAtZero()
 				}
 			}
 	}
@@ -77,7 +88,7 @@ struct RelativeIcon: View {
 	init(since date: Date?) {
 		let reference = date?.timeIntervalSinceReferenceDate
 		self.reference = reference
-		self._components = State(initialValue: reference != nil ? timeComponents(since: reference!) : "?")
+		self._components = State(initialValue: reference != nil ? timeComponents(since: reference!, allowPast: true) : "?")
 	}
 
 	var body: some View {
@@ -85,7 +96,7 @@ struct RelativeIcon: View {
 			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
 				if let reference = self.reference {
-					let new = timeComponents(at: interval, since: reference)
+					let new = timeComponents(at: interval, since: reference, allowPast: true)
 					if new != self.components {
 						self.components = new
 					}

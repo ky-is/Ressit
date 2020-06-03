@@ -82,6 +82,12 @@ private struct SubredditsSubscriptionList: View {
 				if !self.inSplitView && self.subscriptions.isEmpty {
 					self.showAddSubreddits = true
 				}
+
+				//SAMPLE
+//				let samples = self.subscriptions.compactMap(\.model).filter(\.postCount, ==, 0)
+//				print(samples.map(\.name))
+//				samples.forEach { $0.periodWeekDate = Date(timeIntervalSinceNow: -(.day - .minute)) }
+//				self.context.safeSave()
 			}
 	}
 }
@@ -137,7 +143,7 @@ private struct SubredditEntryLabel: View {
 	var body: some View {
 		HStack {
 			if subscription.model != nil {
-				SubredditEntryDynamic(subreddit: subscription.model!)
+				SubredditEntryDynamic(subscription: subscription, subreddit: subscription.model!)
 			} else if postCount != nil {
 				SubredditEntryPostCount(count: postCount!)
 			}
@@ -148,7 +154,10 @@ private struct SubredditEntryLabel: View {
 }
 
 private struct SubredditEntryDynamic: View {
+	let subscription: SubredditPostsViewModel
 	@ObservedObject var subreddit: UserSubreddit
+
+	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		let postCount = subreddit.postCount
@@ -156,7 +165,9 @@ private struct SubredditEntryDynamic: View {
 			if postCount > 0 {
 				SubredditEntryPostCount(count: postCount)
 			} else {
-				RelativeText(since: subreddit.nextUpdate.date)
+				RelativeText(since: subreddit.nextUpdate.date, atZero: {
+					self.subscription.updateIfNeeded(in: self.context)
+				})
 					.foregroundColor(.secondary)
 			}
 		}

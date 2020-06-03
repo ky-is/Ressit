@@ -173,7 +173,7 @@ struct SubredditPostsView_Previews: PreviewProvider {
 
 	static var previews: some View {
 		NavigationView {
-			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription), inSplitView: false)
+			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription, in: context), inSplitView: false)
 		}
 			.environment(\.managedObjectContext, context)
 	}

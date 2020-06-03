@@ -1,6 +1,7 @@
 import Foundation
 
 extension TimeInterval {
+	static let second: Self = 1
 	static let minute: Self = 60
 	static let hour: Self = minute * 60
 	static let day: Self = hour * 24

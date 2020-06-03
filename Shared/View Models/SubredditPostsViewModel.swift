@@ -22,7 +22,7 @@ enum RedditPeriod: String, CaseIterable {
 final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	typealias NetworkResource = RedditListing<RedditPost>
 
-	static let global = SubredditPostsViewModel(model: nil)
+	static let global = SubredditPostsViewModel(collection: "$GLOBAL")
 
 	let id: String
 	let model: UserSubreddit?
@@ -37,9 +37,15 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 	private var context: NSManagedObjectContext?
 	private var period: RedditPeriod?
 
-	init(model: UserSubreddit?) {
-		self.id = model?.id ?? "$GLOBAL"
+	init(collection id: String) {
+		self.id = id
+		self.model = nil
+	}
+
+	init(model: UserSubreddit, in context: NSManagedObjectContext) {
+		self.id = model.id
 		self.model = model
+		updateIfNeeded(in: context)
 	}
 
 	func updateIfNeeded(in context: NSManagedObjectContext) {

@@ -6,8 +6,7 @@ struct BrowseView: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		let subscriptionViewModels = subscriptions.map(SubredditPostsViewModel.init(model:))
-		subscriptionViewModels.forEach { $0.updateIfNeeded(in: self.context) }
+		let subscriptionViewModels = subscriptions.map { SubredditPostsViewModel(model: $0, in: context) }
 		return GeometryReader { geometry in
 //			if geometry.size.width > 900 { //SAMPLE
 			if geometry.size.width > 640 {
