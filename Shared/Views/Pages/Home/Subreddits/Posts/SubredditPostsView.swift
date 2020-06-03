@@ -149,10 +149,14 @@ private struct ClearReadModifier: ViewModifier {
 	private func performDelete() {
 		PostUserModel.shared.isActive = false
 		context.perform {
+			let allSubreddits = self.model == nil ? self.readPosts.map(\.subreddit) : nil
 			self.readPosts.forEach(self.context.delete)
 			self.context.safeSave()
-			if let model = self.model {
-				self.context.refresh(model, mergeChanges: true)
+
+			if let oneSubreddit = self.model {
+				self.context.refresh(oneSubreddit, mergeChanges: true)
+			} else if let allSubreddits = allSubreddits {
+				Set(allSubreddits).forEach { self.context.refresh($0, mergeChanges: true) }
 			}
 		}
 	}
