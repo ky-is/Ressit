@@ -64,7 +64,9 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 				return
 			}
 			posts.forEach { UserPost.create(for: $0, subreddit: self, in: context) }
-			let date = Date()
+			let updateInterval: TimeInterval = .hour * 8
+			let intervalFromReferenceToPreviousUpdate = ((Date.timeIntervalSinceReferenceDate - updateInterval / 2) / updateInterval).rounded(.down) * updateInterval
+			let date = Date(timeIntervalSinceReferenceDate: intervalFromReferenceToPreviousUpdate)
 			switch period {
 			case .all:
 				self.periodAllDate = date
