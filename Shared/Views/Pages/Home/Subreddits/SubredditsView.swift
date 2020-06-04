@@ -120,7 +120,7 @@ private struct SubredditListEntry: View {
 				SubredditUserModel.shared.selected = self.subscription
 			}) {
 				SubredditTitle(name: subscription.model?.name)
-					.font(.system(size: 21))
+					.font(Font.body.weight(.medium))
 					.padding(.vertical)
 			}
 			Spacer()
@@ -148,8 +148,8 @@ private struct SubredditEntryLabel: View {
 				SubredditEntryPostCount(count: postCount!)
 			}
 		}
-			.font(.system(size: 17, weight: .bold))
-			.frame(width: 36, alignment: .trailing)
+			.font(.system(size: 17))
+			.frame(width: 40, alignment: .trailing)
 	}
 }
 
@@ -158,6 +158,7 @@ private struct SubredditEntryDynamic: View {
 	@ObservedObject var subreddit: UserSubreddit
 
 	@Environment(\.managedObjectContext) private var context
+	@Environment(\.font) private var font
 
 	var body: some View {
 		let postCount = subreddit.postCount
@@ -169,6 +170,7 @@ private struct SubredditEntryDynamic: View {
 					self.subscription.updateIfNeeded(in: self.context)
 				})
 					.foregroundColor(.secondary)
+					.font(font?.weight(.semibold))
 			}
 		}
 	}
@@ -179,6 +181,7 @@ private struct SubredditEntryPostCount: View {
 
 	var body: some View {
 		Text(count.description)
+			.fontWeight(.bold)
 			.foregroundColor(.background)
 			.frame(minWidth: 18)
 			.lineLimit(1)
