@@ -26,7 +26,7 @@ struct PriorityButton: View {
 					withAnimation {
 						self.tapped = true
 					}
-					DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+					DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { //TODO cancellable
 						withAnimation {
 							self.tapped = false
 						}

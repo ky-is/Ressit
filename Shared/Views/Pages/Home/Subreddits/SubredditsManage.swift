@@ -38,7 +38,11 @@ struct SubredditsManage: View {
 						SubredditsResponseList(viewModel: SubredditsMineViewModel.shared, subscriptions: self.subscriptions)
 					} else {
 						Spacer()
-						Text("Sign in to choose from subreddits you already subscribe to")
+						Text("Sign in to choose from subreddits you're subscribed to.")
+							.font(.headline)
+							.foregroundColor(.secondary)
+							.padding()
+							.multilineTextAlignment(.center)
 						Spacer()
 					}
 				}
@@ -89,7 +93,10 @@ private struct SubredditsManageEntry: View {
 					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
 					.frame(width: 20)
 				SubredditTitle(name: subreddit.name)
-				Text(subreddit.subscribers + " members")
+				HStack(alignment: .firstTextBaseline, spacing: 1) {
+					Image(systemName: "person.fill")
+					Text(subreddit.subscribers)
+				}
 					.font(.caption)
 					.foregroundColor(.secondary)
 			}
@@ -99,9 +106,16 @@ private struct SubredditsManageEntry: View {
 
 struct SubredditsManage_Previews: PreviewProvider {
 	private static let context = CoreDataModel.shared.persistentContainer.viewContext
+	private static var subredditSubscription: UserSubreddit = {
+		let subredditSubscription = UserSubreddit(context: context)
+		subredditSubscription.name = "Test"
+		subredditSubscription.creationDate = Date()
+		return subredditSubscription
+	}()
+	private static let model = SubredditPostsViewModel(model: subredditSubscription, in: context)
 
 	static var previews: some View {
-		SubredditsManage(subscriptions: [], subredditSearch: SubredditsSearchViewModel())
+		SubredditsManage(subscriptions: [model], subredditSearch: SubredditsSearchViewModel())
 			.environment(\.managedObjectContext, context)
 	}
 }

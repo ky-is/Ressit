@@ -66,7 +66,7 @@ private struct SubredditsSubscriptionList: View {
 						self.showAddSubreddits = true
 					}) {
 						Image(systemName: "plus")
-							.font(.title)
+							.font(.system(size: 26))
 							.frame(height: 44)
 							.padding(.horizontal, 16)
 					}

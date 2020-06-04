@@ -86,7 +86,7 @@ struct ListRowSwipeModifier: ViewModifier {
 				.offset(x: swipeDistance)
 				.padding(inList ? .zero : insets)
 				.gesture(
-					DragGesture(minimumDistance: 18)
+					DragGesture(minimumDistance: 20)
 						.updating($swipeDistance) { value, swipeDistance, transaction in
 							guard value.startLocation.x > 10.5 else { // Prevent overlap with system left edge back gesture
 								return
