@@ -3,6 +3,7 @@
     <entity name="UserPost" representedClassName="UserPost" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String"/>
         <attribute name="awardCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="body" optional="YES" attributeType="String"/>
         <attribute name="commentCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="creationDate" attributeType="Date" defaultDateTimeInterval="599558400" usesScalarValueType="NO"/>
         <attribute name="crosspostFrom" optional="YES" attributeType="String"/>
@@ -15,7 +16,6 @@
         <attribute name="previewWidth" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="score" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scoreProportion" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="selftext" optional="YES" attributeType="String"/>
         <attribute name="thumbnail" optional="YES" attributeType="URI"/>
         <attribute name="title" attributeType="String" defaultValueString=""/>
         <attribute name="url" optional="YES" attributeType="URI"/>

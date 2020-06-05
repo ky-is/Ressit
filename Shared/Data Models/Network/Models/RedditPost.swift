@@ -16,7 +16,7 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 	let saved: Bool
 	let likes: Bool?
 	let url: URL?
-	let selftext: String
+	let body: String
 	let thumbnail: String?
 	let crosspostID: String?
 	let crosspostFrom: String?
@@ -32,9 +32,14 @@ struct RedditPost: RedditResponsable, RedditIdentifiable {
 		let urlString = data["url"] as? String
 		url = urlString != nil ? URL(string: urlString!) : nil
 		title = data["title"] as! String
-		selftext = data["selftext"] as! String
+		let plaintext = data["selftext"] as! String
+		if let html = data["selftext_html"] as? String {
+			body = html
+		} else {
+			body = plaintext
+		}
 		let isSelf = data["is_self"] as! Bool
-		hashID = getHashID(isSelf: isSelf,id: id, url: url, title: title, selftext: selftext)
+		hashID = getHashID(isSelf: isSelf,id: id, url: url, title: title, selftext: plaintext)
 //		print(json, hashID) //SAMPLE
 		author = data["author"] as! String
 		score = data["score"] as! Int

@@ -35,6 +35,7 @@ private struct SubredditPostContainer: View {
 		} else {
 			self.imageViewModel = nil
 		}
+		post.updateAttributedString(sizeIncrease: 4, async: false)
 	}
 
 	var body: some View {
@@ -64,9 +65,8 @@ private struct SubredditPostContainer: View {
 					.frame(maxWidth: .infinity)
 					.listRowInsets(.zero)
 			}
-			if post.selftext?.nonEmpty != nil {
-				Text(post.selftext!)
-					.padding(.vertical, 4)
+			if post.body?.nonEmpty != nil {
+				BodyText(entity: post)
 			}
 			SubredditPostComments(post: post, commentsViewModel: commentsViewModel)
 		}

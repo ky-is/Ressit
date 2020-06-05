@@ -92,3 +92,18 @@ struct SavedMetadata<Entity: RedditVotable>: View {
 		}
 	}
 }
+
+struct BodyText<Entity: RedditVotable>: View {
+	@ObservedObject var entity: Entity
+
+	var body: some View {
+		Group {
+			if entity.attributedString != nil {
+				TextAttributed(attributedString: self.entity.attributedString!)
+					.frame(maxWidth: .infinity)
+			} else {
+				Text("")
+			}
+		}
+	}
+}

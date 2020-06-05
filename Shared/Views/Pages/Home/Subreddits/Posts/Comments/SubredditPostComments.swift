@@ -163,10 +163,7 @@ private struct SubredditPostCommentFromUser: View {
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 3) {
-			Text(comment.body!.trimmingCharacters(in: .whitespacesAndNewlines))
-				.foregroundColor(comment.body != nil ? nil : .secondary)
-				.font(.callout)
-				.fixedSize(horizontal: false, vertical: true)
+			BodyText(entity: comment)
 			HStack {
 				ScoreMetadata(entity: comment)
 				AwardsMetadata(entity: comment)

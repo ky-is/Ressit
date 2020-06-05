@@ -19,7 +19,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var creationDate: Date
 	@NSManaged var thumbnail: URL?
 	@NSManaged var url: URL?
-	@NSManaged var selftext: String?
+	@NSManaged var body: String?
 	@NSManaged var crosspostID: String?
 	@NSManaged var crosspostFrom: String?
 
@@ -33,6 +33,8 @@ final class UserPost: NSManagedObject, RedditVotable {
 
 	@NSManaged var subreddit: UserSubreddit
 	@NSManaged var metadata: UserPostMetadata?
+
+	@Published var attributedString: NSAttributedString?
 
 	var thumbnailLoader: ImageDownloadViewModel?
 
@@ -48,6 +50,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 			self.commentCount = post.commentCount
 			self.awardCount = post.awardCount
 			self.userSaved = post.saved
+			self.body = post.body
 			self.userVote = post.likes == true ? 1 : (post.likes == false ? -1 : 0)
 			context.safeSave()
 		}
@@ -88,7 +91,7 @@ extension UserPost {
 		url = post.url
 		crosspostID = post.crosspostID
 		crosspostFrom = post.crosspostFrom
-		selftext = post.selftext.trimmingCharacters(in: .whitespacesAndNewlines)
+		body = post.body
 		previewURL = post.previewURLs?.first
 		previewIsVideo = post.previewIsVideo
 		previewWidth = post.previewWidth ?? 0

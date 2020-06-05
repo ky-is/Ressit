@@ -8,7 +8,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 
 	let id: String
 	let author: String?
-	let body: String?
+	var body: String?
 	let creationDate: Date?
 	let editedAt: TimeInterval?
 	let score: Int
@@ -18,6 +18,9 @@ final class RedditComment: RedditResponsable, RedditVotable {
 
 	@Published var userVote: Int
 	@Published var userSaved: Bool
+	@Published var attributedString: NSAttributedString?
+
+	private static let queue = DispatchQueue.global(qos: .userInitiated)
 
 	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -47,7 +50,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		self.author = author
 
 		id = data["id"] as! String
-		body = data["body"] as? String
+		body = data["body_html"] as? String
 		let editTimestamp = data["edited"] as? TimeInterval ?? 0
 		editedAt = editTimestamp > 0 ? editTimestamp : nil
 		score = data["score"] as? Int ?? 0
@@ -55,6 +58,10 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		let likes = data["likes"] as? Bool
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 		userSaved = data["saved"] as! Bool
+
+		Self.queue.async {
+			self.updateAttributedString(sizeIncrease: 2, async: true)
+		}
 	}
 
 	var deleted: Bool {
