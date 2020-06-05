@@ -34,7 +34,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	@NSManaged var subreddit: UserSubreddit
 	@NSManaged var metadata: UserPostMetadata?
 
-	@Published var attributedString: NSAttributedString?
+	var attributedString: NSAttributedString?
 
 	var thumbnailLoader: ImageDownloadViewModel?
 

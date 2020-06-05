@@ -35,7 +35,7 @@ private struct SubredditPostContainer: View {
 		} else {
 			self.imageViewModel = nil
 		}
-		post.updateAttributedString(sizeIncrease: 4, async: false)
+		post.updateAttributedString(sizeIncrease: 4)
 	}
 
 	var body: some View {

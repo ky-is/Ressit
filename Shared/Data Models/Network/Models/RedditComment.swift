@@ -18,9 +18,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 
 	@Published var userVote: Int
 	@Published var userSaved: Bool
-	@Published var attributedString: NSAttributedString?
-
-	private static let queue = DispatchQueue.global(qos: .userInitiated)
+	var attributedString: NSAttributedString?
 
 	init?(json: Any) {
 		let data = Self.defaultJSONData(json)
@@ -59,9 +57,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 		userSaved = data["saved"] as! Bool
 
-		Self.queue.async {
-			self.updateAttributedString(sizeIncrease: 2, async: true)
-		}
+		self.updateAttributedString(sizeIncrease: 2)
 	}
 
 	var deleted: Bool {

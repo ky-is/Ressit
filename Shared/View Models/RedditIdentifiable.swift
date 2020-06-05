@@ -29,7 +29,7 @@ protocol RedditVotable: RedditIdentifiable, ObservableObject {
 	func cacheURL(for source: URL, name: String) -> URL
 	func toggleVote(_ vote: Int, in context: NSManagedObjectContext)
 	func performSaved(_ saved: Bool, in context: NSManagedObjectContext)
-	func updateAttributedString(sizeIncrease: CGFloat, async: Bool)
+	func updateAttributedString(sizeIncrease: CGFloat)
 }
 
 private let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
@@ -79,7 +79,7 @@ extension RedditVotable {
 			}, receiveValue: { _ in })
 	}
 
-	func updateAttributedString(sizeIncrease: CGFloat, async: Bool) {
+	func updateAttributedString(sizeIncrease: CGFloat) {
 		guard let body = body, body.starts(with: "<"), let data = body.data(using: .windowsCP1250) ?? body.data(using: .utf8) else {
 			return
 		}
@@ -94,13 +94,7 @@ extension RedditVotable {
 					attributedString.addAttribute(.font, value: font, range: range)
 				}
 			}
-			if async {
-				DispatchQueue.main.async {
-					self.attributedString = attributedString
-				}
-			} else {
-				self.attributedString = attributedString
-			}
+			self.attributedString = attributedString
 		} catch {
 			print(error)
 			return
