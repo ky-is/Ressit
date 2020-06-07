@@ -21,15 +21,14 @@ struct VideoViewer: UIViewControllerRepresentable {
 			.assign(to: \.aspectRatio, on: self)
 	}
 
-	func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> AVPlayerViewController {
+	func makeUIViewController(context: Context) -> AVPlayerViewController {
 		let player = AVPlayer(url: url)
 		controller.player = player
 		player.play()
 		return controller
 	}
 
-	func updateUIViewController(_ uiViewController: AVPlayerViewController, context: UIViewControllerRepresentableContext<Self>) {
-	}
+	func updateUIViewController(_ uiViewController: AVPlayerViewController, context: Context) {}
 }
 
 #if DEBUG

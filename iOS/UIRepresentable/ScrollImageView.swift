@@ -6,7 +6,7 @@ struct ScrollImageView: UIViewControllerRepresentable {
 	let height: CGFloat
 	let geometry: GeometryProxy
 
-	func makeUIViewController(context: UIViewControllerRepresentableContext<Self>) -> ScrollImageViewController {
+	func makeUIViewController(context: Context) -> ScrollImageViewController {
 		let controller = ScrollImageViewController()
 		let imageView = UIImageView(image: image)
 		imageView.contentMode = .scaleAspectFit
@@ -28,8 +28,7 @@ struct ScrollImageView: UIViewControllerRepresentable {
 		return controller
 	}
 
-	func updateUIViewController(_ uiViewController: ScrollImageViewController, context: UIViewControllerRepresentableContext<Self>) {
-	}
+	func updateUIViewController(_ uiViewController: ScrollImageViewController, context: Context) {}
 }
 
 internal final class ScrollImageViewController: UIViewController, UIScrollViewDelegate {

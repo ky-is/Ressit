@@ -4,11 +4,11 @@ struct SearchBar: UIViewRepresentable {
 	@Binding var text: String
 	let autoFocus: Bool
 
-	func makeCoordinator() -> SearchBar.Coordinator {
+	func makeCoordinator() -> Self.Coordinator {
 		return Coordinator(text: $text)
 	}
 
-	func makeUIView(context: UIViewRepresentableContext<SearchBar>) -> UISearchBar {
+	func makeUIView(context: Context) -> UISearchBar {
 		let searchBar = UISearchBar(frame: .zero)
 		searchBar.delegate = context.coordinator
 		searchBar.autocapitalizationType = .none
@@ -19,7 +19,7 @@ struct SearchBar: UIViewRepresentable {
 		return searchBar
 	}
 
-	func updateUIView(_ uiView: UISearchBar, context: UIViewRepresentableContext<SearchBar>) {
+	func updateUIView(_ uiView: UISearchBar, context: Context) {
 		uiView.text = text
 	}
 
