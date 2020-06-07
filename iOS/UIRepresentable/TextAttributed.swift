@@ -3,33 +3,58 @@ import Combine
 
 struct TextAttributed: UIViewRepresentable {
 	let attributedString: NSAttributedString
+	let width: CGFloat
 
-	func makeUIView(context: Context) -> UILabel {
-		let view = UILabel()
-		view.attributedText = attributedString
-		view.textColor = .label
-		view.numberOfLines = 0
-		view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+	internal func makeCoordinator() -> Self.Coordinator {
+		return Coordinator()
+	}
+
+	func makeUIView(context: Context) -> FixedTextView {
+		let view = FixedTextView(attributedString: attributedString, width: width)
+		view.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.tint]
+		view.delegate = context.coordinator
 		return view
 	}
 
-	func updateUIView(_ view: UILabel, context: Context) {}
+	func updateUIView(_ view: FixedTextView, context: Context) {}
+
+	final class Coordinator: NSObject, UITextViewDelegate {
+		func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+			if url.scheme == "applewebdata" {
+				let prefix = url.relativePath.prefix(3)
+				if prefix == "/u/" || prefix == "/r/" {
+					if let url = URL(string: url.relativePath, relativeTo: URL(string: "https://reddit.com")) {
+						UIApplication.shared.open(url)
+					}
+					return false
+				}
+				print("Unknown url", url)
+			}
+			return true
+		}
+	}
 }
 
-//struct TextAttributed: UIViewRepresentable { //
-//	let attributedString: NSAttributedString
-//
-//	func makeUIView(context: Context) -> UITextView {
-//		let view = UITextView()
-//		view.contentInset = .zero
-//		view.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.tint]
-//		view.attributedText = attributedString
-//		view.textColor = .label
-//		view.isScrollEnabled = false
-//		view.isEditable = false
-//		view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-//		return view
-//	}
-//
-//	func updateUIView(_ view: UITextView, context: Context) {}
-//}
+internal final class FixedTextView: UITextView {
+	private var flexibleHeightSize: CGSize!
+
+	init(attributedString: NSAttributedString, width: CGFloat) {
+		super.init(frame: .zero, textContainer: nil)
+		attributedText = attributedString
+		insetsLayoutMarginsFromSafeArea = false
+		isEditable = false
+		isScrollEnabled = false
+		textColor = .label
+		let padding = textContainer.lineFragmentPadding
+		textContainerInset = UIEdgeInsets(top: 0, left: -padding, bottom: 0, right: -padding)
+		flexibleHeightSize = sizeThatFits(CGSize(width: width, height: .infinity))
+	}
+
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	override var intrinsicContentSize: CGSize {
+		flexibleHeightSize
+	}
+}

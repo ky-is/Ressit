@@ -2,23 +2,25 @@ import SwiftUI
 
 struct SubredditPostComments: View {
 	let post: UserPost
-
 	let commentsViewModel: SubredditPostCommentsViewModel
+	let width: CGFloat
 
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		RedditView(commentsViewModel, loadingHeight: 128) { postComments in
-			SubredditPostCommentsContainer(userPost: self.post, postComments: postComments)
+			SubredditPostCommentsContainer(userPost: self.post, postComments: postComments, width: self.width)
 		}
 	}
 }
 
 private struct SubredditPostCommentsContainer: View {
 	let comments: RedditListing<RedditComment>
+	let width: CGFloat
 
-	init(userPost: UserPost, postComments: RedditPostComments) {
+	init(userPost: UserPost, postComments: RedditPostComments, width: CGFloat) {
 		self.comments = postComments.comments
+		self.width = width
 		userPost.update(fromRemote: postComments.post, in: CoreDataModel.shared.persistentContainer.viewContext)
 	}
 
@@ -30,7 +32,7 @@ private struct SubredditPostCommentsContainer: View {
 					.foregroundColor(.secondary)
 					.padding()
 			} else {
-				SubredditPostCommentGroup(comments: comments, maxDepth: 20, currentDepth: 0)
+				SubredditPostCommentGroup(comments: comments, maxDepth: 20, currentDepth: 0, width: width)
 			}
 		}
 	}
@@ -40,10 +42,11 @@ private struct SubredditPostCommentGroup: View {
 	let comments: RedditListing<RedditComment>
 	let maxDepth: Int
 	let currentDepth: Int
+	let width: CGFloat
 
 	var body: some View {
 		ForEach(comments.values) { comment in
-			SubredditPostCommentTree(comment: comment, maxDepth: self.maxDepth, currentDepth: self.currentDepth)
+			SubredditPostCommentTree(comment: comment, maxDepth: self.maxDepth, currentDepth: self.currentDepth, width: self.width)
 		}
 			.listRowInsets(.zero)
 	}
@@ -55,15 +58,17 @@ private struct SubredditPostCommentTree: View {
 	let comment: RedditComment
 	let maxDepth: Int
 	let currentDepth: Int
+	let width: CGFloat
 	private let isRoot: Bool
 
 	@State private var collapsed = false
 
-	init(comment: RedditComment, maxDepth: Int, currentDepth: Int) {
+	init(comment: RedditComment, maxDepth: Int, currentDepth: Int, width: CGFloat) {
 		self.comment = comment
 		self.maxDepth = maxDepth
 		self.currentDepth = currentDepth
 		self._collapsed = State(initialValue: comment.deleted)
+		self.width = width
 		self.isRoot = currentDepth == 0
 	}
 
@@ -72,7 +77,7 @@ private struct SubredditPostCommentTree: View {
 			Divider()
 				.background(isRoot ? Color.secondary : nil)
 				.padding(.leading, isRoot ? 16 - insets.leading : 0)
-			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: $collapsed)
+			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: $collapsed, width: width)
 				.onTapGesture {
 					if self.comment.childIDs == nil {
 						withAnimation {
@@ -81,7 +86,7 @@ private struct SubredditPostCommentTree: View {
 					}
 				}
 			if !collapsed && comment.replies != nil && currentDepth < maxDepth {
-				SubredditPostCommentGroup(comments: comment.replies!, maxDepth: maxDepth, currentDepth: currentDepth + 1)
+				SubredditPostCommentGroup(comments: comment.replies!, maxDepth: maxDepth, currentDepth: currentDepth + 1, width: width - defaultListInset.leading * 2)
 			}
 		}
 			.padding(.leading, insets.leading)
@@ -92,13 +97,14 @@ private struct SubredditPostCommentContent: View {
 	let comment: RedditComment
 	let currentDepth: Int
 	@Binding var collapsed: Bool
+	let width: CGFloat
 
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
 		Group {
 			if !collapsed && !comment.deleted {
-				SubredditPostCommentFromUser(comment: comment)
+				SubredditPostCommentFromUser(comment: comment, width: width)
 			} else {
 				VStack(alignment: .leading) {
 					if collapsed {
@@ -160,10 +166,11 @@ private struct SubredditPostCommentContent: View {
 
 private struct SubredditPostCommentFromUser: View {
 	let comment: RedditComment
+	let width: CGFloat
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 3) {
-			BodyText(entity: comment)
+			BodyText(entity: comment, width: width)
 			HStack {
 				ScoreMetadata(entity: comment)
 				AwardsMetadata(entity: comment)
@@ -185,8 +192,10 @@ struct SubredditPostComments_Previews: PreviewProvider {
 	private static let comments = RedditListing<RedditComment>(asset: .comments)
 
 	static var previews: some View {
-		List {
-			SubredditPostCommentGroup(comments: comments, maxDepth: 2, currentDepth: 0)
+		GeometryReader { geometry in
+			List {
+				SubredditPostCommentGroup(comments: comments, maxDepth: 2, currentDepth: 0, width: geometry.size.width)
+			}
 		}
 			.environment(\.managedObjectContext, context)
 	}

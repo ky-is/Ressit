@@ -39,36 +39,39 @@ private struct SubredditPostContainer: View {
 	}
 
 	var body: some View {
-		List {
-			SubredditPostHeader(post: post)
-				.fixedSize(horizontal: false, vertical: true)
-				.modifier(PostListRowSwipeModifier(post: post))
-			if post.previewURL != nil {
-				Group {
-					if post.previewIsVideo {
-						PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
-					} else if post.isYoutubeLink {
-						YoutubeEmbedView(url: post.url!)
-							.aspectRatio(16/9, contentMode: .fit)
-							.frame(minHeight: 200)
-					} else {
-						ImageDownloadView(viewModel: imageViewModel!)
-							.background(Color.background)
-							.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)
-							.onTapGesture {
-								if case let .success(image) = self.imageViewModel?.state {
-									self.fullscreenImage = image
+		GeometryReader { geometry in
+			List {
+				SubredditPostHeader(post: self.post)
+					.fixedSize(horizontal: false, vertical: true)
+					.modifier(PostListRowSwipeModifier(post: self.post))
+				if self.post.previewURL != nil {
+					Group {
+						if self.post.previewIsVideo {
+							PostVideo(url: self.post.previewURL!, aspectRatio: self.post.previewHeight > 0 ? CGFloat(self.post.previewWidth / self.post.previewHeight) : 16/9)
+						} else if self.post.isYoutubeLink {
+							YoutubeEmbedView(url: self.post.url!)
+								.aspectRatio(16/9, contentMode: .fit)
+								.frame(minHeight: 200)
+						} else {
+							ImageDownloadView(viewModel: self.imageViewModel!)
+								.background(Color.background)
+								.aspectRatio(CGFloat(self.post.previewWidth / self.post.previewHeight), contentMode: .fill)
+								.onTapGesture {
+									if case let .success(image) = self.imageViewModel?.state {
+										self.fullscreenImage = image
+									}
 								}
-							}
+						}
 					}
+						.frame(maxWidth: .infinity)
+						.listRowInsets(.zero)
 				}
-					.frame(maxWidth: .infinity)
-					.listRowInsets(.zero)
+				if self.post.body?.nonEmpty != nil {
+					BodyText(entity: self.post, width: geometry.size.width - defaultListInset.leading * 2)
+						.padding(.top, defaultListInset.top)
+				}
+				SubredditPostComments(post: self.post, commentsViewModel: self.commentsViewModel, width: geometry.size.width - defaultListInset.leading * 2)
 			}
-			if post.body?.nonEmpty != nil {
-				BodyText(entity: post)
-			}
-			SubredditPostComments(post: post, commentsViewModel: commentsViewModel)
 		}
 			.overlay(PostImageOverlay(post: self.post, image: $fullscreenImage))
 	}

@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let defaultListInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
+let defaultListInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
 
 private var activatedSwipeSegment: SwipeSegment?

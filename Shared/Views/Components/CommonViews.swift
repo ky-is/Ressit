@@ -95,12 +95,13 @@ struct SavedMetadata<Entity: RedditVotable>: View {
 
 struct BodyText<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
+	let width: CGFloat
 
 	var body: some View {
 		Group {
 			if entity.attributedString != nil {
-				TextAttributed(attributedString: self.entity.attributedString!)
-					.frame(maxWidth: .infinity)
+				TextAttributed(attributedString: entity.attributedString!, width: width)
+					.padding(.bottom, -16)
 			} else {
 				Text("")
 			}
