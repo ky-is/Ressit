@@ -33,7 +33,7 @@ extension Array {
 		guard index >= startIndex else {
 			return first
 		}
-		guard index <= endIndex else {
+		guard index < endIndex else {
 			return last
 		}
 		return self[index]
