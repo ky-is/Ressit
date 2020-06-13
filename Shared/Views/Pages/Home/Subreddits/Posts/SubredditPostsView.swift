@@ -45,14 +45,14 @@ private struct UpcomingPostsRow: View {
 	@ObservedObject var model: UserSubreddit
 
 	var body: some View {
-		let nextPeriod = model.nextMostFrequentUpdate
+		let nextUpdate = model.nextUpdate
 		return VStack(alignment: .center) {
 			PriorityButton(subreddit: model, size: 16, tooltip: true)
 			Group {
-				if nextPeriod.date.timeIntervalSinceNow < 0 {
+				if nextUpdate.date.timeIntervalSinceNow < 0 {
 					Text("Update ready")
 				} else {
-					RelativeText("Next update for top \(nextPeriod.period.rawValue) in", since: nextPeriod.date)
+					RelativeText("Next update for top \(nextUpdate.period.rawValue) in", since: nextUpdate.date)
 				}
 			}
 				.font(.subheadline)

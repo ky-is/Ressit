@@ -38,17 +38,13 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 		}
 	}
 
-	var nextMostFrequentUpdate: PeriodDate {
-		let minPeriod: RedditPeriod = priority > 0 ? .week : .month
-		return (minPeriod, nextDate(for: minPeriod) ?? Date())
+	var fastestUpdatePeriod: RedditPeriod {
+		priority > 0 ? .week : .month
 	}
 
 	var nextUpdate: PeriodDate {
-		guard periodAllDate != nil, periodYearDate != nil, periodMonthDate != nil, periodWeekDate != nil else {
-			return (.all, Date())
-		}
-		let periods: [RedditPeriod] = [.all, .year, .month, .week]
-		return periods.map({ ($0, nextDate(for: $0)!) }).sorted(\.date, <).first!
+		let minPeriod = fastestUpdatePeriod
+		return (minPeriod, nextDate(for: minPeriod) ?? Date())
 	}
 
 	func needsUpdate(for period: RedditPeriod) -> Bool {
@@ -58,15 +54,20 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 		return nextDate.timeIntervalSinceNow < 0
 	}
 
+	private func previousDateOver(interval: TimeInterval) -> Date {
+		let currentTimeMinusHalfOverInterval = Date.timeIntervalSinceReferenceDate - interval / 2
+		let intervalFromReferenceToPreviousUpdate = (currentTimeMinusHalfOverInterval / interval).rounded(.down) * interval
+		return Date(timeIntervalSinceReferenceDate: intervalFromReferenceToPreviousUpdate)
+	}
+
 	func performUpdate(posts: [RedditPost], for period: RedditPeriod, in context: NSManagedObjectContext) {
 		context.perform {
 			if self.managedObjectContext != context {
 				return
 			}
 			posts.forEach { UserPost.create(for: $0, subreddit: self, in: context) }
-			let updateInterval: TimeInterval = .hour * 8
-			let intervalFromReferenceToPreviousUpdate = ((Date.timeIntervalSinceReferenceDate - updateInterval / 2) / updateInterval).rounded(.down) * updateInterval
-			let date = Date(timeIntervalSinceReferenceDate: intervalFromReferenceToPreviousUpdate)
+
+			let date = self.previousDateOver(interval: .hour * 8)
 			switch period {
 			case .all:
 				self.periodAllDate = date
@@ -77,6 +78,7 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 			case .week:
 				self.periodWeekDate = date
 			}
+
 			context.safeSave()
 			context.refresh(self, mergeChanges: true)
 		}
