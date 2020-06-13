@@ -22,7 +22,7 @@ final class UserSubreddit: NSManagedObject, RedditIdentifiable {
 	@NSManaged var posts: Set<UserPost>
 
 	var fetchCount: Int {
-		2 + priority * 2
+		2 + priority * 3
 	}
 
 	private func nextDate(for period: RedditPeriod) -> Date? {
