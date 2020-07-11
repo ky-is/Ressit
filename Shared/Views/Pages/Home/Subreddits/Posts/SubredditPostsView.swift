@@ -13,7 +13,7 @@ struct SubredditPostsView: View {
 				AllSubredditPostsView()
 			}
 		}
-			.navigationBarTitle(Text(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed"), displayMode: .inline)
+			.navigationTitle(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed")
 	}
 }
 
@@ -126,13 +126,14 @@ private struct ClearReadModifier: ViewModifier {
 
 	func body(content: Content) -> some View {
 		content
-			.navigationBarItems(trailing: Group {
-				if !readPosts.isEmpty {
-					Button(action: performDelete) {
-						Text("Clear read")
-					}
-				}
-			})
+			//TODO
+//			.navigationBarItems(trailing: Group {
+//				if !readPosts.isEmpty {
+//					Button(action: performDelete) {
+//						Text("Clear read")
+//					}
+//				}
+//			})
 			.onDisappear {
 				if !self.readPosts.isEmpty && PostUserModel.shared.selected == nil && SubredditUserModel.shared.selected == nil {
 					self.performDelete()

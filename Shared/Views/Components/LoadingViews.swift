@@ -1,13 +1,7 @@
 import SwiftUI
 
-struct LoadingView: View {
-	var body: some View {
-		Image(systemName: "ellipsis")
-			.font(.largeTitle)
-	}
-}
-
 struct LoadingPlaceholder: View {
+	let label: String
 	let error: Error?
 	let loadingHeight: CGFloat?
 
@@ -16,10 +10,10 @@ struct LoadingPlaceholder: View {
 			if error != nil {
 				Text(error!.localizedDescription)
 			} else {
-				LoadingView()
+				ProgressView(label)
 			}
 		}
-		.frame(maxWidth: .infinity)
+			.frame(maxWidth: .infinity)
 	}
 
 	var body: some View {
@@ -38,9 +32,6 @@ struct LoadingPlaceholder: View {
 
 struct LoadingViews_Previews: PreviewProvider {
 	static var previews: some View {
-		VStack {
-			LoadingView()
-			LoadingPlaceholder(error: nil, loadingHeight: 256)
-		}
+		LoadingPlaceholder(label: "test", error: nil, loadingHeight: 256)
 	}
 }

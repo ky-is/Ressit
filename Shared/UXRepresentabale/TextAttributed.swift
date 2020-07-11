@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-struct TextAttributed: UIViewRepresentable {
+struct TextAttributed: UXViewRepresentable {
 	let attributedString: NSAttributedString
 	let width: CGFloat
 
@@ -9,17 +9,26 @@ struct TextAttributed: UIViewRepresentable {
 		return Coordinator()
 	}
 
-	func makeUIView(context: Context) -> FixedTextView {
+	#if os(macOS)
+	func makeNSView(context: Context) -> FixedTextView { makeView(context: context) }
+	func updateNSView(_ view: FixedTextView, context: Context) {}
+	#else
+	func makeUIView(context: Context) -> WKWebView { makeView(context: context) }
+	func updateUIView(_ view: FixedTextView, context: Context) {}
+	#endif
+
+	func makeView(context: Context) -> FixedTextView {
 		let view = FixedTextView(attributedString: attributedString, width: width)
-		view.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.tint]
+		view.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UXColor.tint]
+		#if os(iOS)
 		view.delegate = context.coordinator
+		#endif
 		return view
 	}
 
-	func updateUIView(_ view: FixedTextView, context: Context) {}
-
+	#if os(iOS)
 	final class Coordinator: NSObject, UITextViewDelegate {
-		func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+		func textView(_ textView: UXTextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
 			if url.scheme == "applewebdata" {
 				let prefix = url.relativePath.prefix(3)
 				if prefix == "/u/" || prefix == "/r/" {
@@ -33,8 +42,32 @@ struct TextAttributed: UIViewRepresentable {
 			return true
 		}
 	}
+	#endif
 }
 
+#if os(macOS)
+internal final class FixedTextView: NSTextView {
+	private var flexibleHeightSize: CGSize!
+
+	init(attributedString: NSAttributedString, width: CGFloat) {
+		super.init(frame: .zero, textContainer: nil)
+		textStorage?.setAttributedString(attributedString)
+		isEditable = false
+		textColor = .labelColor
+//		let padding = textContainer.lineFragmentPadding
+		textContainerInset = .zero
+//		flexibleHeightSize = sizeThatFits(CGSize(width: width, height: .infinity))
+	}
+
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	override var intrinsicContentSize: CGSize {
+		flexibleHeightSize
+	}
+}
+#else
 internal final class FixedTextView: UITextView {
 	private var flexibleHeightSize: CGSize!
 
@@ -58,3 +91,4 @@ internal final class FixedTextView: UITextView {
 		flexibleHeightSize
 	}
 }
+#endif

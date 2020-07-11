@@ -7,14 +7,14 @@ struct ImageDownloadView: View {
 		let image = getImage()
 		return Group {
 			if image != nil {
-				Image(uiImage: image!)
+				Image(uxImage: image!)
 					.renderingMode(.original)
 					.resizable()
 					.aspectRatio(contentMode: .fill)
 			} else if getError() != nil {
 				Text(getError()!.localizedDescription)
 			} else {
-				LoadingView()
+				ProgressView("Image")
 			}
 		}
 			.onAppear(perform: viewModel.attemptDownload)
@@ -27,7 +27,7 @@ struct ImageDownloadView: View {
 		return error
 	}
 
-	private func getImage() -> UIImage? {
+	private func getImage() -> UXImage? {
 		guard case let .success(image) = viewModel.state else {
 			return nil
 		}

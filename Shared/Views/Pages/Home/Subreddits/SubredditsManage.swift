@@ -9,13 +9,14 @@ struct SubredditsManageSheet: View {
 	var body: some View {
 		NavigationView {
 			SubredditsManage(subscriptions: subscriptions, subredditSearch: subredditSearch)
-				.navigationBarItems(trailing:
-					Button(action: {
-						self.presentationMode.wrappedValue.dismiss()
-					}) {
-						Text("Close")
-					}
-				)
+				//TODO
+//				.navigationBarItems(trailing:
+//					Button(action: {
+//						self.presentationMode.wrappedValue.dismiss()
+//					}) {
+//						Text("Close")
+//					}
+//				)
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
 	}
@@ -30,7 +31,9 @@ struct SubredditsManage: View {
 	var body: some View {
 		ZStack(alignment: .top) {
 			VStack(spacing: 0) {
+				#if !os(macOS)
 				SearchBar(text: $subredditSearch.query, autoFocus: false)
+				#endif
 				Group {
 					if subredditSearch.result?.values != nil {
 						SubredditsResponseList(viewModel: subredditSearch, subscriptions: self.subscriptions)
@@ -48,7 +51,7 @@ struct SubredditsManage: View {
 				}
 			}
 		}
-			.navigationBarTitle(Text("\(title) subreddits"), displayMode: .inline)
+			.navigationTitle("\(title) subreddits")
 			.onAppear {
 				if self.subscriptions.isEmpty {
 					self.title = "Add"

@@ -10,26 +10,24 @@ struct SectionVibrant<Content: View>: View {
 	}
 
 	var body: some View {
-		Section(header: Text(label)) {
-			content()
-		}
+		Section(header: Text(label), content: content)
 	}
 }
 
-private struct HeaderView: View {
-	let label: String
-
-	var body: some View {
-		ZStack(alignment: .leading) {
-			BlurView(style: .systemChromeMaterial)
-			Text(label)
-				.font(Font.headline.smallCaps())
-				.foregroundColor(.secondary)
-				.padding(.horizontal)
-				.padding(.vertical, 5)
-		}
-	}
-}
+//private struct HeaderView: View {
+//	let label: String
+//
+//	var body: some View {
+//		ZStack(alignment: .leading) {
+//			BlurView(style: .systemChromeMaterial)
+//			Text(label)
+//				.font(Font.headline.smallCaps())
+//				.foregroundColor(.secondary)
+//				.padding(.horizontal)
+//				.padding(.vertical, 5)
+//		}
+//	}
+//}
 
 struct SectionVibrant_Previews: PreviewProvider {
 	static var previews: some View {
@@ -39,7 +37,7 @@ struct SectionVibrant_Previews: PreviewProvider {
 					Text("Test")
 				}
 			}
-				.navigationBarTitle("Test", displayMode: .inline)
+				.navigationTitle("Test")
 		}
 	}
 }

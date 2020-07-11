@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SearchBar: UIViewRepresentable {
+struct SearchBar: UXViewRepresentable {
 	@Binding var text: String
 	let autoFocus: Bool
 
@@ -19,8 +19,8 @@ struct SearchBar: UIViewRepresentable {
 		return searchBar
 	}
 
-	func updateUIView(_ uiView: UISearchBar, context: Context) {
-		uiView.text = text
+	func updateUIView(_ view: UISearchBar, context: Context) {
+		view.text = text
 	}
 
 	final class Coordinator: NSObject, UISearchBarDelegate {

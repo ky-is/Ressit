@@ -86,12 +86,12 @@ extension RedditVotable {
 		let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [.documentType:  NSAttributedString.DocumentType.html]
 		do {
 			let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
-			let systemFamily = UIFont.systemFont(ofSize: 12).familyName
+			let systemFamily: String! = UXFont.systemFont(ofSize: 12).familyName
 			attributedString.enumerateAttribute(.font, in: NSRange(location: 0, length: attributedString.length), options: []) { attribute, range, stop in
-				if let font = attribute as? UIFont {
+				if let font = attribute as? UXFont {
 					let descriptor = font.fontDescriptor.withFamily(systemFamily)
-					let font = UIFont(descriptor: descriptor, size: font.pointSize + sizeIncrease)
-					attributedString.addAttribute(.font, value: font, range: range)
+					let font: UXFont! = UXFont(descriptor: descriptor, size: font.pointSize + sizeIncrease)
+					attributedString.addAttribute(.font, value: font!, range: range)
 				}
 			}
 			self.attributedString = attributedString

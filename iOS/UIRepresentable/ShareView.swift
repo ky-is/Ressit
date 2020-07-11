@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ShareSheet: UIViewControllerRepresentable {
+struct ShareSheet: UXViewControllerRepresentable {
 	let activityItems: [Any]
 	let applicationActivities: [UIActivity]? = nil
 	let excludedActivityTypes: [UIActivity.ActivityType]? = nil
@@ -13,5 +13,5 @@ struct ShareSheet: UIViewControllerRepresentable {
 		return controller
 	}
 
-	func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+	func updateUIViewController(_ viewController: UIActivityViewController, context: Context) {}
 }

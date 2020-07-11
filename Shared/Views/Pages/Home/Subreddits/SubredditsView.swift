@@ -8,7 +8,7 @@ struct SubredditsView: View {
 
 	var body: some View {
 		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch)
-			.navigationBarTitle("Subreddits")
+			.navigationTitle("Subreddits")
 	}
 }
 
@@ -43,17 +43,18 @@ private struct SubredditsSubscriptionList: View {
 				SubredditsSubscriptionsSection(header: "Upcoming", subscriptions: unavailableSubscriptions)
 			}
 		}
-			.navigationBarItems(trailing: Group {
-				Button(action: {
-					self.showAddSubreddits = true
-				}) {
-					Image(systemName: "plus")
-						.imageScale(.large)
-						.frame(height: 44)
-						.padding(.horizontal, 16)
-				}
-					.padding(.trailing, -16)
-			})
+			//TODO
+//			.navigationBarItems(trailing: Group {
+//				Button(action: {
+//					self.showAddSubreddits = true
+//				}) {
+//					Image(systemName: "plus")
+//						.imageScale(.large)
+//						.frame(height: 44)
+//						.padding(.horizontal, 16)
+//				}
+//					.padding(.trailing, -16)
+//			})
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
 					.environment(\.managedObjectContext, self.context)
@@ -79,7 +80,7 @@ private struct SubredditsSubscriptionsSection: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		SectionVibrant(label: header) {
+		Section(header: Text(header)) {
 			ForEach(self.subscriptions) { subreddit in
 				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}

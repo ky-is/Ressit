@@ -1,4 +1,5 @@
 import SwiftUI
+import AVKit
 
 private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
@@ -21,7 +22,7 @@ private struct SubredditPostContainer: View {
 
 	private let commentsViewModel: SubredditPostCommentsViewModel
 	private let imageViewModel: ImageDownloadViewModel?
-	@State private var fullscreenImage: UIImage?
+	@State private var fullscreenImage: UXImage?
 
 	init(post: UserPost) {
 		self.post = post
@@ -79,7 +80,7 @@ private struct SubredditPostContainer: View {
 
 private struct PostImageOverlay: View {
 	let post: UserPost
-	@Binding var image: UIImage?
+	@Binding var image: UXImage?
 
 	@State private var share = false
 
@@ -88,14 +89,15 @@ private struct PostImageOverlay: View {
 			if image != nil {
 				GeometryReader { geometry in
 					ZStack(alignment: .bottom) {
-						ScrollImageView(image: self.image!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
-							.frame(maxWidth: .infinity, maxHeight: .infinity)
-							.background(Color.background.edgesIgnoringSafeArea(.all))
-							.onTapGesture {
-								self.image = nil
-							}
+						//TODO
+//						ScrollImageView(image: self.image!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
+//							.frame(maxWidth: .infinity, maxHeight: .infinity)
+//							.background(Color.background.edgesIgnoringSafeArea(.all))
+//							.onTapGesture {
+//								self.image = nil
+//							}
 						ZStack(alignment: .top) {
-							BlurView(style: .systemChromeMaterial)
+//							BlurView(style: .systemChromeMaterial)
 							HStack {
 								Button(action: {
 									self.share = true
@@ -113,7 +115,7 @@ private struct PostImageOverlay: View {
 					.edgesIgnoringSafeArea(.all)
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
 					.sheet(isPresented: self.$share) {
-						ShareSheet(activityItems: [self.image!])
+//						ShareSheet(activityItems: [self.image!]) //TODO
 					}
 			}
 		}
@@ -125,10 +127,40 @@ private struct PostVideo: View {
 	@State var aspectRatio: CGFloat
 
 	var body: some View {
-		VideoViewer(url: url, aspectRatio: $aspectRatio)
-			.aspectRatio(aspectRatio, contentMode: .fit)
-			.frame(maxWidth: .infinity)
+		Group {
+			#if os(iOS)
+			VideoViewer(url: url, aspectRatio: $aspectRatio)
+				.aspectRatio(aspectRatio, contentMode: .fit)
+				.frame(maxWidth: .infinity)
+			#else
+			VideoPlayer(player: AVPlayer(url: url))
+			#endif
+		}
 	}
+}
+
+private struct LinkView: View {
+	let title: String
+	let url: URL
+
+	@State private var openLink = false
+
+	#if os(iOS)
+	var body: some View {
+		Button(action: {
+			self.openLink = true
+		}) {
+			Text(title)
+		}
+			.sheet(isPresented: $openLink) {
+				SafariView(url: url)
+			}
+	}
+	#else
+	var body: some View {
+		Link(title, destination: url)
+	}
+	#endif
 }
 
 private struct SubredditPostHeader: View {
@@ -139,12 +171,8 @@ private struct SubredditPostHeader: View {
 	var body: some View {
 		Group {
 			VStack(alignment: .leading, spacing: 0) {
-				Button(action: {
-					self.openLink = true
-				}) {
-					Text(post.title)
-						.font(.headline)
-				}
+				LinkView(title: post.title, url: post.url!)
+					.font(.headline)
 				if post.url?.host != nil {
 					Text(post.url!.hostDescription!)
 						.font(.subheadline)
@@ -184,10 +212,7 @@ private struct SubredditPostHeader: View {
 			}
 		}
 			.padding(.vertical, 8)
-			.navigationBarTitle(Text(post.title), displayMode: .inline)
-			.sheet(isPresented: $openLink) {
-				SafariView(url: self.post.url!)
-			}
+			.navigationTitle(post.title)
 	}
 }
 

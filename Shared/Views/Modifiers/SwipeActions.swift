@@ -4,7 +4,9 @@ let defaultListInset = EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16)
 private let swipeActivationMagnitude: CGFloat = 64
 
 private var activatedSwipeSegment: SwipeSegment?
+#if os(iOS)
 private var feedbackGenerator: UIImpactFeedbackGenerator?
+#endif
 
 struct SwipeSegment: Equatable {
 	static func == (lhs: SwipeSegment, rhs: SwipeSegment) -> Bool {
@@ -109,10 +111,12 @@ struct ListRowSwipeModifier: ViewModifier {
 									let segmentIndex = Int(floor(activationsSwipedCount)) - 1
 									didActivateSegment = segmentIndex >= 0
 									displaySegment = directionSegments[clamped: segmentIndex]
+									#if os(iOS)
 									if feedbackGenerator == nil {
 										feedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
 										feedbackGenerator?.prepare()
 									}
+									#endif
 								} else {
 									didActivateSegment = false
 									displaySegment = nil
@@ -129,8 +133,10 @@ struct ListRowSwipeModifier: ViewModifier {
 							let activatedSection = didActivateSegment ? displaySegment : nil
 							if activatedSwipeSegment != activatedSection {
 								activatedSwipeSegment = activatedSection
+								#if os(iOS)
 								feedbackGenerator?.impactOccurred(intensity: didActivateSegment ? 1 : 0.5)
 								feedbackGenerator?.prepare()
+								#endif
 							}
 						}
 						.onEnded { _ in

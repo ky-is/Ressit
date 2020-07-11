@@ -1,7 +1,8 @@
 import Combine
+import Foundation
 
 enum DownloadState {
-	case loading, success(image: UIImage), failure(error: Error)
+	case loading, success(image: UXImage), failure(error: Error)
 }
 
 private enum DownloadError: Error {
@@ -31,8 +32,8 @@ final class ImageDownloadViewModel: ObservableObject {
 		if let localURL = localURL, FileManager.default.fileExists(atPath: localURL.path) {
 //			try? FileManager.default.removeItem(at: localURL) //SAMPLE
 			subscribe(to:
-				Future<UIImage, DownloadError> { promise in
-					if let image = UIImage(contentsOfFile: localURL.path) {
+				Future<UXImage, DownloadError> { promise in
+					if let image = UXImage(contentsOfFile: localURL.path) {
 						promise(.success(image))
 					} else {
 						promise(.failure(.invalidImage))
@@ -49,7 +50,7 @@ final class ImageDownloadViewModel: ObservableObject {
 		}
 	}
 
-	private func subscribe(to publisher: AnyPublisher<UIImage, Error>) {
+	private func subscribe(to publisher: AnyPublisher<UXImage, Error>) {
 		subscription?.cancel()
 		subscription = publisher
 			.sink(receiveCompletion: { completion in
@@ -65,12 +66,12 @@ final class ImageDownloadViewModel: ObservableObject {
 			}
 	}
 
-	private var downloadPublisher: AnyPublisher<UIImage, Error> {
+	private var downloadPublisher: AnyPublisher<UXImage, Error> {
 		URLSession.shared.dataTaskPublisher(for: url)
 			.subscribe(on: Self.backgroundQueue)
 			.receive(on: RunLoop.main)
 			.tryMap { data, response in
-				guard let image = UIImage(data: data) else {
+				guard let image = UXImage(data: data) else {
 					throw DownloadError.invalidImage
 				}
 				if let localURL = self.localURL {

@@ -16,7 +16,7 @@ struct RedditView<VM: RedditViewModel, Content: View>: View {
 			if viewModel.result != nil {
 				content(viewModel.result!)
 			} else {
-				LoadingPlaceholder(error: viewModel.error, loadingHeight: loadingHeight)
+				LoadingPlaceholder(label: "Reddit data", error: viewModel.error, loadingHeight: loadingHeight)
 			}
 		}
 			.onAppear(perform: viewModel.fetch)

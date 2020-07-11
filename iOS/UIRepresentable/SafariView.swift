@@ -10,5 +10,5 @@ struct SafariView: UIViewControllerRepresentable {
 		return controller
 	}
 
-	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+	func updateUIViewController(_ viewController: SFSafariViewController, context: Context) {}
 }

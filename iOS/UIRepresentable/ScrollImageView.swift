@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct ScrollImageView: UIViewControllerRepresentable {
-	let image: UIImage
+	let image: UXImage
 	let width: CGFloat
 	let height: CGFloat
 	let geometry: GeometryProxy
 
 	func makeUIViewController(context: Context) -> ScrollImageViewController {
 		let controller = ScrollImageViewController()
-		let imageView = UIImageView(image: image)
+		let imageView = UXImageView(image: image)
 		imageView.contentMode = .scaleAspectFit
 		imageView.frame.size = geometry.size
 		let aspectRatio = width / height
@@ -32,7 +32,7 @@ struct ScrollImageView: UIViewControllerRepresentable {
 }
 
 internal final class ScrollImageViewController: UIViewController, UIScrollViewDelegate {
-	var imageView: UIImageView?
+	var imageView: UXImageView?
 
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return imageView
