@@ -6,13 +6,10 @@ struct SubredditTitle: View {
 	var body: some View {
 		HStack(spacing: 1) {
 			if name != nil {
-				Text("r/")
-					.foregroundColor(.secondary)
-				Text(name!)
+				TextLabel(prefix: "r/", title: name!)
 			} else {
-				Image(systemName: "globe")
-					.foregroundColor(.accentColor)
-				Text(" Global Feed")
+				Label("Global Feed", systemImage: "globe")
+					.labelStyle(FaintIconLabelStyle())
 			}
 		}
 			.lineLimit(1)
@@ -31,31 +28,18 @@ struct HiddenNavigationLink<Destination: View>: View {
 	}
 }
 
-struct IconText: View {
-	let iconName: String
-	let label: String
-
-	var body: some View {
-		HStack(spacing: 2) {
-			Image(systemName: iconName)
-				.foregroundColor(.secondary)
-			Text(label)
-				.fixedSize()
-		}
-	}
-}
-
 struct ScoreMetadata<Entity: RedditVotable>: View {
 	@ObservedObject var entity: Entity
 
 	var body: some View {
-		HStack(spacing: 2) {
+		Label {
+			Text(entity.score.estimatedDescription)
+				.fixedSize()
+		} icon: {
 			Image(systemName: "arrow.up")
 				.foregroundColor(entity.voteColor())
 				.animation(.default)
 				.rotationEffect(entity.userVote < 0 ? .degrees(180) : .zero)
-			Text(entity.score.estimatedDescription)
-				.fixedSize()
 		}
 	}
 }
@@ -64,7 +48,8 @@ struct CommentsMetadata: View {
 	@ObservedObject var post: UserPost
 
 	var body: some View {
-		IconText(iconName: "bubble.left.and.bubble.right", label: post.commentCount.description)
+		Label(post.commentCount.description, systemImage: "bubble.left.and.bubble.right")
+			.labelStyle(FaintIconLabelStyle())
 	}
 }
 
@@ -74,7 +59,8 @@ struct AwardsMetadata<Entity: RedditVotable>: View {
 	var body: some View {
 		Group {
 			if entity.awardCount > 0 {
-				IconText(iconName: "gift", label: entity.awardCount.description)
+				Label(entity.awardCount.description, systemImage: "gift")
+					.labelStyle(FaintIconLabelStyle())
 			}
 		}
 	}
@@ -86,7 +72,8 @@ struct SavedMetadata<Entity: RedditVotable>: View {
 	var body: some View {
 		Group {
 			if entity.userSaved {
-				Image(systemName: "bookmark.fill")
+				Label("Saved", image: "bookmark.fill")
+					.labelStyle(IconOnlyLabelStyle())
 					.foregroundColor(.green)
 			}
 		}

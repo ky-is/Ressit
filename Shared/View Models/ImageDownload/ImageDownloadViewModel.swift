@@ -1,5 +1,4 @@
 import Combine
-import UIKit
 
 enum DownloadState {
 	case loading, success(image: UIImage), failure(error: Error)

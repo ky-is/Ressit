@@ -92,7 +92,8 @@ struct RelativeIcon: View {
 	}
 
 	var body: some View {
-		IconText(iconName: "clock", label: components)
+		Label(components, systemImage: "clock")
+			.labelStyle(FaintIconLabelStyle())
 			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
 				if let reference = self.reference {

@@ -93,10 +93,7 @@ private struct SubredditsManageEntry: View {
 					.foregroundColor(subscriptionModel != nil ? .accentColor : .secondary)
 					.frame(width: 20)
 				SubredditTitle(name: subreddit.name)
-				HStack(alignment: .firstTextBaseline, spacing: 1) {
-					Image(systemName: "person.fill")
-					Text(subreddit.subscribers)
-				}
+				Label(subreddit.subscribers, systemImage: "person.fill")
 					.font(.caption)
 					.foregroundColor(.secondary)
 			}

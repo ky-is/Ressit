@@ -174,10 +174,7 @@ private struct SubredditPostCommentFromUser: View {
 			HStack {
 				ScoreMetadata(entity: comment)
 				AwardsMetadata(entity: comment)
-				Text("u/")
-					.foregroundColor(.secondary)
-				+
-				Text(comment.author!)
+				TextLabel(prefix: "u/", title: comment.author!)
 				RelativeIcon(since: comment.creationDate)
 				SavedMetadata(entity: comment)
 			}

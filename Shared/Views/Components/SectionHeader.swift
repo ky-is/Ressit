@@ -10,11 +10,9 @@ struct SectionVibrant<Content: View>: View {
 	}
 
 	var body: some View {
-		Section(header: HeaderView(label: label)) {
+		Section(header: Text(label)) {
 			content()
-				.padding(.horizontal)
 		}
-			.listRowInsets(.zero)
 	}
 }
 

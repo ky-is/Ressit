@@ -19,7 +19,11 @@ extension RedditResponsable {
 }
 
 #if DEBUG
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
 
 extension NSDataAssetName {
 	static let comments = Self.init("comments")

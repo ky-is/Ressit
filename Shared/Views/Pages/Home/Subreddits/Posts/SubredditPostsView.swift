@@ -4,7 +4,6 @@ private let postSort = NSSortDescriptor(key: "score", ascending: false)
 
 struct SubredditPostsView: View {
 	let subscription: SubredditPostsViewModel
-	let inSplitView: Bool
 
 	var body: some View {
 		Group {
@@ -15,11 +14,6 @@ struct SubredditPostsView: View {
 			}
 		}
 			.navigationBarTitle(Text(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed"), displayMode: .inline)
-			.background(Group {
-				if !inSplitView {
-					SelectedPostLink(inSplitView: inSplitView)
-				}
-			})
 	}
 }
 
@@ -173,7 +167,7 @@ struct SubredditPostsView_Previews: PreviewProvider {
 
 	static var previews: some View {
 		NavigationView {
-			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription, in: context), inSplitView: false)
+			SubredditPostsView(subscription: SubredditPostsViewModel(model: subredditSubscription, in: context))
 		}
 			.environment(\.managedObjectContext, context)
 	}

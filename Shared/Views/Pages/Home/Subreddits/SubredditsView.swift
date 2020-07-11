@@ -3,27 +3,11 @@ import SwiftUI
 
 struct SubredditsView: View {
 	let subscriptions: [SubredditPostsViewModel]
-	let inSplitView: Bool
-
-	var body: some View {
-		NavigationView {
-			SubredditsContainer(subscriptions: subscriptions, inSplitView: inSplitView)
-				.background(
-					SelectedSubredditLink(inSplitView: inSplitView)
-				)
-		}
-			.navigationViewStyle(StackNavigationViewStyle())
-	}
-}
-
-private struct SubredditsContainer: View {
-	let subscriptions: [SubredditPostsViewModel]
-	let inSplitView: Bool
 
 	private let subredditSearch = SubredditsSearchViewModel()
 
 	var body: some View {
-		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch, inSplitView: inSplitView)
+		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch)
 			.navigationBarTitle("Subreddits")
 	}
 }
@@ -31,7 +15,6 @@ private struct SubredditsContainer: View {
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: [SubredditPostsViewModel]
 	let subredditSearch: SubredditsSearchViewModel
-	let inSplitView: Bool
 
 	@State private var showAddSubreddits = false
 	@Environment(\.managedObjectContext) private var context
@@ -61,25 +44,22 @@ private struct SubredditsSubscriptionList: View {
 			}
 		}
 			.navigationBarItems(trailing: Group {
-				if !inSplitView {
-					Button(action: {
-						self.showAddSubreddits = true
-					}) {
-						Image(systemName: "plus")
-							.font(.system(size: 26))
-							.frame(height: 44)
-							.padding(.horizontal, 16)
-					}
-						.padding(.trailing, -16)
+				Button(action: {
+					self.showAddSubreddits = true
+				}) {
+					Image(systemName: "plus")
+						.imageScale(.large)
+						.frame(height: 44)
+						.padding(.horizontal, 16)
 				}
+					.padding(.trailing, -16)
 			})
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
-					.accentColor(.tint)
 					.environment(\.managedObjectContext, self.context)
 			}
 			.onAppear {
-				if !self.inSplitView && self.subscriptions.isEmpty {
+				if self.subscriptions.isEmpty {
 					self.showAddSubreddits = true
 				}
 
@@ -199,7 +179,7 @@ struct SubredditsView_Previews: PreviewProvider {
 	private static let context = CoreDataModel.shared.persistentContainer.viewContext
 
 	static var previews: some View {
-		SubredditsView(subscriptions: [], inSplitView: false)
+		SubredditsView(subscriptions: [])
 			.environment(\.managedObjectContext, context)
 	}
 }

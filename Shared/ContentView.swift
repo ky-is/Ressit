@@ -11,7 +11,6 @@ struct ContentView: View {
 				WelcomeView()
 			}
 		}
-			.accentColor(.tint)
 	}
 }
 

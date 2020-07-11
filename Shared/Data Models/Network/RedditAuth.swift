@@ -216,6 +216,6 @@ struct RedditAuthManager {
 
 private final class AuthenticationWindowProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
 	func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-		return globalPresentationAnchor ?? ASPresentationAnchor()
+		return UIApplication.shared.windows.first! //TODO
 	}
 }

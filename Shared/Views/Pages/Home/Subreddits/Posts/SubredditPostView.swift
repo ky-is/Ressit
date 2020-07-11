@@ -152,13 +152,17 @@ private struct SubredditPostHeader: View {
 				}
 				VStack(alignment: .leading, spacing: 4) {
 					HStack {
-						IconText(iconName: "person.fill", label: post.author)
+						Label(post.author, systemImage: "person.fill")
+							.labelStyle(FaintIconLabelStyle())
 						RelativeIcon(since: post.creationDate)
 						SubredditTitle(name: post.subreddit.name)
 						if post.crosspostFrom != nil {
-							Image(systemName: "link")
-								.foregroundColor(.secondary)
-							SubredditTitle(name: post.crosspostFrom!)
+							Label {
+								SubredditTitle(name: post.crosspostFrom!)
+							} icon: {
+								Image(systemName: "link")
+							}
+								.labelStyle(FaintIconLabelStyle())
 						}
 						SavedMetadata(entity: post)
 					}

@@ -21,7 +21,7 @@ struct YoutubeEmbedView: UIViewRepresentable {
 		let view = WKWebView(frame: .zero, configuration: configuration)
 		view.isOpaque = false
 		if let id = id {
-			view.loadHTMLString(#"<iframe width="100%" height="100%" type="text/html" src="https://www.youtube.com/embed/\#(id)?autoplay=1" frameborder="0"></iframe><style>body{margin:0;}</style>"#, baseURL: nil)
+			view.loadHTMLString(#"<iframe width="100%" height="100%" type="text/html" src="https://www.youtube-nocookie.com/embed/\#(id)?autoplay=1" frameborder="0"></iframe><style>body{margin:0;}</style>"#, baseURL: nil)
 		}
 		return view
 	}
