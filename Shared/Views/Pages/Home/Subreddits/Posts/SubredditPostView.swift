@@ -42,24 +42,24 @@ private struct SubredditPostContainer: View {
 	var body: some View {
 		GeometryReader { geometry in
 			List {
-				SubredditPostHeader(post: self.post)
+				SubredditPostHeader(post: post)
 					.fixedSize(horizontal: false, vertical: true)
-					.modifier(PostListRowSwipeModifier(post: self.post))
-				if self.post.previewURL != nil {
+					.modifier(PostListRowSwipeModifier(post: post))
+				if post.previewURL != nil {
 					Group {
-						if self.post.previewIsVideo {
-							PostVideo(url: self.post.previewURL!, aspectRatio: self.post.previewHeight > 0 ? CGFloat(self.post.previewWidth / self.post.previewHeight) : 16/9)
-						} else if self.post.isYoutubeLink {
-							YoutubeEmbedView(url: self.post.url!)
+						if post.previewIsVideo {
+							PostVideo(url: post.previewURL!, aspectRatio: post.previewHeight > 0 ? CGFloat(post.previewWidth / post.previewHeight) : 16/9)
+						} else if post.isYoutubeLink {
+							YoutubeEmbedView(url: post.url!)
 								.aspectRatio(16/9, contentMode: .fit)
 								.frame(minHeight: 200)
 						} else {
-							ImageDownloadView(viewModel: self.imageViewModel!)
+							ImageDownloadView(viewModel: imageViewModel!)
 								.background(Color.background)
-								.aspectRatio(CGFloat(self.post.previewWidth / self.post.previewHeight), contentMode: .fill)
+								.aspectRatio(CGFloat(post.previewWidth / post.previewHeight), contentMode: .fill)
 								.onTapGesture {
-									if case let .success(image) = self.imageViewModel?.state {
-										self.fullscreenImage = image
+									if case let .success(image) = imageViewModel?.state {
+										fullscreenImage = image
 									}
 								}
 						}
@@ -67,14 +67,14 @@ private struct SubredditPostContainer: View {
 						.frame(maxWidth: .infinity)
 						.listRowInsets(.zero)
 				}
-				if self.post.body?.nonEmpty != nil {
-					BodyText(entity: self.post, width: geometry.size.width - defaultListInset.leading * 2)
+				if post.body?.nonEmpty != nil {
+					BodyText(entity: post, width: geometry.size.width - defaultListInset.leading * 2)
 						.padding(.top, defaultListInset.top)
 				}
-				SubredditPostComments(post: self.post, commentsViewModel: self.commentsViewModel, width: geometry.size.width - defaultListInset.leading * 2)
+				SubredditPostComments(post: post, commentsViewModel: commentsViewModel, width: geometry.size.width - defaultListInset.leading * 2)
 			}
 		}
-			.overlay(PostImageOverlay(post: self.post, image: $fullscreenImage))
+			.overlay(PostImageOverlay(post: post, image: $fullscreenImage))
 	}
 }
 
@@ -90,17 +90,17 @@ private struct PostImageOverlay: View {
 				GeometryReader { geometry in
 					ZStack(alignment: .bottom) {
 						//TODO
-//						ScrollImageView(image: self.image!, width: CGFloat(self.post.previewWidth), height: CGFloat(self.post.previewHeight), geometry: geometry)
+//						ScrollImageView(image: image!, width: CGFloat(post.previewWidth), height: CGFloat(post.previewHeight), geometry: geometry)
 //							.frame(maxWidth: .infinity, maxHeight: .infinity)
 //							.background(Color.background.edgesIgnoringSafeArea(.all))
 //							.onTapGesture {
-//								self.image = nil
+//								image = nil
 //							}
 						ZStack(alignment: .top) {
 //							BlurView(style: .systemChromeMaterial)
 							HStack {
 								Button(action: {
-									self.share = true
+									share = true
 								}) {
 									Image(systemName: "square.and.arrow.up")
 										.frame(minWidth: 44, maxHeight: .infinity)
@@ -114,8 +114,8 @@ private struct PostImageOverlay: View {
 				}
 					.edgesIgnoringSafeArea(.all)
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
-					.sheet(isPresented: self.$share) {
-//						ShareSheet(activityItems: [self.image!]) //TODO
+					.sheet(isPresented: $share) {
+//						ShareSheet(activityItems: [image!]) //TODO
 					}
 			}
 		}
@@ -148,7 +148,7 @@ private struct LinkView: View {
 	#if os(iOS)
 	var body: some View {
 		Button(action: {
-			self.openLink = true
+			openLink = true
 		}) {
 			Text(title)
 		}

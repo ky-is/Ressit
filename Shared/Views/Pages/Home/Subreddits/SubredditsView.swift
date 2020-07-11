@@ -46,7 +46,7 @@ private struct SubredditsSubscriptionList: View {
 			//TODO
 //			.navigationBarItems(trailing: Group {
 //				Button(action: {
-//					self.showAddSubreddits = true
+//					showAddSubreddits = true
 //				}) {
 //					Image(systemName: "plus")
 //						.imageScale(.large)
@@ -56,19 +56,19 @@ private struct SubredditsSubscriptionList: View {
 //					.padding(.trailing, -16)
 //			})
 			.sheet(isPresented: $showAddSubreddits) {
-				SubredditsManageSheet(subscriptions: self.subscriptions, subredditSearch: self.subredditSearch)
-					.environment(\.managedObjectContext, self.context)
+				SubredditsManageSheet(subscriptions: subscriptions, subredditSearch: subredditSearch)
+					.environment(\.managedObjectContext, context)
 			}
 			.onAppear {
-				if self.subscriptions.isEmpty {
-					self.showAddSubreddits = true
+				if subscriptions.isEmpty {
+					showAddSubreddits = true
 				}
 
 				//SAMPLE
-//				let samples = self.subscriptions.compactMap(\.model).filter(\.postCount, ==, 0)
+//				let samples = subscriptions.compactMap(\.model).filter(\.postCount, ==, 0)
 //				print(samples.map(\.name))
 //				samples.forEach { $0.periodWeekDate = Date(timeIntervalSinceNow: -(.day - .minute)) }
-//				self.context.safeSave()
+//				context.safeSave()
 			}
 	}
 }
@@ -81,11 +81,11 @@ private struct SubredditsSubscriptionsSection: View {
 
 	var body: some View {
 		Section(header: Text(header)) {
-			ForEach(self.subscriptions) { subreddit in
+			ForEach(subscriptions) { subreddit in
 				SubredditListEntry(subscription: subreddit, postCount: nil)
 			}
 				.onDelete { indices in
-					self.subscriptions.performDelete(at: indices, from: self.context)
+					subscriptions.performDelete(at: indices, from: context)
 				}
 		}
 	}
@@ -98,7 +98,7 @@ private struct SubredditListEntry: View {
 	var body: some View {
 		HStack {
 			Button(action: {
-				SubredditUserModel.shared.selected = self.subscription
+				SubredditUserModel.shared.selected = subscription
 			}) {
 				SubredditTitle(name: subscription.model?.name)
 					.font(Font.body.weight(.medium))
@@ -148,7 +148,7 @@ private struct SubredditEntryDynamic: View {
 				SubredditEntryPostCount(count: postCount)
 			} else {
 				RelativeText(since: subreddit.nextUpdate.date, atZero: {
-					self.subscription.updateIfNeeded(in: self.context)
+					subscription.updateIfNeeded(in: context)
 				})
 					.foregroundColor(.secondary)
 					.font(font?.weight(.semibold))

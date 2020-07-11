@@ -9,7 +9,7 @@ struct SubredditPostComments: View {
 
 	var body: some View {
 		RedditView(commentsViewModel, loadingHeight: 128) { postComments in
-			SubredditPostCommentsContainer(userPost: self.post, postComments: postComments, width: self.width)
+			SubredditPostCommentsContainer(userPost: post, postComments: postComments, width: width)
 		}
 	}
 }
@@ -46,7 +46,7 @@ private struct SubredditPostCommentGroup: View {
 
 	var body: some View {
 		ForEach(comments.values) { comment in
-			SubredditPostCommentTree(comment: comment, maxDepth: self.maxDepth, currentDepth: self.currentDepth, width: self.width)
+			SubredditPostCommentTree(comment: comment, maxDepth: maxDepth, currentDepth: currentDepth, width: width)
 		}
 			.listRowInsets(.zero)
 	}
@@ -79,9 +79,9 @@ private struct SubredditPostCommentTree: View {
 				.padding(.leading, isRoot ? 16 - insets.leading : 0)
 			SubredditPostCommentContent(comment: comment, currentDepth: currentDepth, collapsed: $collapsed, width: width)
 				.onTapGesture {
-					if self.comment.childIDs == nil {
+					if comment.childIDs == nil {
 						withAnimation {
-							self.collapsed.toggle()
+							collapsed.toggle()
 						}
 					}
 				}
@@ -123,7 +123,7 @@ private struct SubredditPostCommentContent: View {
 			.background(Group {
 				if currentDepth > 0 {
 					Color.accentColor
-						.hueRotation(.degrees(Double(self.currentDepth - 1) * 31))
+						.hueRotation(.degrees(Double(currentDepth - 1) * 31))
 						.frame(width: 1)
 						.offset(x: -insets.leading - 1)
 				}
@@ -134,29 +134,29 @@ private struct SubredditPostCommentContent: View {
 				ListRowSwipeModifier(
 					inList: false, insets: insets,
 					leading: collapsed ? nil : [
-						SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { self.comment.userVote > 0 }) { action in
-							self.comment.toggleVote(action == .upvote ? 1 : 0, in: self.context)
+						SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { comment.userVote > 0 }) { action in
+							comment.toggleVote(action == .upvote ? 1 : 0, in: context)
 						},
-						SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { self.comment.userVote < 0 }) { action in
-							self.comment.toggleVote(action == .downvote ? -1 : 0, in: self.context)
+						SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { comment.userVote < 0 }) { action in
+							comment.toggleVote(action == .downvote ? -1 : 0, in: context)
 						},
 					],
 					trailing: collapsed
 						? [
-							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { self.collapsed }) { action in
+							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { collapsed }) { action in
 								withAnimation {
-									self.collapsed = action == .collapse
+									collapsed = action == .collapse
 								}
 							},
 						]
 						: [
-							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { self.collapsed }) { action in
+							SwipeSegment(primary: .collapse, reset: .collapseReset, shouldReset: { collapsed }) { action in
 								withAnimation {
-									self.collapsed = action == .collapse
+									collapsed = action == .collapse
 								}
 							},
-							SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.comment.userSaved }) { action in
-								self.comment.performSaved(action == .save, in: self.context)
+							SwipeSegment(primary: .save, reset: .unsave, shouldReset: { comment.userSaved }) { action in
+								comment.performSaved(action == .save, in: context)
 							},
 						]
 				)

@@ -35,19 +35,19 @@ struct PostListRowSwipeModifier: ViewModifier {
 		content.modifier(
 			ListRowSwipeModifier(
 				leading: [
-					SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { self.post.userVote > 0 }) { action in
-						self.post.toggleVote(action == .upvote ? 1 : 0, in: self.context)
+					SwipeSegment(primary: .upvote, reset: .upvoteRemove, shouldReset: { post.userVote > 0 }) { action in
+						post.toggleVote(action == .upvote ? 1 : 0, in: context)
 					},
-					SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { self.post.userVote < 0 }) { action in
-						self.post.toggleVote(action == .downvote ? -1 : 0, in: self.context)
+					SwipeSegment(primary: .downvote, reset: .downvoteRemove, shouldReset: { post.userVote < 0 }) { action in
+						post.toggleVote(action == .downvote ? -1 : 0, in: context)
 					},
 				],
 				trailing: [
-					SwipeSegment(primary: .markRead, reset: .markUnread, shouldReset: { self.post.metadata?.readDate != nil }) { action in
-						self.post.performRead(action == .markRead, in: self.context)
+					SwipeSegment(primary: .markRead, reset: .markUnread, shouldReset: { post.metadata?.readDate != nil }) { action in
+						post.performRead(action == .markRead, in: context)
 					},
-					SwipeSegment(primary: .save, reset: .unsave, shouldReset: { self.post.userSaved }) { action in
-						self.post.performSaved(action == .save, in: self.context)
+					SwipeSegment(primary: .save, reset: .unsave, shouldReset: { post.userSaved }) { action in
+						post.performSaved(action == .save, in: context)
 					},
 				]
 			)
@@ -103,10 +103,10 @@ struct ListRowSwipeModifier: ViewModifier {
 								displaySegment = nil
 								swipeEdge = nil
 							} else {
-								distance = self.getSwipeDistance(from: value).resist(over: 256)
+								distance = getSwipeDistance(from: value).resist(over: 256)
 								let isLeadingSwipe = distance > 0
 								swipeEdge = isLeadingSwipe ? .leading : (distance < 0 ? .trailing : nil)
-								if let directionSegments = isLeadingSwipe ? self.leading : self.trailing {
+								if let directionSegments = isLeadingSwipe ? leading : trailing {
 									let activationsSwipedCount = distance.magnitude / swipeActivationMagnitude
 									let segmentIndex = Int(floor(activationsSwipedCount)) - 1
 									didActivateSegment = segmentIndex >= 0
@@ -124,9 +124,9 @@ struct ListRowSwipeModifier: ViewModifier {
 							}
 							swipeDistance = distance
 							let displayAction = displaySegment?.enabledAction
-							if self.swipeAction != displayAction {
+							if swipeAction != displayAction {
 								DispatchQueue.main.async {
-									self.swipeAction = displayAction
+									swipeAction = displayAction
 									self.swipeEdge = swipeEdge
 								}
 							}

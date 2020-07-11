@@ -57,7 +57,7 @@ final class RedditComment: RedditResponsable, RedditVotable {
 		userVote = likes == true ? 1 : (likes == false ? -1 : 0)
 		userSaved = data["saved"] as! Bool
 
-		self.updateAttributedString(sizeIncrease: 2)
+		updateAttributedString(sizeIncrease: 2)
 	}
 
 	var deleted: Bool {

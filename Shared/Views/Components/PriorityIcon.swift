@@ -11,24 +11,24 @@ struct PriorityButton: View {
 
 	var body: some View {
 		Button(action: {
-			self.context.perform {
-				if self.subreddit.priority >= 3 { //TODO
-					self.subreddit.priority = 0
+			context.perform {
+				if subreddit.priority >= 3 { //TODO
+					subreddit.priority = 0
 				} else {
-					self.subreddit.priority += 1
-					self.subreddit.periodAllDate = nil
-					self.subreddit.periodYearDate = nil
-					self.subreddit.periodMonthDate = nil
-					self.subreddit.periodWeekDate = nil
+					subreddit.priority += 1
+					subreddit.periodAllDate = nil
+					subreddit.periodYearDate = nil
+					subreddit.periodMonthDate = nil
+					subreddit.periodWeekDate = nil
 				}
-				self.context.safeSave()
-				if self.tooltip {
+				context.safeSave()
+				if tooltip {
 					withAnimation {
-						self.tapped = true
+						tapped = true
 					}
 					DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { //TODO cancellable
 						withAnimation {
-							self.tapped = false
+							tapped = false
 						}
 					}
 				}
@@ -73,13 +73,13 @@ private struct StrengthIcon: View {
 		return HStack(alignment: .bottom, spacing: size / 6) {
 			ForEach(0..<3) { index in
 				VStack {
-					if index < self.level {
+					if index < level {
 						bar.fill()
 					} else {
 						bar.strokeBorder(lineWidth: 2)
 					}
 				}
-					.frame(width: self.size, height: self.size + self.size / 2 * CGFloat(index))
+					.frame(width: size, height: size + size / 2 * CGFloat(index))
 			}
 		}
 	}

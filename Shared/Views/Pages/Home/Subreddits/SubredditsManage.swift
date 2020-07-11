@@ -12,7 +12,7 @@ struct SubredditsManageSheet: View {
 				//TODO
 //				.navigationBarItems(trailing:
 //					Button(action: {
-//						self.presentationMode.wrappedValue.dismiss()
+//						presentationMode.wrappedValue.dismiss()
 //					}) {
 //						Text("Close")
 //					}
@@ -36,9 +36,9 @@ struct SubredditsManage: View {
 				#endif
 				Group {
 					if subredditSearch.result?.values != nil {
-						SubredditsResponseList(viewModel: subredditSearch, subscriptions: self.subscriptions)
+						SubredditsResponseList(viewModel: subredditSearch, subscriptions: subscriptions)
 					} else if RedditAuthModel.shared.accessToken != nil {
-						SubredditsResponseList(viewModel: SubredditsMineViewModel.shared, subscriptions: self.subscriptions)
+						SubredditsResponseList(viewModel: SubredditsMineViewModel.shared, subscriptions: subscriptions)
 					} else {
 						Spacer()
 						Text("Sign in to choose from subreddits you're subscribed to.")
@@ -53,8 +53,8 @@ struct SubredditsManage: View {
 		}
 			.navigationTitle("\(title) subreddits")
 			.onAppear {
-				if self.subscriptions.isEmpty {
-					self.title = "Add"
+				if subscriptions.isEmpty {
+					title = "Add"
 				}
 			}
 	}
@@ -67,7 +67,7 @@ private struct SubredditsResponseList<VM: RedditViewModel>: View where VM.Networ
 	var body: some View {
 		RedditView(viewModel) { result in
 			List(result.values) { subreddit in
-				SubredditsManageEntry(subreddit: subreddit, subscriptionModel: self.subscriptions.first { $0.model!.id == subreddit.id }?.model)
+				SubredditsManageEntry(subreddit: subreddit, subscriptionModel: subscriptions.first { $0.model!.id == subreddit.id }?.model)
 			}
 		}
 	}
@@ -81,13 +81,13 @@ private struct SubredditsManageEntry: View {
 
 	var body: some View {
 		Button(action: {
-			self.context.perform {
-				if let subscriptionModel = self.subscriptionModel {
-					self.context.delete(subscriptionModel)
+			context.perform {
+				if let subscriptionModel = subscriptionModel {
+					context.delete(subscriptionModel)
 				} else {
-					UserSubreddit.create(for: self.subreddit, in: self.context)
+					UserSubreddit.create(for: subreddit, in: context)
 				}
-				self.context.safeSave()
+				context.safeSave()
 			}
 		}) {
 			HStack(alignment: .firstTextBaseline) {

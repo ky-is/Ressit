@@ -26,7 +26,7 @@ private struct SubredditPostButton: View {
 
 	var body: some View {
 		Button(action: {
-			PostUserModel.shared.selected = self.post
+			PostUserModel.shared.selected = post
 		}) {
 			HStack(alignment: .top) {
 				if post.thumbnail != nil {

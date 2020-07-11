@@ -61,7 +61,7 @@ final class SubredditPostsViewModel: RedditViewModel, Identifiable {
 		if model.priority < 1 {
 			cases = cases.dropLast()
 		}
-		self.period = cases.first(where: model.needsUpdate(for:))
+		period = cases.first(where: model.needsUpdate(for:))
 		guard let period = period else {
 			return
 		}

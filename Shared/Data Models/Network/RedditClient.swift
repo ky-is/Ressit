@@ -48,7 +48,7 @@ final class RedditClient {
 				return retry(apiRequest, after: rateLimitInterval)
 			}
 		}
-		return URLSession.shared.dataTaskPublisher(for: self.transform(accessToken: accessToken, apiRequest: apiRequest))
+		return URLSession.shared.dataTaskPublisher(for: transform(accessToken: accessToken, apiRequest: apiRequest))
 			.tryMap { try self.transform($0.data, $0.response) }
 			.tryCatch { error -> AnyPublisher<Result, Error> in
 				guard let apiError = error as? APIError else {

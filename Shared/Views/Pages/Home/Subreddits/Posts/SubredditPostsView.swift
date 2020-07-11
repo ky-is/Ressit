@@ -25,10 +25,10 @@ private struct OneSubredditPostsView: View {
 		LocalView(subscription, sortDescriptor: postSort, predicate: \UserPost.subreddit == model) { (result: FetchedResults<UserPost>) in
 			Group {
 				if result.isEmpty {
-					EmptyPostsPlaceholder(subscription: self.subscription)
+					EmptyPostsPlaceholder(subscription: subscription)
 				} else {
-					SubredditPostsList(subscription: self.subscription, posts: result)
-						.modifier(ClearReadModifier(model: self.model, posts: result))
+					SubredditPostsList(subscription: subscription, posts: result)
+						.modifier(ClearReadModifier(model: model, posts: result))
 				}
 			}
 		}
@@ -135,8 +135,8 @@ private struct ClearReadModifier: ViewModifier {
 //				}
 //			})
 			.onDisappear {
-				if !self.readPosts.isEmpty && PostUserModel.shared.selected == nil && SubredditUserModel.shared.selected == nil {
-					self.performDelete()
+				if !readPosts.isEmpty && PostUserModel.shared.selected == nil && SubredditUserModel.shared.selected == nil {
+					performDelete()
 				}
 			}
 	}
@@ -144,14 +144,14 @@ private struct ClearReadModifier: ViewModifier {
 	private func performDelete() {
 		PostUserModel.shared.isActive = false
 		context.perform {
-			let allSubreddits = self.model == nil ? self.readPosts.map(\.subreddit) : nil
-			self.readPosts.forEach(self.context.delete)
-			self.context.safeSave()
+			let allSubreddits = model == nil ? readPosts.map(\.subreddit) : nil
+			readPosts.forEach(context.delete)
+			context.safeSave()
 
-			if let oneSubreddit = self.model {
-				self.context.refresh(oneSubreddit, mergeChanges: true)
+			if let oneSubreddit = model {
+				context.refresh(oneSubreddit, mergeChanges: true)
 			} else if let allSubreddits = allSubreddits {
-				Set(allSubreddits).forEach { self.context.refresh($0, mergeChanges: true) }
+				Set(allSubreddits).forEach { context.refresh($0, mergeChanges: true) }
 			}
 		}
 	}

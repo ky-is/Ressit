@@ -64,7 +64,7 @@ extension RedditVotable {
 			self[keyPath: keyPath] = value
 			context.safeSave()
 		}
-		self.saveSubscription = RedditClient.shared.send(request)
+		saveSubscription = RedditClient.shared.send(request)
 			.sink(receiveCompletion: { completion in
 				switch completion {
 				case .failure(let error):

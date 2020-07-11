@@ -64,7 +64,7 @@ final class UserPost: NSManagedObject, RedditVotable {
 	}
 
 	private func toggleRead(_ read: Bool, in context: NSManagedObjectContext) {
-		if let metadata = self.metadata {
+		if let metadata = metadata {
 			metadata.readDate = read ? Date() : nil
 			context.refresh(self, mergeChanges: true)
 		} else if read {

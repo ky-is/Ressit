@@ -12,8 +12,8 @@ struct RedditSubreddit: RedditResponsable, RedditIdentifiable {
 		guard let subscribers = data["subscribers"] as? Int else {
 			return nil
 		}
-		self.id = data["id"] as! String
-		self.name = data["display_name"] as! String
+		id = data["id"] as! String
+		name = data["display_name"] as! String
 		self.subscribers = subscribers.estimatedDescription
 	}
 }

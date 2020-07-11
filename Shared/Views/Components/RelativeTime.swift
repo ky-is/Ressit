@@ -39,7 +39,7 @@ struct RelativeText: View {
 	@Environment(\.font) private var font
 
 	private func updateAtZero() {
-		if let atZero = self.atZero, components == "⋯" {
+		if let atZero = atZero, components == "⋯" {
 			atZero()
 		}
 	}
@@ -58,10 +58,10 @@ struct RelativeText: View {
 		Text(text)
 			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
-				let new = timeComponents(at: interval, since: self.reference, allowPast: self.atZero == nil)
-				if new != self.components {
-					self.components = new
-					self.updateAtZero()
+				let new = timeComponents(at: interval, since: reference, allowPast: atZero == nil)
+				if new != components {
+					components = new
+					updateAtZero()
 				}
 			}
 	}
@@ -96,10 +96,10 @@ struct RelativeIcon: View {
 			.labelStyle(FaintIconLabelStyle())
 			.font((font ?? .caption).monospacedDigit())
 			.onReceive(RelativeTimer.shared.$minute) { interval in
-				if let reference = self.reference {
+				if let reference = reference {
 					let new = timeComponents(at: interval, since: reference, allowPast: true)
-					if new != self.components {
-						self.components = new
+					if new != components {
+						components = new
 					}
 				}
 			}

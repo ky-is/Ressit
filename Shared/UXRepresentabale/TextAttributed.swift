@@ -13,7 +13,7 @@ struct TextAttributed: UXViewRepresentable {
 	func makeNSView(context: Context) -> FixedTextView { makeView(context: context) }
 	func updateNSView(_ view: FixedTextView, context: Context) {}
 	#else
-	func makeUIView(context: Context) -> WKWebView { makeView(context: context) }
+	func makeUIView(context: Context) -> FixedTextView { makeView(context: context) }
 	func updateUIView(_ view: FixedTextView, context: Context) {}
 	#endif
 

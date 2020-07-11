@@ -19,7 +19,7 @@ protocol RedditViewModel: ObservableObject {
 
 extension RedditViewModel {
 	func fetch() {
-		guard let request = request ?? self.request else {
+		guard let request = request else {
 			return
 		}
 		if !refreshOnAppear && result != nil {
