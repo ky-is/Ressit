@@ -4,7 +4,6 @@ import SwiftUI
 struct WelcomeView: View {
 	var body: some View {
 		WelcomeContent()
-			.navigationTitle("Ressit")
 	}
 }
 #else
@@ -12,7 +11,6 @@ struct WelcomeView: View {
 	var body: some View {
 		NavigationView {
 			WelcomeContent()
-				.navigationTitle("Ressit")
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
 	}
@@ -43,6 +41,7 @@ private struct WelcomeContent: View {
 			}
 			Spacer()
 		}
+			.navigationTitle("Ressit")
 	}
 }
 

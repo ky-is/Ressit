@@ -25,9 +25,12 @@ private struct SubredditPostButton: View {
 	let hasSubredditContext: Bool
 
 	var body: some View {
-		Button(action: {
-			PostUserModel.shared.selected = post
-		}) {
+		let activation = Binding {
+			PostUserModel.shared.selected == post
+		} set: { isActive in
+			PostUserModel.shared.selected = isActive ? post : nil
+		}
+		return NavigationLink(destination: SubredditPostView(post: post), isActive: activation) {
 			HStack(alignment: .top) {
 				if post.thumbnail != nil {
 					ImageDownloadView(viewModel: post.getThumbnailManager()!)

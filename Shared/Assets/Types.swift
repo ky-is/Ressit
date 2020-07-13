@@ -23,6 +23,17 @@ typealias UXTextView = NSTextView
 typealias UXViewRepresentable = NSViewRepresentable
 typealias UXViewControllerRepresentable = NSViewControllerRepresentable
 
+struct NavigationBarItem {
+	enum TitleDisplayMode {
+		case automatic, inline, large
+	}
+}
+extension View {
+	func navigationBarTitleDisplayMode(_ mode: NavigationBarItem.TitleDisplayMode) -> Self {
+		return self
+	}
+}
+
 #else
 import UIKit
 

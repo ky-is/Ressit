@@ -4,17 +4,16 @@ import SwiftUI
 struct SubredditsView: View {
 	let subscriptions: [SubredditPostsViewModel]
 
-	private let subredditSearch = SubredditsSearchViewModel()
-
 	var body: some View {
-		SubredditsSubscriptionList(subscriptions: subscriptions, subredditSearch: subredditSearch)
+		SubredditsSubscriptionList(subscriptions: subscriptions)
 			.navigationTitle("Subreddits")
 	}
 }
 
 private struct SubredditsSubscriptionList: View {
 	let subscriptions: [SubredditPostsViewModel]
-	let subredditSearch: SubredditsSearchViewModel
+
+	@StateObject private var subredditSearch = SubredditsSearchViewModel()
 
 	@State private var showAddSubreddits = false
 	@Environment(\.managedObjectContext) private var context
@@ -34,6 +33,7 @@ private struct SubredditsSubscriptionList: View {
 			if totalPostCount > 0 {
 				SectionVibrant(label: "Collections") {
 					SubredditListEntry(subscription: .global, postCount: totalPostCount)
+//						.tag(SubredditPostsViewModel.global)
 				}
 			}
 			if !availableSubscriptions.isEmpty {
@@ -43,18 +43,17 @@ private struct SubredditsSubscriptionList: View {
 				SubredditsSubscriptionsSection(header: "Upcoming", subscriptions: unavailableSubscriptions)
 			}
 		}
-			//TODO
-//			.navigationBarItems(trailing: Group {
-//				Button(action: {
-//					showAddSubreddits = true
-//				}) {
-//					Image(systemName: "plus")
-//						.imageScale(.large)
-//						.frame(height: 44)
-//						.padding(.horizontal, 16)
-//				}
-//					.padding(.trailing, -16)
-//			})
+			.listStyle(SidebarListStyle())
+			.toolbar {
+				ToolbarItem(placement: .primaryAction) {
+					Button {
+						showAddSubreddits = true
+					} label: {
+						Image(systemName: "plus")
+							.imageScale(.large)
+					}
+				}
+			}
 			.sheet(isPresented: $showAddSubreddits) {
 				SubredditsManageSheet(subscriptions: subscriptions, subredditSearch: subredditSearch)
 					.environment(\.managedObjectContext, context)
@@ -96,10 +95,13 @@ private struct SubredditListEntry: View {
 	let postCount: Int?
 
 	var body: some View {
-		HStack {
-			Button(action: {
-				SubredditUserModel.shared.selected = subscription
-			}) {
+		let activation = Binding {
+			SubredditUserModel.shared.selected == subscription
+		} set: { isActive in
+			SubredditUserModel.shared.selected = isActive ? subscription : nil
+		}
+		return HStack {
+			NavigationLink(destination: SubredditPostsView(subscription: subscription), isActive: activation) {
 				SubredditTitle(name: subscription.model?.name)
 					.font(Font.body.weight(.medium))
 					.padding(.vertical)
@@ -109,7 +111,7 @@ private struct SubredditListEntry: View {
 				if subscription.model != nil {
 					PriorityButton(subreddit: subscription.model!, size: 8, tooltip: true)
 						.padding(2)
-						.frame(minWidth: 40, minHeight: 40, alignment: .trailing)
+						.frame(maxHeight: .infinity)
 				}
 				SubredditEntryLabel(subscription: subscription, postCount: postCount)
 			}

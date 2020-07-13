@@ -219,7 +219,7 @@ private final class AuthenticationWindowProvider: NSObject, ASWebAuthenticationP
 		#if os(iOS)
 		return UIApplication.shared.windows.first! //TODO
 		#else
-		return NSApp.mainWindow!
+		return NSApp.windows.first!
 		#endif
 	}
 }

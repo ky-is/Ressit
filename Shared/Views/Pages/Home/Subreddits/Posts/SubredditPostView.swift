@@ -99,9 +99,9 @@ private struct PostImageOverlay: View {
 						ZStack(alignment: .top) {
 //							BlurView(style: .systemChromeMaterial)
 							HStack {
-								Button(action: {
+								Button {
 									share = true
-								}) {
+								} label: {
 									Image(systemName: "square.and.arrow.up")
 										.frame(minWidth: 44, maxHeight: .infinity)
 								}
@@ -147,10 +147,8 @@ private struct LinkView: View {
 
 	#if os(iOS)
 	var body: some View {
-		Button(action: {
+		Button(title) {
 			openLink = true
-		}) {
-			Text(title)
 		}
 			.sheet(isPresented: $openLink) {
 				SafariView(url: url)
@@ -213,6 +211,7 @@ private struct SubredditPostHeader: View {
 		}
 			.padding(.vertical, 8)
 			.navigationTitle(post.title)
+			.navigationBarTitleDisplayMode(.inline)
 	}
 }
 

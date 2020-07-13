@@ -10,7 +10,7 @@ struct PriorityButton: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		Button(action: {
+		Button {
 			context.perform {
 				if subreddit.priority >= 3 { //TODO
 					subreddit.priority = 0
@@ -33,7 +33,7 @@ struct PriorityButton: View {
 					}
 				}
 			}
-		}) {
+		} label: {
 			StrengthIcon(level: subreddit.priority, size: size)
 		}
 			.buttonStyle(BorderlessButtonStyle())

@@ -19,7 +19,11 @@ enum RedditPeriod: String, CaseIterable {
 	}
 }
 
-final class SubredditPostsViewModel: RedditViewModel, Identifiable {
+final class SubredditPostsViewModel: RedditViewModel, Equatable, Identifiable {
+	static func == (lhs: SubredditPostsViewModel, rhs: SubredditPostsViewModel) -> Bool {
+		lhs.id == rhs.id
+	}
+
 	typealias NetworkResource = RedditListing<RedditPost>
 
 	static let global = SubredditPostsViewModel(collection: "$GLOBAL")

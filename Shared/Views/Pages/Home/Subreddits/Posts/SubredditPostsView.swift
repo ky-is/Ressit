@@ -14,6 +14,7 @@ struct SubredditPostsView: View {
 			}
 		}
 			.navigationTitle(subscription.model != nil ? "r/\(subscription.model!.name)" : "Global Feed")
+			.navigationBarTitleDisplayMode(.inline)
 	}
 }
 
@@ -114,46 +115,22 @@ private struct SubredditPostsList: View {
 }
 
 private struct ClearReadModifier: ViewModifier {
-	let readPosts: [UserPost]
 	let model: UserSubreddit?
-
-	@Environment(\.managedObjectContext) private var context
+	let hasUnread: Bool
 
 	init(model: UserSubreddit?, posts: FetchedResults<UserPost>) {
 		self.model = model
-		self.readPosts = posts.filter { $0.metadata?.readDate != nil }
+		self.hasUnread = posts.first { $0.metadata?.readDate != nil } != nil
 	}
 
 	func body(content: Content) -> some View {
 		content
-			//TODO
-//			.navigationBarItems(trailing: Group {
-//				if !readPosts.isEmpty {
-//					Button(action: performDelete) {
-//						Text("Clear read")
-//					}
-//				}
-//			})
-			.onDisappear {
-				if !readPosts.isEmpty && PostUserModel.shared.selected == nil && SubredditUserModel.shared.selected == nil {
-					performDelete()
+			.toolbar {
+				ToolbarItem(placement: .primaryAction) {
+					Button("Clear read", action: PostUserModel.shared.performDelete)
+						.hidden(!hasUnread)
 				}
 			}
-	}
-
-	private func performDelete() {
-		PostUserModel.shared.isActive = false
-		context.perform {
-			let allSubreddits = model == nil ? readPosts.map(\.subreddit) : nil
-			readPosts.forEach(context.delete)
-			context.safeSave()
-
-			if let oneSubreddit = model {
-				context.refresh(oneSubreddit, mergeChanges: true)
-			} else if let allSubreddits = allSubreddits {
-				Set(allSubreddits).forEach { context.refresh($0, mergeChanges: true) }
-			}
-		}
 	}
 }
 

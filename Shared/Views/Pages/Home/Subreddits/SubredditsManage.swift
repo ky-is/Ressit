@@ -9,14 +9,13 @@ struct SubredditsManageSheet: View {
 	var body: some View {
 		NavigationView {
 			SubredditsManage(subscriptions: subscriptions, subredditSearch: subredditSearch)
-				//TODO
-//				.navigationBarItems(trailing:
-//					Button(action: {
-//						presentationMode.wrappedValue.dismiss()
-//					}) {
-//						Text("Close")
-//					}
-//				)
+				.toolbar {
+					ToolbarItem(placement: .primaryAction) {
+						Button("Close") {
+							presentationMode.wrappedValue.dismiss()
+						}
+					}
+				}
 		}
 			.navigationViewStyle(StackNavigationViewStyle())
 	}
@@ -31,7 +30,7 @@ struct SubredditsManage: View {
 	var body: some View {
 		ZStack(alignment: .top) {
 			VStack(spacing: 0) {
-				#if !os(macOS)
+				#if !os(macOS) //TODO
 				SearchBar(text: $subredditSearch.query, autoFocus: false)
 				#endif
 				Group {
@@ -52,6 +51,7 @@ struct SubredditsManage: View {
 			}
 		}
 			.navigationTitle("\(title) subreddits")
+			.navigationBarTitleDisplayMode(.inline)
 			.onAppear {
 				if subscriptions.isEmpty {
 					title = "Add"
@@ -80,7 +80,7 @@ private struct SubredditsManageEntry: View {
 	@Environment(\.managedObjectContext) private var context
 
 	var body: some View {
-		Button(action: {
+		Button {
 			context.perform {
 				if let subscriptionModel = subscriptionModel {
 					context.delete(subscriptionModel)
@@ -89,7 +89,7 @@ private struct SubredditsManageEntry: View {
 				}
 				context.safeSave()
 			}
-		}) {
+		} label: {
 			HStack(alignment: .firstTextBaseline) {
 				Image(systemName: subscriptionModel != nil ? "checkmark" : "circle")
 					.font(Font.body.weight(subscriptionModel != nil ? .bold : .light))
